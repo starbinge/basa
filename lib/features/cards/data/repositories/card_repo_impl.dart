@@ -10,19 +10,20 @@ import 'package:basa_app_project/features/cards/domain/repositories/card_repo.da
 import 'package:basa_app_project/core/services/external_database_accessor.dart';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as path;
 
 class CardRepoImpl implements CardRepo {
   final DecksDao _decksDao;
 
-  CardRepoImpl({required DecksDao decksDao})
-    : _decksDao = decksDao;
+  CardRepoImpl({required DecksDao decksDao}) : _decksDao = decksDao;
 
   @override
   Future<CardsEntity> fetchCards({required int deckId}) async {
     final ImportedDeckData _selectedRow = await _decksDao.getDeckFilePathById(
       id: deckId,
     );
+    debugPrint(_selectedRow.extractedPath);
     AnkiMediaService _ankiMediaService = AnkiMediaService();
     await _ankiMediaService.findAudioPath(
       mediaInformationSource: path.join(_selectedRow.extractedPath, "media"),
@@ -31,6 +32,7 @@ class CardRepoImpl implements CardRepo {
       _selectedRow.extractedPath,
       "collection.anki2",
     );
+    debugPrint(_extractedSelectedCardsPath);
     try {
       final ExternalDatabase _selectedData =
           ExternalDatabaseAccessor.openConnectionFromFile(
