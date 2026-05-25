@@ -1,0 +1,1 @@
+class DeckAlreadyExistsException implements Exception {}

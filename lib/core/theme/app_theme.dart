@@ -1,0 +1,257 @@
+import 'package:basa_app_project/core/theme/app_colors.dart';
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
+class AppTheme {
+  AppTheme._();
+
+  static ThemeData get light {
+    const colorScheme = ColorScheme(
+      brightness: Brightness.light,
+      primary: AppColors.primary,
+      onPrimary: AppColors.onPrimary,
+      primaryContainer: AppColors.primaryContainer,
+      onPrimaryContainer: AppColors.onPrimaryContainer,
+      secondary: AppColors.secondary,
+      onSecondary: AppColors.onSecondary,
+      secondaryContainer: AppColors.secondaryContainer,
+      onSecondaryContainer: AppColors.onSecondaryContainer,
+      tertiary: AppColors.tertiary,
+      onTertiary: AppColors.onTertiary,
+      tertiaryContainer: AppColors.tertiaryContainer,
+      onTertiaryContainer: AppColors.onTertiaryContainer,
+      error: AppColors.error,
+      onError: AppColors.onError,
+      errorContainer: AppColors.errorContainer,
+      onErrorContainer: AppColors.onErrorContainer,
+      surface: AppColors.surface,
+      onSurface: AppColors.onSurface,
+      onSurfaceVariant: AppColors.onSurfaceVariant,
+      outline: AppColors.outline,
+      outlineVariant: AppColors.outlineVariant,
+      inverseSurface: AppColors.inverseSurface,
+      inversePrimary: AppColors.inversePrimary,
+    );
+
+    return ThemeData(
+      useMaterial3: true,
+      brightness: Brightness.light,
+      colorScheme: colorScheme,
+      scaffoldBackgroundColor: AppColors.surface,
+
+      textTheme: TextTheme(
+        displayLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 64,
+          fontWeight: FontWeight.w700,
+          height: 1.1,
+          letterSpacing: -1.28,
+          color: AppColors.onSurface,
+        ),
+        headlineLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 40,
+          fontWeight: FontWeight.w700,
+          height: 1.2,
+          letterSpacing: -0.4,
+          color: AppColors.onSurface,
+        ),
+        headlineMedium: GoogleFonts.spaceGrotesk(
+          fontSize: 24,
+          fontWeight: FontWeight.w600,
+          height: 1.3,
+          color: AppColors.onSurface,
+        ),
+        titleLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: AppColors.onSurface,
+        ),
+        titleMedium: GoogleFonts.spaceGrotesk(
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+          color: AppColors.onSurface,
+        ),
+        titleSmall: GoogleFonts.spaceGrotesk(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: AppColors.onSurface,
+        ),
+        bodyLarge: GoogleFonts.literata(
+          fontSize: 18,
+          fontWeight: FontWeight.w400,
+          height: 1.6,
+          color: AppColors.onSurface,
+        ),
+        bodyMedium: GoogleFonts.literata(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          height: 1.6,
+          color: AppColors.onSurface,
+        ),
+        labelLarge: GoogleFonts.spaceGrotesk(
+          fontSize: 14,
+          fontWeight: FontWeight.w700,
+          height: 1.0,
+          letterSpacing: 0.7,
+          color: AppColors.onSurface,
+        ),
+        labelMedium: GoogleFonts.spaceGrotesk(
+          fontSize: 11,
+          fontWeight: FontWeight.w500,
+          height: 1.0,
+          color: AppColors.onSurface,
+        ),
+        labelSmall: GoogleFonts.spaceGrotesk(
+          fontSize: 10,
+          fontWeight: FontWeight.w300,
+          height: 1.0,
+          color: AppColors.onSurface,
+        ),
+      ),
+
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.surface,
+          foregroundColor: AppColors.onSurface,
+          elevation: 1,
+          shadowColor: Colors.black.withAlpha(25),
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            side: BorderSide(color: AppColors.outline, width: 1),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          textStyle: GoogleFonts.spaceGrotesk(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.7,
+          ),
+        ),
+      ),
+
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: AppColors.onSurface,
+          elevation: 0,
+          shadowColor: Colors.transparent,
+          side: BorderSide(color: AppColors.outline, width: 1),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          textStyle: GoogleFonts.spaceGrotesk(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+            letterSpacing: 0.7,
+          ),
+        ),
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        isDense: true,
+        contentPadding: const EdgeInsets.all(8),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: BorderSide(color: AppColors.outline, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: BorderSide(color: AppColors.onSurface, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: BorderSide(color: AppColors.error, width: 1),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(4),
+          borderSide: BorderSide(color: AppColors.error, width: 1.5),
+        ),
+        labelStyle: GoogleFonts.spaceGrotesk(
+          fontSize: 14,
+          fontWeight: FontWeight.w500,
+          color: AppColors.onSurfaceVariant,
+        ),
+        hintStyle: GoogleFonts.spaceGrotesk(
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          color: AppColors.onSurfaceVariant.withAlpha(100),
+        ),
+      ),
+
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: AppColors.surface,
+        selectedItemColor: AppColors.primary,
+        unselectedItemColor: AppColors.onSurfaceVariant,
+        elevation: 2,
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle: GoogleFonts.spaceGrotesk(
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+        unselectedLabelStyle: GoogleFonts.spaceGrotesk(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+        ),
+      ),
+
+      cardTheme: CardThemeData(
+        elevation: 2,
+        shadowColor: Colors.black.withAlpha(25),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(color: AppColors.outlineVariant, width: 1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        color: AppColors.surfaceContainerLow,
+        margin: EdgeInsets.zero,
+      ),
+
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        elevation: 4,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.onPrimary,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      ),
+
+      appBarTheme: AppBarTheme(
+        elevation: 0,
+        shadowColor: Colors.transparent,
+        scrolledUnderElevation: 1,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.onSurface,
+        titleTextStyle: GoogleFonts.spaceGrotesk(
+          fontSize: 22,
+          fontWeight: FontWeight.w700,
+          color: AppColors.onSurface,
+        ),
+      ),
+
+      dividerTheme: DividerThemeData(
+        thickness: 1,
+        color: AppColors.outlineVariant,
+        space: 1,
+      ),
+
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.primary,
+        labelStyle: GoogleFonts.spaceGrotesk(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          color: AppColors.onPrimary,
+        ),
+        side: BorderSide.none,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      ),
+
+      progressIndicatorTheme: const ProgressIndicatorThemeData(
+        color: AppColors.primary,
+        linearTrackColor: AppColors.surfaceContainerHighest,
+      ),
+
+      iconTheme: const IconThemeData(color: AppColors.onSurfaceVariant),
+    );
+  }
+}
