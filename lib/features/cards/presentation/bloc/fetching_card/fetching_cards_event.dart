@@ -8,3 +8,9 @@ class FetchCards extends FetchingCardsEvent {
 
   FetchCards({required this.deckId});
 }
+
+class GetCardById extends FetchingCardsEvent {
+  final int cardId;
+
+  GetCardById({ required this.cardId});
+}

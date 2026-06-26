@@ -1,62 +1,72 @@
-import 'package:basa_app_project/features/cards/domain/entities/cards_entity.dart';
+import 'dart:io';
+import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
+import 'package:basa_app_project/core/services/external_database_accessor.dart';
+import 'package:basa_app_project/features/cards/data/repositories/card_repo_impl.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/flash_card_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class MainCardPage extends StatefulWidget {
-  const MainCardPage({super.key, required this.deckId});
+  const MainCardPage({
+    super.key,
+    required this.deckId,
+    required this.fileName,
+    required this.filePath,
+  });
 
   final int deckId;
+  final String fileName;
+  final File filePath;
 
   @override
   State<MainCardPage> createState() => _MainCardPageState();
 }
 
 class _MainCardPageState extends State<MainCardPage> {
+  FetchingCardsBloc? _bloc;
+
   @override
   void initState() {
     super.initState();
-    context.read<FetchingCardsBloc>().add(FetchCards(deckId: widget.deckId));
+    _initDatabase();
+  }
+
+  Future<void> _initDatabase() async {
+    final accessor = RepositoryProvider.of<ExternalDatabaseAccessor>(context);
+    final db = await accessor.fetchAnkiDatabase(
+      pathFile: widget.filePath,
+      fileName: widget.fileName,
+    );
+    final decksDao = await RepositoryProvider.of<AppDatabase>(context).decksDao;
+    final repo = await CardRepoImpl(decksDao: decksDao, cardsDao: db.cardsDao);
+
+    debugPrint("trying to fetch");
+
+    await repo.getCardById(cardId: 1335782638416);
+    debugPrint(repo.oneCardById?.defaultLanguage.toString());
+    setState(() {
+      _bloc = FetchingCardsBloc(cardRepo: repo);
+    });
+  }
+
+  @override
+  void dispose() {
+    _bloc?.close();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<FetchingCardsBloc, FetchingCardsState>(
-      builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(
-              state is FetchingCardIsFinished
-                  ? state.cardsEntity.deckName
-                  : '',
-            ),
-          ),
-          body: switch (state) {
-            FetchingCardsInitial() || FetchingCardIsLoading() => const Center(
-              child: CircularProgressIndicator(),
-            ),
-            FetchingCardIsFinished(:final cardsEntity) =>
-              _buildCardList(cardsEntity),
-            FetchingCardIsError(:final errorMessage) => Center(
-              child: Text(errorMessage),
-            ),
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildCardList(CardsEntity cardsEntity) {
-    if (cardsEntity.listCard.isEmpty) {
-      return const Center(child: Text('No cards in this deck'));
+    if (_bloc == null) {
+      return const Center(child: CircularProgressIndicator());
     }
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: cardsEntity.listCard.length,
-      itemBuilder: (context, index) {
-        return FlashCardWidget(card: cardsEntity.listCard[index]);
-      },
+
+    return BlocProvider.value(
+      value: _bloc!,
+      child: Scaffold(
+        appBar: AppBar(title: Text(widget.fileName)),
+        body: const Center(child: Text("Test: BLoC Berhasil Diinisialisasi!")),
+      ),
     );
   }
 }

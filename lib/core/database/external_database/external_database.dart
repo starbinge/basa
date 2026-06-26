@@ -11,7 +11,4 @@ class ExternalDatabase extends _$ExternalDatabase {
 
   // TODO: implement schemaVersion
   int get schemaVersion => 1;
-
-  @override
-  MigrationStrategy get migration => MigrationStrategy();
 }

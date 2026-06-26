@@ -12,10 +12,19 @@ class FetchingDeckBloc extends Bloc<FetchingDeckEvent, FetchingDeckState> {
 
   FetchingDeckBloc({required DeckRepository repository})
     : _repository = repository,
-      super(FetchingDeckState(deckList: [])) {
+      super(
+        FetchingDeckState(
+          deckList: [],
+          isLoading: false,
+          isDeckExist: false,
+          errorMessage: '',
+        ),
+      ) {
     on<FetchDecksList>((event, emit) async {
-      debugPrint("Fetch");
       try {
+        emit(
+          state.copyWith(isLoading: true)
+        );
         final List<ImportedDeckData> rawDecksData = await _repository.getAll();
         final List<DeckEntity> finalDecksData = rawDecksData.map((deck) {
           return DeckEntity(
@@ -29,7 +38,14 @@ class FetchingDeckBloc extends Bloc<FetchingDeckEvent, FetchingDeckState> {
             deckColor: deck.colorDeck,
           );
         }).toList();
-        emit(FetchingDeckState(deckList: finalDecksData));
+        emit(
+          state.copyWith(
+            deckList: finalDecksData,
+            isLoading: false,
+            isDeckExist: true,
+            errorMessage: '',
+          ),
+        );
       } catch (e) {}
     });
   }

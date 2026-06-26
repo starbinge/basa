@@ -34,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
     return LazyDatabase(() async {
       final dbFolder = await getApplicationSupportDirectory();
       final file = File(path.join(dbFolder.path, 'basa_database.sqlite'));
-      return NativeDatabase(file);
+      return NativeDatabase.createInBackground(file);
     });
   }
 }

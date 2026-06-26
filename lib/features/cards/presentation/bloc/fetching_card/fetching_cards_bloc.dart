@@ -23,5 +23,14 @@ class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
         emit(FetchingCardIsError(errorMessage: e.toString()));
       }
     });
+    on<GetCardById>((event, emit) async {
+      emit(FetchingCardIsLoading());
+      try {
+        final result = await _cardRepo.getCardById(cardId: event.cardId);
+        debugPrint(result?.id.toString() );
+      } catch (e) {
+        emit(FetchingCardIsError(errorMessage: e.toString()));
+      }
+    });
   }
 }

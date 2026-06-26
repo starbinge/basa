@@ -1,37 +1,33 @@
 import 'dart:io';
 
 import 'package:basa_app_project/core/database/external_database/external_database.dart';
-import 'package:drift/drift.dart';
+import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
 import 'package:drift/native.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class ExternalDatabaseAccessor {
-  static final Map<String, ExternalDatabase> _cache = {};
+  ExternalDatabase? _database;
 
-  static ExternalDatabase openConnectionFromFile({required String dbPath}) {
-    return _cache.putIfAbsent(dbPath, () {
-      return ExternalDatabase(
-        LazyDatabase(() async {
-          final file = File(dbPath);
-          if (!await file.exists()) {
-            throw Exception("File tidak ditemukan di sistem HP!");
-          }
-          return NativeDatabase.createInBackground(file);
-        }),
-      );
-    });
-  }
-
-  /// Call this when you're done with a database file (e.g. user removes it)
-  static Future<void> closeConnection({required String dbPath}) async {
-    final db = _cache.remove(dbPath);
-    await db?.close();
-  }
-
-  /// Call this on app shutdown
-  static Future<void> closeAll() async {
-    for (final db in _cache.values) {
-      await db.close();
+  Future<ExternalDatabase> fetchAnkiDatabase({
+    required File pathFile,
+    required String fileName,
+  }) async {
+    if (_database != null) {
+      await _database!.close();
+      _database = null;
     }
-    _cache.clear();
+    final docDir = await getApplicationDocumentsDirectory();
+    final localPath = path.join(docDir.path, fileName);
+    final isFileExist = await File(localPath).exists();
+    if (!isFileExist) {
+      await pathFile.copy(localPath);
+    }
+    final executor = NativeDatabase.createInBackground(File(localPath));
+    _database = ExternalDatabase(executor);
+    return _database!;
   }
+
+  CardsDao? get cardsDao => _database?.cardsDao;
+  ExternalDatabase? get externalDatabase => _database;
 }
