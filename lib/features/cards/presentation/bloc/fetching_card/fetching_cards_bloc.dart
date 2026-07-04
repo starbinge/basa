@@ -1,7 +1,12 @@
+import 'dart:io';
+
+import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
+import 'package:basa_app_project/core/data/initial_database/initial_database.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/card_repo.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/repositories/card_repo_impl.dart';
 import '../../../domain/entities/cards_entity.dart';
 
 part 'fetching_cards_event.dart';
@@ -9,25 +14,35 @@ part 'fetching_cards_event.dart';
 part 'fetching_cards_state.dart';
 
 class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
-  final CardRepo _cardRepo;
+  final ExternalDatabaseAccessor _databaseAccessor;
+  final AppDatabase _appDatabase;
 
-  FetchingCardsBloc({required CardRepo cardRepo})
-    : _cardRepo = cardRepo,
-      super(FetchingCardsInitial()) {
+  FetchingCardsBloc({
+    required ExternalDatabaseAccessor databaseAccessor,
+    required AppDatabase appDatabase,
+  }) : _databaseAccessor = databaseAccessor,
+       _appDatabase = appDatabase,
+       super(FetchingCardInitial()) {
     on<FetchCards>((event, emit) async {
       emit(FetchingCardIsLoading());
       try {
-        final result = await _cardRepo.fetchCards(deckId: event.deckId);
+        await _databaseAccessor.closeCurrentDatabase();
+
+        final db = await _databaseAccessor.openExternalDatabase(
+          pathFile: event.filePath,
+          fileName: event.fileName,
+        );
+
+        final decksDao = await _appDatabase.decksDao;
+        final repo = CardRepoImpl(decksDao: decksDao, cardsDao: db.cardsDao);
+
+        final result = await repo.fetchCards(
+          deckId: event.deckId,
+          deckName: event.deckName,
+          deckCountry: event.deckCountry,
+        );
+
         emit(FetchingCardIsFinished(cardsEntity: result));
-      } catch (e) {
-        emit(FetchingCardIsError(errorMessage: e.toString()));
-      }
-    });
-    on<GetCardById>((event, emit) async {
-      emit(FetchingCardIsLoading());
-      try {
-        final result = await _cardRepo.getCardById(cardId: event.cardId);
-        debugPrint(result?.id.toString() );
       } catch (e) {
         emit(FetchingCardIsError(errorMessage: e.toString()));
       }

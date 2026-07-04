@@ -3,7 +3,7 @@ part of 'fetching_cards_bloc.dart';
 @immutable
 sealed class FetchingCardsState {}
 
-final class FetchingCardsInitial extends FetchingCardsState {}
+final class FetchingCardInitial extends FetchingCardsState {}
 
 final class FetchingCardIsLoading extends FetchingCardsState {}
 

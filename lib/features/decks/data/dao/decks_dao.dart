@@ -1,6 +1,6 @@
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
 import 'package:drift/drift.dart';
 
+import '../../../../core/data/initial_database/initial_database.dart';
 import '../models/deck_model.dart';
 
 part 'decks_dao.g.dart';

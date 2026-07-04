@@ -1,7 +1,7 @@
-import 'package:basa_app_project/core/database/external_database/external_database.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
 
+import '../../../../core/data/external_database/external_database.dart';
 import '../models/fetching_cards_model.dart';
 
 part 'cards_dao.g.dart';
@@ -24,11 +24,14 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
         'queue': card.queue,
         'flds': note.flds,
         'tags': note.tags,
+        'ivl': card.ivl,
+        'odue': card.odue,
+        'factor': card.factor,
       });
     }).toList();
   }
 
-  Future<CardsModel?>   getCardById({required int cardId}) async {
+  Future<CardsModel?> getCardById({required int cardId}) async {
     final cardsTableData = select(
       cardsTable,
     ).join([innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid))]);
@@ -46,10 +49,13 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
 
     return CardsModel.fromMap({
       'card_id': cardRow.id,
-      'nid': cardRow.nid,
+      'nid': noteRow.id,
       'queue': cardRow.queue,
       'flds': noteRow.flds,
       'tags': noteRow.tags,
+      'ivl': cardRow.ivl,
+      'odue': cardRow.odue,
+      'factor': cardRow.factor,
     });
   }
 }

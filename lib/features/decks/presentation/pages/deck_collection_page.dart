@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import 'package:basa_app_project/core/constants/common_path.dart';
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
-import 'package:basa_app_project/core/services/file_picker.dart';
+import 'package:basa_app_project/core/utils/file_picker.dart';
 import 'package:basa_app_project/core/widgets/flying_action_button.dart';
 import 'package:basa_app_project/core/widgets/status_overlay.dart';
 import 'package:basa_app_project/features/decks/data/repositories/deck_repository_impl.dart';
@@ -19,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
 
+import '../../../../core/data/initial_database/initial_database.dart';
 import '../../domain/repositories/deck_repository.dart';
 
 class DeckCollectionPage extends StatefulWidget {
@@ -74,7 +74,7 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                   return GestureDetector(
                     onTap: () {
                       GoRouter.of(context).push(
-                        '/cards/${deckList[index].id}/collection.anki2',
+                        '/cards/${deckList[index].id}/collection.anki2/${deckList[index].deckName}/${deckList[index].deckLanguage}',
                         extra: File(
                           path.join(
                             deckList[index].extractedPath,

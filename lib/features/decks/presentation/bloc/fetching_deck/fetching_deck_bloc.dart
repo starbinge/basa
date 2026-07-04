@@ -1,9 +1,9 @@
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
 import 'package:basa_app_project/features/decks/domain/entities/deck_entity.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../../core/data/initial_database/initial_database.dart';
 import 'fetching_deck_event.dart';
 import 'fetching_deck_state.dart';
 
@@ -22,9 +22,7 @@ class FetchingDeckBloc extends Bloc<FetchingDeckEvent, FetchingDeckState> {
       ) {
     on<FetchDecksList>((event, emit) async {
       try {
-        emit(
-          state.copyWith(isLoading: true)
-        );
+        emit(state.copyWith(isLoading: true));
         final List<ImportedDeckData> rawDecksData = await _repository.getAll();
         final List<DeckEntity> finalDecksData = rawDecksData.map((deck) {
           return DeckEntity(

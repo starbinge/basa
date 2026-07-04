@@ -1,10 +1,9 @@
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
 import 'package:basa_app_project/core/router/app_router.dart';
-import 'package:basa_app_project/core/services/external_database_accessor.dart';
 import 'package:basa_app_project/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
+import 'core/data/external_database/external_database_accessor.dart';
+import 'core/data/initial_database/initial_database.dart';
 import 'features/decks/data/repositories/deck_repository_impl.dart';
 import 'features/decks/domain/repositories/deck_repository.dart';
 
