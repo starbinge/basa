@@ -58,4 +58,12 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
       'factor': cardRow.factor,
     });
   }
+
+  Future<int> updateCards({
+    required CardsTableCompanion updatedCardValue,
+  }) async {
+    return (update(cardsTable)
+          ..where((card) => card.id.equals(updatedCardValue.id.value)))
+        .write(updatedCardValue);
+  }
 }

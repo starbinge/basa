@@ -7,6 +7,7 @@ class CardsDetailEntity {
   final int reps;
   final int odue;
   final int ivl;
+  final int left;
   final String defaultLanguage;
   final String translatedLanguage;
   final List<String> descriptions;
@@ -29,5 +30,6 @@ class CardsDetailEntity {
     this.imagePath,
     this.tags,
     required this.factor,
+    required this.left,
   });
 }

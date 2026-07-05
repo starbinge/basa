@@ -4,12 +4,13 @@ import 'package:drift/drift.dart';
 import '../../domain/entities/cards_detail_entity.dart';
 
 //card model for the UI
-class CardsModel {
+class CardsModel implements Comparable<CardsModel> {
   final int id;
   final int noteId;
   final int queue;
   final int reps;
   final int odue;
+  final int left;
   final int ivl;
   final String defaultLanguage;
   final String translatedLanguage;
@@ -33,7 +34,13 @@ class CardsModel {
     required this.audioPath,
     this.imagePath,
     required this.descriptions,
+    required this.left,
   });
+
+  @override
+  int compareTo(CardsModel other) {
+    return queue.compareTo(other.queue);
+  }
 
   factory CardsModel.fromMap(Map<String, dynamic> map) {
     final String rawFields = map['flds'] ?? "";
@@ -78,9 +85,9 @@ class CardsModel {
       noteId: map['nid'] ?? 0,
       queue: map['queue'] ?? 0,
       tags: tags,
-      // 💡 PERBAIKAN: Berikan operator ?? 0 untuk mengamankan data dari nilai Null
       reps: map['reps'] ?? 0,
       odue: map['odue'] ?? 0,
+      left: map['left'] ?? 0,
       ivl: map['ivl'] ?? 0,
       factor: map['factor'] ?? 0,
       defaultLanguage: defaultLanguage,
@@ -104,6 +111,7 @@ class CardsModel {
       descriptions: descriptions,
       audioPath: audioPath,
       factor: factor,
+      left: left,
     );
   }
 }
@@ -123,6 +131,8 @@ class CardsTable extends Table {
   IntColumn get ivl => integer()();
 
   IntColumn get odue => integer()();
+
+  IntColumn get left => integer()();
 
   @override
   String get tableName => 'cards';

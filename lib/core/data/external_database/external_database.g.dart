@@ -72,6 +72,15 @@ class $CardsTableTable extends CardsTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _leftMeta = const VerificationMeta('left');
+  @override
+  late final GeneratedColumn<int> left = GeneratedColumn<int>(
+    'left',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     queue,
@@ -81,6 +90,7 @@ class $CardsTableTable extends CardsTable
     factor,
     ivl,
     odue,
+    left,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -145,6 +155,14 @@ class $CardsTableTable extends CardsTable
     } else if (isInserting) {
       context.missing(_odueMeta);
     }
+    if (data.containsKey('left')) {
+      context.handle(
+        _leftMeta,
+        left.isAcceptableOrUnknown(data['left']!, _leftMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_leftMeta);
+    }
     return context;
   }
 
@@ -182,6 +200,10 @@ class $CardsTableTable extends CardsTable
         DriftSqlType.int,
         data['${effectivePrefix}odue'],
       )!,
+      left: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}left'],
+      )!,
     );
   }
 
@@ -199,6 +221,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
   final int factor;
   final int ivl;
   final int odue;
+  final int left;
   const CardsTableData({
     required this.queue,
     required this.id,
@@ -207,6 +230,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
     required this.factor,
     required this.ivl,
     required this.odue,
+    required this.left,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -218,6 +242,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
     map['factor'] = Variable<int>(factor);
     map['ivl'] = Variable<int>(ivl);
     map['odue'] = Variable<int>(odue);
+    map['left'] = Variable<int>(left);
     return map;
   }
 
@@ -230,6 +255,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
       factor: Value(factor),
       ivl: Value(ivl),
       odue: Value(odue),
+      left: Value(left),
     );
   }
 
@@ -246,6 +272,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
       factor: serializer.fromJson<int>(json['factor']),
       ivl: serializer.fromJson<int>(json['ivl']),
       odue: serializer.fromJson<int>(json['odue']),
+      left: serializer.fromJson<int>(json['left']),
     );
   }
   @override
@@ -259,6 +286,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
       'factor': serializer.toJson<int>(factor),
       'ivl': serializer.toJson<int>(ivl),
       'odue': serializer.toJson<int>(odue),
+      'left': serializer.toJson<int>(left),
     };
   }
 
@@ -270,6 +298,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
     int? factor,
     int? ivl,
     int? odue,
+    int? left,
   }) => CardsTableData(
     queue: queue ?? this.queue,
     id: id ?? this.id,
@@ -278,6 +307,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
     factor: factor ?? this.factor,
     ivl: ivl ?? this.ivl,
     odue: odue ?? this.odue,
+    left: left ?? this.left,
   );
   CardsTableData copyWithCompanion(CardsTableCompanion data) {
     return CardsTableData(
@@ -288,6 +318,7 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
       factor: data.factor.present ? data.factor.value : this.factor,
       ivl: data.ivl.present ? data.ivl.value : this.ivl,
       odue: data.odue.present ? data.odue.value : this.odue,
+      left: data.left.present ? data.left.value : this.left,
     );
   }
 
@@ -300,13 +331,15 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
           ..write('reps: $reps, ')
           ..write('factor: $factor, ')
           ..write('ivl: $ivl, ')
-          ..write('odue: $odue')
+          ..write('odue: $odue, ')
+          ..write('left: $left')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(queue, id, nid, reps, factor, ivl, odue);
+  int get hashCode =>
+      Object.hash(queue, id, nid, reps, factor, ivl, odue, left);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -317,7 +350,8 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
           other.reps == this.reps &&
           other.factor == this.factor &&
           other.ivl == this.ivl &&
-          other.odue == this.odue);
+          other.odue == this.odue &&
+          other.left == this.left);
 }
 
 class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
@@ -328,6 +362,7 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
   final Value<int> factor;
   final Value<int> ivl;
   final Value<int> odue;
+  final Value<int> left;
   const CardsTableCompanion({
     this.queue = const Value.absent(),
     this.id = const Value.absent(),
@@ -336,6 +371,7 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
     this.factor = const Value.absent(),
     this.ivl = const Value.absent(),
     this.odue = const Value.absent(),
+    this.left = const Value.absent(),
   });
   CardsTableCompanion.insert({
     required int queue,
@@ -345,12 +381,14 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
     required int factor,
     required int ivl,
     required int odue,
+    required int left,
   }) : queue = Value(queue),
        nid = Value(nid),
        reps = Value(reps),
        factor = Value(factor),
        ivl = Value(ivl),
-       odue = Value(odue);
+       odue = Value(odue),
+       left = Value(left);
   static Insertable<CardsTableData> custom({
     Expression<int>? queue,
     Expression<int>? id,
@@ -359,6 +397,7 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
     Expression<int>? factor,
     Expression<int>? ivl,
     Expression<int>? odue,
+    Expression<int>? left,
   }) {
     return RawValuesInsertable({
       if (queue != null) 'queue': queue,
@@ -368,6 +407,7 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
       if (factor != null) 'factor': factor,
       if (ivl != null) 'ivl': ivl,
       if (odue != null) 'odue': odue,
+      if (left != null) 'left': left,
     });
   }
 
@@ -379,6 +419,7 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
     Value<int>? factor,
     Value<int>? ivl,
     Value<int>? odue,
+    Value<int>? left,
   }) {
     return CardsTableCompanion(
       queue: queue ?? this.queue,
@@ -388,6 +429,7 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
       factor: factor ?? this.factor,
       ivl: ivl ?? this.ivl,
       odue: odue ?? this.odue,
+      left: left ?? this.left,
     );
   }
 
@@ -415,6 +457,9 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
     if (odue.present) {
       map['odue'] = Variable<int>(odue.value);
     }
+    if (left.present) {
+      map['left'] = Variable<int>(left.value);
+    }
     return map;
   }
 
@@ -427,7 +472,8 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
           ..write('reps: $reps, ')
           ..write('factor: $factor, ')
           ..write('ivl: $ivl, ')
-          ..write('odue: $odue')
+          ..write('odue: $odue, ')
+          ..write('left: $left')
           ..write(')'))
         .toString();
   }
@@ -755,6 +801,7 @@ typedef $$CardsTableTableCreateCompanionBuilder =
       required int factor,
       required int ivl,
       required int odue,
+      required int left,
     });
 typedef $$CardsTableTableUpdateCompanionBuilder =
     CardsTableCompanion Function({
@@ -765,6 +812,7 @@ typedef $$CardsTableTableUpdateCompanionBuilder =
       Value<int> factor,
       Value<int> ivl,
       Value<int> odue,
+      Value<int> left,
     });
 
 class $$CardsTableTableFilterComposer
@@ -808,6 +856,11 @@ class $$CardsTableTableFilterComposer
 
   ColumnFilters<int> get odue => $composableBuilder(
     column: $table.odue,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get left => $composableBuilder(
+    column: $table.left,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -855,6 +908,11 @@ class $$CardsTableTableOrderingComposer
     column: $table.odue,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get left => $composableBuilder(
+    column: $table.left,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$CardsTableTableAnnotationComposer
@@ -886,6 +944,9 @@ class $$CardsTableTableAnnotationComposer
 
   GeneratedColumn<int> get odue =>
       $composableBuilder(column: $table.odue, builder: (column) => column);
+
+  GeneratedColumn<int> get left =>
+      $composableBuilder(column: $table.left, builder: (column) => column);
 }
 
 class $$CardsTableTableTableManager
@@ -930,6 +991,7 @@ class $$CardsTableTableTableManager
                 Value<int> factor = const Value.absent(),
                 Value<int> ivl = const Value.absent(),
                 Value<int> odue = const Value.absent(),
+                Value<int> left = const Value.absent(),
               }) => CardsTableCompanion(
                 queue: queue,
                 id: id,
@@ -938,6 +1000,7 @@ class $$CardsTableTableTableManager
                 factor: factor,
                 ivl: ivl,
                 odue: odue,
+                left: left,
               ),
           createCompanionCallback:
               ({
@@ -948,6 +1011,7 @@ class $$CardsTableTableTableManager
                 required int factor,
                 required int ivl,
                 required int odue,
+                required int left,
               }) => CardsTableCompanion.insert(
                 queue: queue,
                 id: id,
@@ -956,6 +1020,7 @@ class $$CardsTableTableTableManager
                 factor: factor,
                 ivl: ivl,
                 odue: odue,
+                left: left,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

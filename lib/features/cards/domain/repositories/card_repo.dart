@@ -12,8 +12,4 @@ abstract class CardRepo {
   });
 
   Future<CardsModel?> getCardById({required int cardId});
-
-  Future<List<CardsModel>> flashCardGenerator({
-    required List<CardsModel> cardList,
-  });
 }

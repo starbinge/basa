@@ -3,8 +3,10 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/features/cards/data/repositories/card_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/pages/flash_card_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
 import '../../domain/usecases/finding_country.dart';
 import '../../../../core/data/external_database/external_database_accessor.dart';
@@ -81,6 +83,18 @@ class _MainCardPageState extends State<MainCardPage> {
               return CustomScrollView(
                 slivers: [
                   CardAppBar(flagEmoji: flagEmoji, widget: widget),
+                  SliverToBoxAdapter(
+                    child: TextButton(
+                      onPressed: () {
+                        final bloc = context.read<FetchingCardsBloc>();
+                        context.push(
+                          '${GoRouterState.of(context).matchedLocation}/flashcard',
+                          extra: bloc,
+                        );
+                      },
+                      child: Text("Flash Card"),
+                    ),
+                  ),
                   CardStats(),
                   SliverPadding(
                     padding: EdgeInsetsGeometry.all(10),
