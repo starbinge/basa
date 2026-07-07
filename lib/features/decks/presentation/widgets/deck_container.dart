@@ -37,10 +37,13 @@ class DeckContainer extends StatelessWidget {
               colorMapper: CustomDeckColorMapper(selectedColor: iconColor),
             ),
             const SizedBox(height: 4),
-            Text(
-              deckName,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.labelMedium,
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Text(
+                deckName,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelMedium,
+              ),
             ),
             Text(
               deckLanguage,

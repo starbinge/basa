@@ -25,6 +25,7 @@ class MainCardPage extends StatefulWidget {
     required this.filePath,
     required this.deckName,
     required this.deckCountry,
+    required this.activeHour,
   });
 
   final int deckId;
@@ -32,6 +33,7 @@ class MainCardPage extends StatefulWidget {
   final File filePath;
   final String deckName;
   final String deckCountry;
+  final String activeHour;
 
   @override
   State<MainCardPage> createState() => _MainCardPageState();
@@ -39,6 +41,30 @@ class MainCardPage extends StatefulWidget {
 
 class _MainCardPageState extends State<MainCardPage> {
   final AudioPlayer _audioPlayer = AudioPlayer();
+  final ScrollController _scrollController = ScrollController();
+  bool _showBackToTopButton = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController.addListener(() {
+      if (_scrollController.offset >= 2000) {
+        if (!_showBackToTopButton) {
+          setState(() {
+            _showBackToTopButton = true;
+          });
+        }
+      } else {
+        if (_showBackToTopButton) {
+          setState(() {
+            _showBackToTopButton = false;
+          });
+        }
+      }
+    });
+    super.initState();
+  }
 
   void dispose() {
     _audioPlayer.stop();
@@ -81,6 +107,7 @@ class _MainCardPageState extends State<MainCardPage> {
                 return Center(child: Text("No Cards Here"));
               }
               return CustomScrollView(
+                controller: _scrollController,
                 slivers: [
                   CardAppBar(flagEmoji: flagEmoji, widget: widget),
                   SliverToBoxAdapter(
@@ -145,7 +172,22 @@ class _MainCardPageState extends State<MainCardPage> {
             return Center(child: Text("Something Went Wrong"));
           },
         ),
+        floatingActionButton: _showBackToTopButton
+            ? FloatingActionButton(
+                onPressed: _scrollToTop,
+                backgroundColor: Theme.of(context).colorScheme.secondary,
+                child: const Icon(Icons.arrow_upward, color: Colors.white),
+              )
+            : null,
       ),
+    );
+  }
+
+  void _scrollToTop() {
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeInOutCubic,
     );
   }
 }

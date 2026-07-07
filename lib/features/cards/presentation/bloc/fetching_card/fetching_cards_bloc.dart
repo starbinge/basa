@@ -9,6 +9,7 @@ import 'package:basa_app_project/features/cards/domain/repositories/card_repo.da
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
+import '../../../data/dao/cards_dao.dart';
 import '../../../data/repositories/card_repo_impl.dart';
 import '../../../domain/entities/cards_entity.dart';
 
@@ -45,7 +46,13 @@ class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
           deckCountry: event.deckCountry,
         );
 
-        emit(FetchingCardIsFinished(cardsEntity: result));
+        emit(
+          FetchingCardIsFinished(
+            cardsEntity: result,
+            cardsDao: db.cardsDao,
+            filePath: event.filePath,
+          ),
+        );
       } catch (e) {
         emit(FetchingCardIsError(errorMessage: e.toString()));
       }

@@ -2,5 +2,5 @@ int calculateDeltaTime({
   required DateTime startDate,
   required DateTime endDate,
 }) {
-  return startDate.difference(endDate).inDays;
+  return endDate.difference(startDate).inDays;
 }

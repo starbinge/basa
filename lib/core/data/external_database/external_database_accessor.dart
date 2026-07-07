@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
@@ -18,7 +19,7 @@ class ExternalDatabaseAccessor {
       await _database!.close();
       _database = null;
     }
-
+    debugPrint("this is the raw pathFile $pathFile");
     final docDir = await getApplicationDocumentsDirectory();
     final parentFolderName = path.basename(pathFile.parent.path);
 
@@ -39,7 +40,7 @@ class ExternalDatabaseAccessor {
     if (!isFileExist) {
       await pathFile.copy(localPath);
     }
-
+    debugPrint("this is the local Path: $localPath");
     final executor = NativeDatabase.createInBackground(File(localPath));
     _database = ExternalDatabase(executor);
     return _database!;

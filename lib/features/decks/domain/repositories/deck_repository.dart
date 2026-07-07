@@ -14,6 +14,11 @@ abstract class DeckRepository {
     required int deckColor,
   });
 
+  Future<int> updatingActiveHour({
+    required int deckId,
+    required int additionalHours,
+  });
+
   Future<void> reConstructData({
     required File mediaFile,
     required File extractedFilePath,

@@ -46,5 +46,17 @@ class FetchingDeckBloc extends Bloc<FetchingDeckEvent, FetchingDeckState> {
         );
       } catch (e) {}
     });
+
+    on<UpdateActiveHour>((event, emit) async {
+      try {
+        await _repository.updatingActiveHour(
+          deckId: event.deckId,
+          additionalHours: event.additionalHours,
+        );
+        add(FetchDecksList());
+      } catch (e) {
+        emit(state.copyWith(errorMessage: e.toString()));
+      }
+    });
   }
 }

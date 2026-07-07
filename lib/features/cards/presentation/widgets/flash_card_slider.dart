@@ -2,6 +2,7 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../domain/entities/cards_detail_entity.dart';
 
@@ -49,7 +50,7 @@ class _FlashCardSliderState extends State<FlashCardSlider> {
 
         return Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 60.0, horizontal: 25),
+            padding: EdgeInsets.symmetric(vertical: 60.h, horizontal: 25.w),
             child: FlipCard(
               onFlipDone: widget.onCardFlipped,
               controller: widget._flipCardController,
@@ -81,22 +82,22 @@ class _FlashCardSliderState extends State<FlashCardSlider> {
         width: double.infinity,
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: const Color(0xFF000000), width: 2),
+          borderRadius: BorderRadius.circular(20.r),
+          border: Border.all(color: const Color(0xFF000000), width: 2.w),
           boxShadow: const [
             BoxShadow(color: Color(0xFF000000), offset: Offset(4, 4)),
           ],
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: EdgeInsets.all(16.w),
             child: Text(
               text,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 24,
+              style: TextStyle(
+                fontSize: 24.sp,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF000000),
+                color: const Color(0xFF000000),
               ),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path/path.dart' as path;
 
 import '../../domain/entities/cards_detail_entity.dart';
@@ -27,7 +28,7 @@ class VocabBottomModal extends StatelessWidget {
       child: SingleChildScrollView(
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.symmetric(vertical: 24.0),
+          padding: EdgeInsets.symmetric(vertical: 24.h),
 
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +38,7 @@ class VocabBottomModal extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: EdgeInsets.all(20.w),
                     child: Text(
                       textAlign: TextAlign.center,
                       listCard[index].defaultLanguage,
@@ -51,7 +52,7 @@ class VocabBottomModal extends StatelessWidget {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(20.0),
+                    padding: EdgeInsets.all(20.w),
                     child: Text(
                       listCard[index].translatedLanguage,
                       style: TextStyle(
@@ -61,7 +62,7 @@ class VocabBottomModal extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               if (listCard[index].descriptions.isNotEmpty)
                 Card(
                   shadowColor: Theme.of(
@@ -69,34 +70,34 @@ class VocabBottomModal extends StatelessWidget {
                   ).shadowColor.withValues(alpha: 0.1),
                   elevation: 2,
                   clipBehavior: Clip.antiAlias,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(12)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(12.r)),
                   ),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 8,
+                  margin: EdgeInsets.symmetric(
+                    horizontal: 20.w,
+                    vertical: 8.h,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 12,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 12.h,
                         ),
                         width: double.infinity,
                         decoration: BoxDecoration(
                           color: Theme.of(
                             context,
                           ).primaryColorLight.withValues(alpha: 0.2),
-                          border: Border(
-                            bottom: BorderSide(
-                              color: Theme.of(
-                                context,
-                              ).dividerColor.withValues(alpha: 0.1),
-                              width: 1,
+                            border: Border(
+                              bottom: BorderSide(
+                                color: Theme.of(
+                                  context,
+                                ).dividerColor.withValues(alpha: 0.1),
+                                width: 1.w,
+                              ),
                             ),
-                          ),
                         ),
                         child: Text(
                           "Additional Context",
@@ -110,7 +111,7 @@ class VocabBottomModal extends StatelessWidget {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(16.w),
                         child: ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -119,16 +120,16 @@ class VocabBottomModal extends StatelessWidget {
                             final description =
                                 listCard[index].descriptions[descIndex];
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 10.0),
+                              padding: EdgeInsets.only(bottom: 10.h),
                               child: ListTile(
-                                leading: const Text(
+                                leading: Text(
                                   "•",
                                   style: TextStyle(
-                                    fontSize: 18,
+                                    fontSize: 18.sp,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                                horizontalTitleGap: 8,
+                                horizontalTitleGap: 8.w,
                                 contentPadding: EdgeInsets.zero,
                                 title: Text(
                                   description,
@@ -151,11 +152,11 @@ class VocabBottomModal extends StatelessWidget {
                     ],
                   ),
                 ),
-              const SizedBox(height: 50),
+              SizedBox(height: 50.h),
               IconButton(
                 style: ButtonStyle(
-                  maximumSize: WidgetStateProperty.all(const Size(100, 100)),
-                  minimumSize: WidgetStateProperty.all(const Size(60, 60)),
+                  maximumSize: WidgetStateProperty.all(Size(100.w, 100.h)),
+                  minimumSize: WidgetStateProperty.all(Size(60.w, 60.h)),
                   foregroundColor: const WidgetStatePropertyAll<Color>(
                     Colors.white,
                   ),

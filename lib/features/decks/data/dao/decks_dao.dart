@@ -16,6 +16,16 @@ class DecksDao extends DatabaseAccessor<AppDatabase> with _$DecksDaoMixin {
     return into(importedDeck).insert(entry);
   }
 
+  Future<int> updatingActiveHour({
+    required int deckId,
+    required int additionalHours,
+  }) async {
+    return customUpdate(
+      'UPDATE imported_deck SET active_hour = active_hour + ? WHERE id = ?',
+      variables: [Variable(additionalHours), Variable(deckId)],
+    );
+  }
+
   Future<ImportedDeckData> getDeckFilePathById({required int id}) {
     return (select(
       importedDeck,

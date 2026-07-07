@@ -33,7 +33,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
   @override
   int generateNewFactorValue({
     required FlashcardAnswerEnum answer,
-    required int vF, // Murni INT
+    required int vF,
   }) {
     int _result;
     switch (answer) {

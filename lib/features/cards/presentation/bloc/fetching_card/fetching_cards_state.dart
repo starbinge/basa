@@ -15,6 +15,12 @@ final class FetchingCardIsError extends FetchingCardsState {
 
 final class FetchingCardIsFinished extends FetchingCardsState {
   final CardsEntity cardsEntity;
+  final CardsDao cardsDao;
+  final File filePath;
 
-  FetchingCardIsFinished({required this.cardsEntity});
+  FetchingCardIsFinished({
+    required this.cardsEntity,
+    required this.cardsDao,
+    required this.filePath,
+  });
 }

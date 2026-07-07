@@ -27,6 +27,8 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
         'ivl': card.ivl,
         'odue': card.odue,
         'factor': card.factor,
+        'left': card.left,
+        'reps': card.reps,
       });
     }).toList();
   }
@@ -56,6 +58,8 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
       'ivl': cardRow.ivl,
       'odue': cardRow.odue,
       'factor': cardRow.factor,
+      'left': cardRow.left,
+      'reps': cardRow.reps,
     });
   }
 

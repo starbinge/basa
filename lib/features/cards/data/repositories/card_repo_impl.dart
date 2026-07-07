@@ -7,13 +7,11 @@ import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:flutter/material.dart';
 
 class CardRepoImpl implements CardRepo {
-  final DecksDao _decksDao;
   final CardsDao _cardsDao;
   CardsModel? _cardById;
 
   CardRepoImpl({required DecksDao decksDao, required CardsDao cardsDao})
-    : _cardsDao = cardsDao,
-      _decksDao = decksDao;
+    : _cardsDao = cardsDao;
 
   //Fetching all cards based on deckId
   @override

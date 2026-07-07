@@ -29,6 +29,16 @@ class DeckRepositoryImpl implements DeckRepository {
   }
 
   @override
+  Future<int> updatingActiveHour({
+    required int deckId,
+    required int additionalHours,
+  }) =>
+      _dao.updatingActiveHour(
+        deckId: deckId,
+        additionalHours: additionalHours,
+      );
+
+  @override
   Future<void> reConstructData({
     required File mediaFile,
     required File extractedFilePath,

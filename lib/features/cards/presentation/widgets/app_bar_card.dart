@@ -83,11 +83,14 @@ class CardAppBar extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      widget.deckName,
-                      style: TextStyle(
-                        fontSize: TextTheme.of(context).displaySmall?.fontSize,
-                        color: Colors.white,
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        widget.deckName,
+                        style: TextStyle(
+                          fontSize: TextTheme.of(context).displaySmall?.fontSize,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ],

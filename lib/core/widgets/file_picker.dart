@@ -1,5 +1,6 @@
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AnkiFilePickerButton extends StatefulWidget {
   const AnkiFilePickerButton({
@@ -29,26 +30,26 @@ class _AnkiFilePickerButtonState extends State<AnkiFilePickerButton> {
                 onTap: widget.onTap,
                 behavior: HitTestBehavior.opaque,
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(8.w),
                   decoration: BoxDecoration(
                     border: Border.symmetric(
                       horizontal: BorderSide(
                         color: theme.colorScheme.onSurface,
-                        width: 1,
+                        width: 1.w,
                       ),
                       vertical: BorderSide(
                         color: theme.colorScheme.onSurface,
-                        width: 1,
+                        width: 1.w,
                       ),
                     ),
-                    borderRadius: BorderRadius.circular(5),
+                    borderRadius: BorderRadius.circular(5.r),
                   ),
                   child: Text(
                     widget.ankiFilePath.isNotEmpty
                         ? widget.ankiFilePath
                         : "Select Anki Deck",
                     style: theme.textTheme.bodyMedium?.copyWith(
-                      fontSize: 13,
+                      fontSize: 13.sp,
                       color: widget.ankiFilePath.isNotEmpty
                           ? null
                           : AppColors.onSurfaceVariant.withAlpha(100),

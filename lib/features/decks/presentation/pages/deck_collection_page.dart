@@ -74,7 +74,7 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                   return GestureDetector(
                     onTap: () {
                       GoRouter.of(context).push(
-                        '/cards/${deckList[index].id}/collection.anki2/${deckList[index].deckName}/${deckList[index].deckLanguage}',
+                        '/cards/${deckList[index].id}/collection.anki2/${deckList[index].deckName}/${deckList[index].deckLanguage}/${deckList[index].activeHour}',
                         extra: File(
                           path.join(
                             deckList[index].extractedPath,
