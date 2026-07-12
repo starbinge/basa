@@ -43,7 +43,6 @@ class _FlashcardSummaryStatsPageState extends State<FlashcardSummaryStatsPage> {
     final int totalCorrect = int.tryParse(widget.correctAnswer) ?? 0;
     final int totalWrong = int.tryParse(widget.wrongAnswer) ?? 0;
     final int totalQuestion = totalCorrect + totalWrong;
-    const int itemIntervalMs = 80;
     final FormatTimeUseCase _formatTime = FormatTimeUseCase();
 
     return Scaffold(
@@ -92,22 +91,13 @@ class _FlashcardSummaryStatsPageState extends State<FlashcardSummaryStatsPage> {
                 ),
               ),
 
-              TweenAnimationBuilder<double>(
-                tween: Tween<double>(begin: 0, end: totalCorrect.toDouble()),
-                duration: Duration(
-                  milliseconds: (totalQuestion * itemIntervalMs) + 250,
+              Text(
+                "$totalCorrect / $totalQuestion",
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  fontWeight: FontWeight.w900,
+                  color: Colors.white,
+                  fontSize: context.screenWidth * 0.2,
                 ),
-                curve: Curves.easeOutQuad,
-                builder: (context, value, child) {
-                  return Text(
-                    "${value.toInt()} / $totalQuestion",
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w900,
-                      color: Colors.white,
-                      fontSize: context.screenWidth * 0.2,
-                    ),
-                  );
-                },
               ),
 
               SizedBox(

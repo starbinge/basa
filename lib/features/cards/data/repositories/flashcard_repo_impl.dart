@@ -2,21 +2,26 @@ import 'dart:math';
 
 import 'package:basa_app_project/features/cards/constants/date_constanta.dart';
 import 'package:basa_app_project/features/cards/constants/enums/flashcard_answer_enum.dart';
+import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
+import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/calculate_delta_time.dart';
+
+import '../../../../core/errors/cards_error.dart';
 
 class FlashcardRepoImpl implements FlashCardRepo {
   @override
   int generateNewDueValue({
     required FlashcardAnswerEnum answer,
     required int vF,
+    required int vT,
   }) {
     int _vD;
     final DateTime _cD = getDateConstanta;
     final DateTime _now = DateTime.now();
     final int _deltaTime = calculateDeltaTime(startDate: _cD, endDate: _now);
 
-    final int _newVf = generateNewFactorValue(answer: answer, vF: vF);
+    final int _newVf = generateNewFactorValue(answer: answer, vF: vF, vT: vT);
 
     switch (answer) {
       case FlashcardAnswerEnum.correct:
@@ -32,16 +37,27 @@ class FlashcardRepoImpl implements FlashCardRepo {
 
   @override
   int generateNewFactorValue({
+    required int vT,
     required FlashcardAnswerEnum answer,
     required int vF,
   }) {
     int _result;
     switch (answer) {
       case FlashcardAnswerEnum.correct:
-        _result = vF + 15;
+        if (vT <= 3000) {
+          _result = vF + 15;
+        } else if (vT <= 7000) {
+          _result = vF + 10;
+        } else {
+          _result = vF + 1;
+        }
         break;
       case FlashcardAnswerEnum.wrong:
-        _result = vF - 20;
+        if (vT <= 7000) {
+          _result = vF - 20;
+        } else {
+          _result = vF - 30;
+        }
         break;
     }
 
@@ -55,6 +71,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
 
   @override
   int generateQueueValue({
+    required int vT,
     required FlashcardAnswerEnum answer,
     required int vF,
     required int vR,
@@ -62,7 +79,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
     final DateTime _cD = getDateConstanta;
 
     double _ratio = generateFactorToRepsRatio(vF: vF, vR: vR);
-    int _vD = generateNewDueValue(answer: answer, vF: vF);
+    int _vD = generateNewDueValue(answer: answer, vF: vF, vT: vT);
     int _deltaTime = calculateDeltaTime(
       startDate: _cD,
       endDate: DateTime.now(),
@@ -73,5 +90,59 @@ class FlashcardRepoImpl implements FlashCardRepo {
     int vQ = (rawVq * 100).round();
 
     return vQ;
+  }
+
+  @override
+  Future<List<DeckAccuracy>> getMonthlyAccuracy({
+    required CardsDao cardsDao,
+  }) async {
+    final List<DeckAccuracy>? _monthlyAccuracy = await cardsDao
+        .getMonthlyAccuracy();
+    if (_monthlyAccuracy == null || _monthlyAccuracy.isEmpty) {
+      return [];
+    }
+    return _monthlyAccuracy.map((data) {
+      return DeckAccuracy(
+        monthName: data.monthName,
+        accuracyNumber: data.accuracyNumber,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<DeckAccuracy> getPreviousMonthAccuracy({
+    required CardsDao cardsDao,
+  }) async {
+    final DeckAccuracy? _previousMonthAccuracy = await cardsDao
+        .getPreviousMonthAccuracy();
+    return _previousMonthAccuracy ??
+        DeckAccuracy(monthName: "Month is Empty", accuracyNumber: 0);
+  }
+
+  @override
+  Future<DeckAccuracy> getThisMonthAccuracy({
+    required CardsDao cardsDao,
+  }) async {
+    final DeckAccuracy? _thisMonthAccuracy = await cardsDao
+        .getThisMonthAccuracy();
+    return _thisMonthAccuracy ??
+        DeckAccuracy(monthName: "Month is Empty", accuracyNumber: 0);
+  }
+
+  @override
+  Future<List<DeckAccuracy>> getWeeklyAccuracy({
+    required CardsDao cardsDao,
+  }) async {
+    final List<DeckAccuracy>? _weeklyAccuracy = await cardsDao
+        .getWeeklyAccuracy();
+    if (_weeklyAccuracy == null || _weeklyAccuracy.isEmpty) {
+      return [];
+    }
+    return _weeklyAccuracy.map((data) {
+      return DeckAccuracy(
+        monthName: data.monthName,
+        accuracyNumber: data.accuracyNumber,
+      );
+    }).toList();
   }
 }

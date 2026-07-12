@@ -6,6 +6,7 @@ part of 'cards_dao.dart';
 mixin _$CardsDaoMixin on DatabaseAccessor<ExternalDatabase> {
   $CardsTableTable get cardsTable => attachedDatabase.cardsTable;
   $NotesTableTable get notesTable => attachedDatabase.notesTable;
+  $RevlogTableTable get revlogTable => attachedDatabase.revlogTable;
   CardsDaoManager get managers => CardsDaoManager(this);
 }
 
@@ -16,4 +17,6 @@ class CardsDaoManager {
       $$CardsTableTableTableManager(_db.attachedDatabase, _db.cardsTable);
   $$NotesTableTableTableManager get notesTable =>
       $$NotesTableTableTableManager(_db.attachedDatabase, _db.notesTable);
+  $$RevlogTableTableTableManager get revlogTable =>
+      $$RevlogTableTableTableManager(_db.attachedDatabase, _db.revlogTable);
 }

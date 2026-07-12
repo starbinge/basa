@@ -19,6 +19,7 @@ class CardsModel implements Comparable<CardsModel> {
   final String? imagePath;
   final List<String>? tags;
   final int factor;
+  final int flags;
 
   CardsModel({
     required this.id,
@@ -35,6 +36,7 @@ class CardsModel implements Comparable<CardsModel> {
     this.imagePath,
     required this.descriptions,
     required this.left,
+    required this.flags,
   });
 
   @override
@@ -81,6 +83,7 @@ class CardsModel implements Comparable<CardsModel> {
 
     //Returning value
     return CardsModel(
+      flags: map['flags'] ?? 0,
       id: map['card_id'] ?? map['id'] ?? 0,
       noteId: map['nid'] ?? 0,
       queue: map['queue'] ?? 0,
@@ -112,6 +115,38 @@ class CardsModel implements Comparable<CardsModel> {
       audioPath: audioPath,
       factor: factor,
       left: left,
+      flags: flags,
+    );
+  }
+}
+
+// Model for Revlog UI
+class RevlogModel {
+  final int id;
+
+  final int cid;
+
+  final int ease;
+
+  final int factor;
+
+  final int time;
+
+  RevlogModel({
+    required this.id,
+    required this.cid,
+    required this.ease,
+    required this.factor,
+    required this.time,
+  });
+
+  factory RevlogModel.fromMap(Map<String, dynamic> map) {
+    return RevlogModel(
+      id: map['id'],
+      cid: map['cid'],
+      ease: map['ease'],
+      factor: map['factor'],
+      time: map['time'],
     );
   }
 }
@@ -134,6 +169,8 @@ class CardsTable extends Table {
 
   IntColumn get left => integer()();
 
+  IntColumn get flags => integer()();
+
   @override
   String get tableName => 'cards';
 
@@ -153,4 +190,30 @@ class NotesTable extends Table {
 
   @override
   String get tableName => 'notes';
+}
+
+class RevlogTable extends Table {
+  IntColumn get id => integer()();
+
+  IntColumn get cid => integer()();
+
+  IntColumn get usn => integer()();
+
+  IntColumn get ease => integer()();
+
+  IntColumn get ivl => integer()();
+
+  IntColumn get lastIvl => integer().named('lastIvl')();
+
+  IntColumn get factor => integer()();
+
+  IntColumn get time => integer()();
+
+  IntColumn get type => integer()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  String get tableName => 'revlog';
 }

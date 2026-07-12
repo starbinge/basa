@@ -10,6 +10,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 
 import '../../../data/dao/cards_dao.dart';
+import '../../../data/models/flashcard_statistic_model.dart';
 import '../../../data/repositories/card_repo_impl.dart';
 import '../../../domain/entities/cards_entity.dart';
 

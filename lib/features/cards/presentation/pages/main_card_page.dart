@@ -1,8 +1,11 @@
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:basa_app_project/core/pages/error_page.dart';
+import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/repositories/card_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flash_card_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -63,7 +66,6 @@ class _MainCardPageState extends State<MainCardPage> {
         }
       }
     });
-    super.initState();
   }
 
   void dispose() {
@@ -94,17 +96,22 @@ class _MainCardPageState extends State<MainCardPage> {
         body: BlocBuilder<FetchingCardsBloc, FetchingCardsState>(
           builder: (context, state) {
             if (state is FetchingCardIsLoading) {
-              return CircularProgressIndicator();
+              return Center(child: CircularProgressIndicator());
             }
             if (state is FetchingCardIsError) {
-              debugPrint(state.errorMessage);
-              return Center(child: Text("Something Error"));
+              return ErrorPage(
+                title: 'Failed to load cards',
+                message: state.errorMessage,
+              );
             }
             if (state is FetchingCardIsFinished) {
               final List<CardsDetailEntity> listCard =
                   state.cardsEntity.listCard;
               if (listCard.isEmpty) {
-                return Center(child: Text("No Cards Here"));
+                return ErrorPage(
+                  title: 'No Cards Here',
+                  message: 'This deck doesn\'t have any cards yet.',
+                );
               }
               return CustomScrollView(
                 controller: _scrollController,
@@ -122,7 +129,18 @@ class _MainCardPageState extends State<MainCardPage> {
                       child: Text("Flash Card"),
                     ),
                   ),
-                  CardStats(),
+                  CardStats(
+                    onTap: () {
+                      final String currentPath = GoRouterState.of(
+                        context,
+                      ).uri.path;
+
+                      context.push(
+                        '$currentPath/deckStats/accuracy',
+                        extra: context.read<FetchingCardsBloc>(),
+                      );
+                    },
+                  ),
                   SliverPadding(
                     padding: EdgeInsetsGeometry.all(10),
                     sliver: SliverList(
@@ -169,7 +187,7 @@ class _MainCardPageState extends State<MainCardPage> {
                 ],
               );
             }
-            return Center(child: Text("Something Went Wrong"));
+            return const ErrorPage();
           },
         ),
         floatingActionButton: _showBackToTopButton

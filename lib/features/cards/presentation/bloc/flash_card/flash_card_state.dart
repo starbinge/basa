@@ -18,3 +18,9 @@ final class FLashCardIsFinished extends FlashCardState {
 
   FLashCardIsFinished({required this.listCard});
 }
+
+final class AccuracyStatsFinished extends FlashCardState {
+  final DeckAccuracyStats stats;
+
+  AccuracyStatsFinished({required this.stats});
+}

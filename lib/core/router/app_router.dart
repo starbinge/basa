@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:basa_app_project/core/data/initial_database/initial_database.dart';
 import 'package:basa_app_project/core/router/app_shell.dart';
+import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/repositories/flashcard_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/pages/deck_statistic_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flash_card_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flashcard_summary_stats_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/main_card_page.dart';
@@ -36,7 +38,7 @@ final appRouter = GoRouter(
         filePath: state.extra as File,
         deckName: state.pathParameters['deckName']!,
         deckCountry: state.pathParameters['deckCountry']!,
-        activeHour: state.pathParameters['deckCountry']!,
+        activeHour: state.pathParameters['activeHour']!,
       ),
       routes: [
         GoRoute(
@@ -73,6 +75,45 @@ final appRouter = GoRouter(
                   filePath: activeFilePath ?? state.extra as File,
                   deckName: state.pathParameters['deckName']!,
                   deckCountry: state.pathParameters['deckCountry']!,
+                ),
+              ),
+            );
+          },
+        ),
+        GoRoute(
+          name: 'deck_stats',
+          path: 'deckStats/:statsType',
+          pageBuilder: (context, state) {
+            final fetchingCardsBloc = state.extra as FetchingCardsBloc;
+            CardsDao? activeCardsDao;
+
+            if (fetchingCardsBloc.state is FetchingCardIsFinished) {
+              activeCardsDao =
+                  (fetchingCardsBloc.state as FetchingCardIsFinished).cardsDao;
+            }
+            final String? statsTypeString = state.pathParameters['statsType'];
+            final FlashCardRepo flashCardRepo = FlashcardRepoImpl();
+            final StatisticsPageEnum statsTypeParam = StatisticsPageEnum.values
+                .firstWhere(
+                  (e) => e.name == statsTypeString,
+                  orElse: () => StatisticsPageEnum.accuracy,
+                );
+            return MaterialPage(
+              child: BlocProvider(
+                create: (context) {
+                  switch (statsTypeParam) {
+                    case StatisticsPageEnum.accuracy:
+                      return FlashCardBloc(
+                        flashCardRepo: flashCardRepo,
+                        cardsDao: activeCardsDao,
+                      )..add(GettingAccuracyStats());
+                    case StatisticsPageEnum.timeConsume:
+                      throw UnimplementedError();
+                  }
+                },
+                child: DeckStatisticPage(
+                  deckName: state.pathParameters['deckName']!,
+                  statsType: statsTypeParam,
                 ),
               ),
             );

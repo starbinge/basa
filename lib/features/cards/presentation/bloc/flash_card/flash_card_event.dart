@@ -14,8 +14,13 @@ class AnsweringFlashCard extends FlashCardEvent {
 
   final CardsDetailEntity selectedCard;
 
+  final int timeMs;
+
   AnsweringFlashCard({
     required FlashcardAnswerEnum this.answer,
     required CardsDetailEntity this.selectedCard,
+    required this.timeMs,
   });
 }
+
+class GettingAccuracyStats extends FlashCardEvent {}

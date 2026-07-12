@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:basa_app_project/core/constants/common_path.dart';
+import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/core/utils/file_picker.dart';
 import 'package:basa_app_project/core/widgets/flying_action_button.dart';
 import 'package:basa_app_project/core/widgets/status_overlay.dart';
@@ -123,7 +124,20 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                           page = 1;
                         } else if (importState.isError &&
                             !importState.isDeckExist) {
-                          page = 2;
+                          final rootNavigator = Navigator.of(
+                            sheetContext,
+                            rootNavigator: true,
+                          );
+                          Navigator.pop(sheetContext);
+                          rootNavigator.push(
+                            MaterialPageRoute(
+                              builder: (_) => ErrorPage(
+                                title: 'Failed to import deck',
+                                message: importState.errorMessage,
+                              ),
+                            ),
+                          );
+                          return;
                         } else if (importState.isDeckExist &&
                             importState.isError) {
                           page = 3;

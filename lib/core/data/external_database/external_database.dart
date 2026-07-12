@@ -5,10 +5,10 @@ import '../../../features/cards/data/dao/cards_dao.dart';
 
 part 'external_database.g.dart';
 
-@DriftDatabase(tables: [CardsTable, NotesTable], daos: [CardsDao])
+@DriftDatabase(tables: [CardsTable, NotesTable, RevlogTable], daos: [CardsDao])
 class ExternalDatabase extends _$ExternalDatabase {
   ExternalDatabase(super.e);
 
-  // TODO: implement schemaVersion
+  @override
   int get schemaVersion => 1;
 }

@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import '../../../../core/widgets/stats_card.dart';
 
 class CardStats extends StatelessWidget {
-  const CardStats({super.key});
+  const CardStats({super.key, required this.onTap});
+
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +27,14 @@ class CardStats extends StatelessWidget {
                 childAspectRatio: 1,
               ),
               children: [
-                StatsCard(
-                  colorCards: Theme.of(context).colorScheme.secondary,
-                  statsNumber: 20,
-                  statsTitle: 'Cards',
-                  statsIcon: Icons.collections_bookmark_sharp,
+                GestureDetector(
+                  onTap: onTap,
+                  child: StatsCard(
+                    colorCards: Theme.of(context).colorScheme.secondary,
+                    statsNumber: 20,
+                    statsTitle: 'Cards',
+                    statsIcon: Icons.collections_bookmark_sharp,
+                  ),
                 ),
                 StatsCard(
                   colorCards: Theme.of(context).colorScheme.primary,

@@ -1,8 +1,10 @@
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/core/widgets/button.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
+import 'package:basa_app_project/features/cards/domain/usecases/track_per_card_timer.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
 import 'package:flip_card/flip_card_controller.dart';
@@ -35,6 +37,7 @@ class FleshCardPage extends StatefulWidget {
 
 class _FleshCardPageState extends State<FleshCardPage> {
   final Stopwatch _sessionStopWatch = Stopwatch();
+  final TrackPerCardTimer _cardTimer = TrackPerCardTimer();
   final PageController _pageController = PageController();
   final FlipCardController _flipCardController = FlipCardController();
   bool isThisBack = false;
@@ -46,6 +49,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
   void initState() {
     super.initState();
     _sessionStopWatch.start();
+    _cardTimer.start();
   }
 
   @override
@@ -61,7 +65,10 @@ class _FleshCardPageState extends State<FleshCardPage> {
         builder: (context, state) {
           if (state is FlashCardIsLoading) return CircularProgressIndicator();
           if (state is FLashCardIsError)
-            return Center(child: Text("Something Went Wrong"));
+            return ErrorPage(
+              title: 'Flashcard error',
+              message: state.errorMessage,
+            );
           if (state is FLashCardIsFinished) {
             final List<CardsDetailEntity> flashCards = state.listCard;
             return SafeArea(
@@ -86,6 +93,9 @@ class _FleshCardPageState extends State<FleshCardPage> {
                       onPageChanged: (int value) {
                         activeIndex = value;
                         isThisBack = false;
+                        _cardTimer
+                          ..stop()
+                          ..start();
                       },
                     ),
                   ),
@@ -159,7 +169,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
               ),
             );
           }
-          return Center(child: Text("Something unknown"));
+          return const ErrorPage();
         },
       ),
     );
@@ -170,8 +180,13 @@ class _FleshCardPageState extends State<FleshCardPage> {
     required int cardLength,
     required CardsDetailEntity flashCards,
   }) {
+    _cardTimer.stop();
     context.read<FlashCardBloc>().add(
-      AnsweringFlashCard(selectedCard: flashCards, answer: answer),
+      AnsweringFlashCard(
+        selectedCard: flashCards,
+        answer: answer,
+        timeMs: _cardTimer.elapsedMilliseconds,
+      ),
     );
 
     if (cardLength - 1 == activeIndex) {
