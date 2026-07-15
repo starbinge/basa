@@ -15,15 +15,12 @@ import 'package:basa_app_project/features/cards/presentation/pages/main_card_pag
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:basa_app_project/features/decks/data/repositories/deck_repository_impl.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/deck_import/deck_import_bloc.dart';
 import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_bloc.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/cards/data/dao/cards_dao.dart';
-import '../../features/cards/data/models/fetching_cards_model.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -84,12 +81,15 @@ final appRouter = GoRouter(
           name: 'deck_stats',
           path: 'deckStats/:statsType',
           pageBuilder: (context, state) {
-            final fetchingCardsBloc = state.extra as FetchingCardsBloc;
+            final extras =
+                state.extra
+                    as ({FetchingCardsBloc fetchingCardsBloc, File? filePath});
             CardsDao? activeCardsDao;
 
-            if (fetchingCardsBloc.state is FetchingCardIsFinished) {
+            if (extras.fetchingCardsBloc.state is FetchingCardIsFinished) {
               activeCardsDao =
-                  (fetchingCardsBloc.state as FetchingCardIsFinished).cardsDao;
+                  (extras.fetchingCardsBloc.state as FetchingCardIsFinished)
+                      .cardsDao;
             }
             final String? statsTypeString = state.pathParameters['statsType'];
             final FlashCardRepo flashCardRepo = FlashcardRepoImpl();
@@ -114,6 +114,7 @@ final appRouter = GoRouter(
                 child: DeckStatisticPage(
                   deckName: state.pathParameters['deckName']!,
                   statsType: statsTypeParam,
+                  filePath: extras.filePath ?? File(""),
                 ),
               ),
             );

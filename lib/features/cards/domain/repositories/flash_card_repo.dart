@@ -1,5 +1,7 @@
 import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
+import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
+import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 
 import '../../constants/enums/flashcard_answer_enum.dart';
 
@@ -32,4 +34,11 @@ abstract class FlashCardRepo {
   Future<List<DeckAccuracy>> getWeeklyAccuracy({required CardsDao cardsDao});
 
   Future<List<DeckAccuracy>> getMonthlyAccuracy({required CardsDao cardsDao});
+
+  Future<List<CardsDetailEntity>> getTop3MostAccurateCards({
+    required CardsDao cardsDao,
+  });
+  Future<List<CardsDetailEntity>> getTop3LeastAccurateCards({
+    required CardsDao cardsDao,
+  });
 }

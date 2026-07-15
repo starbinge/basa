@@ -1,12 +1,8 @@
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
-import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
-import 'package:basa_app_project/features/cards/data/repositories/card_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
-import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
-import 'package:basa_app_project/features/cards/presentation/pages/flash_card_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +10,6 @@ import 'package:path/path.dart' as path;
 import '../../domain/usecases/finding_country.dart';
 import '../../../../core/data/external_database/external_database_accessor.dart';
 import '../../../../core/data/initial_database/initial_database.dart';
-import '../../../../core/widgets/stats_card.dart';
 import '../widgets/app_bar_card.dart';
 import '../widgets/card_stats.dart';
 import '../widgets/vocab_bottom_modal.dart';
@@ -137,7 +132,10 @@ class _MainCardPageState extends State<MainCardPage> {
 
                       context.push(
                         '$currentPath/deckStats/accuracy',
-                        extra: context.read<FetchingCardsBloc>(),
+                        extra: (
+                          fetchingCardsBloc: context.read<FetchingCardsBloc>(),
+                          filePath: widget.filePath,
+                        ),
                       );
                     },
                   ),
@@ -170,7 +168,7 @@ class _MainCardPageState extends State<MainCardPage> {
                               builder: (context) {
                                 return VocabBottomModal(
                                   listCard: listCard,
-                                  widget: widget,
+                                  filePath: widget.filePath,
                                   audioPlayer: _audioPlayer,
                                   cardIndex: index,
                                 );

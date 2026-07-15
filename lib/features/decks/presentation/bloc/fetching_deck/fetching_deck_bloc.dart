@@ -1,7 +1,6 @@
 import 'package:basa_app_project/features/decks/domain/entities/deck_entity.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 
 import '../../../../../core/data/initial_database/initial_database.dart';
 import 'fetching_deck_event.dart';

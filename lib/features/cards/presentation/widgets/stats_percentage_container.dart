@@ -1,8 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../core/constants/screen_size.dart';
 
 class StatsPercentageContainer extends StatelessWidget {
   const StatsPercentageContainer({
@@ -55,6 +52,9 @@ class StatsPercentageContainer extends StatelessWidget {
                       fontSize: Theme.of(
                         context,
                       ).textTheme.titleMedium?.fontSize,
+                      fontWeight: Theme.of(
+                        context,
+                      ).textTheme.titleMedium?.fontWeight,
                       color: Colors.white,
                     ),
                   ),
@@ -98,6 +98,12 @@ class StatsPercentageContainer extends StatelessWidget {
                   fontSize: (Theme.of(
                     context,
                   ).textTheme.displayLarge!.fontSize!),
+                  fontStyle: Theme.of(
+                    context,
+                  ).textTheme.displayLarge?.fontStyle,
+                  fontWeight: Theme.of(
+                    context,
+                  ).textTheme.displayLarge?.fontWeight,
                   color: Colors.white,
                 ),
               ),
@@ -105,7 +111,10 @@ class StatsPercentageContainer extends StatelessWidget {
               SizedBox(height: 10),
               Text(
                 "Last Check ${DateFormat.yMMMMd('en_US').format(DateTime.now())}",
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Colors.white.withValues(alpha: 0.7),
+                  fontWeight: Theme.of(context).textTheme.bodyLarge?.fontWeight,
+                ),
               ),
             ],
           ),

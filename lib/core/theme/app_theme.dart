@@ -1,10 +1,12 @@
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   AppTheme._();
+
+  static const _fredoka = 'Fredoka';
+  static const _jakartaSans = 'PlusJakartaSans';
 
   static ThemeData light(BuildContext context) {
     const colorScheme = ColorScheme(
@@ -37,73 +39,108 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: _fredoka,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.surface,
 
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.spaceGrotesk(
+        displayLarge: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 51.sp,
           fontWeight: FontWeight.w700,
           height: 1.1,
           letterSpacing: -1.28,
           color: AppColors.onSurface,
         ),
-        headlineLarge: GoogleFonts.spaceGrotesk(
+        displayMedium: TextStyle(
+          fontFamily: _fredoka,
+          fontSize: 45.sp,
+          fontWeight: FontWeight.w700,
+          height: 1.15,
+          letterSpacing: -1.0,
+          color: AppColors.onSurface,
+        ),
+        displaySmall: TextStyle(
+          fontFamily: _fredoka,
+          fontSize: 36.sp,
+          fontWeight: FontWeight.w600,
+          height: 1.2,
+          letterSpacing: -0.5,
+          color: AppColors.onSurface,
+        ),
+        headlineLarge: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 32.sp,
           fontWeight: FontWeight.w700,
           height: 1.2,
           letterSpacing: -0.4,
           color: AppColors.onSurface,
         ),
-        headlineMedium: GoogleFonts.spaceGrotesk(
+        headlineMedium: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 19.sp,
           fontWeight: FontWeight.w600,
           height: 1.3,
           color: AppColors.onSurface,
         ),
-        titleLarge: GoogleFonts.spaceGrotesk(
+        titleLarge: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 18.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onSurface,
         ),
-        titleMedium: GoogleFonts.spaceGrotesk(
+        titleMedium: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 13.sp,
           fontWeight: FontWeight.w600,
           color: AppColors.onSurface,
         ),
-        titleSmall: GoogleFonts.spaceGrotesk(
+        titleSmall: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 11.sp,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
-        bodyLarge: GoogleFonts.literata(
+        bodyLarge: TextStyle(
+          fontFamily: _jakartaSans,
           fontSize: 14.sp,
           fontWeight: FontWeight.w400,
           height: 1.6,
           color: AppColors.onSurface,
         ),
-        bodyMedium: GoogleFonts.literata(
+        bodyMedium: TextStyle(
+          fontFamily: _jakartaSans,
           fontSize: 13.sp,
           fontWeight: FontWeight.w400,
           height: 1.6,
           color: AppColors.onSurface,
         ),
-        labelLarge: GoogleFonts.spaceGrotesk(
+        bodySmall: TextStyle(
+          fontFamily: _jakartaSans,
+          fontSize: 11.sp,
+          fontWeight: FontWeight.w400,
+          height: 1.4,
+          color: AppColors.onSurfaceVariant,
+        ),
+        labelLarge: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 11.sp,
           fontWeight: FontWeight.w700,
           height: 1.0,
           letterSpacing: 0.7,
           color: AppColors.onSurface,
         ),
-        labelMedium: GoogleFonts.spaceGrotesk(
+        labelMedium: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 9.sp,
           fontWeight: FontWeight.w500,
           height: 1.0,
           color: AppColors.onSurface,
         ),
-        labelSmall: GoogleFonts.spaceGrotesk(
+        labelSmall: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 8.sp,
-          fontWeight: FontWeight.w300,
+          fontWeight: FontWeight.w400,
           height: 1.0,
           color: AppColors.onSurface,
         ),
@@ -121,8 +158,9 @@ class AppTheme {
             borderRadius: BorderRadius.circular(4.r),
           ),
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-          textStyle: GoogleFonts.spaceGrotesk(
-            fontSize: 11.sp,
+          textStyle: const TextStyle(
+            fontFamily: _fredoka,
+            fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.7,
           ),
@@ -137,8 +175,9 @@ class AppTheme {
           side: BorderSide(color: AppColors.outline, width: 1.w),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
-          textStyle: GoogleFonts.spaceGrotesk(
-            fontSize: 11.sp,
+          textStyle: const TextStyle(
+            fontFamily: _fredoka,
+            fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.7,
           ),
@@ -168,12 +207,14 @@ class AppTheme {
           borderRadius: BorderRadius.circular(4.r),
           borderSide: BorderSide(color: AppColors.error, width: 1.5.w),
         ),
-        labelStyle: GoogleFonts.spaceGrotesk(
+        labelStyle: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 11.sp,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurfaceVariant,
         ),
-        hintStyle: GoogleFonts.spaceGrotesk(
+        hintStyle: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 11.sp,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurfaceVariant.withAlpha(100),
@@ -186,11 +227,13 @@ class AppTheme {
         unselectedItemColor: AppColors.onSurfaceVariant,
         elevation: 2,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: GoogleFonts.spaceGrotesk(
+        selectedLabelStyle: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 10.sp,
           fontWeight: FontWeight.w500,
         ),
-        unselectedLabelStyle: GoogleFonts.spaceGrotesk(
+        unselectedLabelStyle: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 10.sp,
           fontWeight: FontWeight.w400,
         ),
@@ -221,7 +264,8 @@ class AppTheme {
         scrolledUnderElevation: 1,
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.onSurface,
-        titleTextStyle: GoogleFonts.spaceGrotesk(
+        titleTextStyle: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 18.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onSurface,
@@ -236,7 +280,8 @@ class AppTheme {
 
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.primary,
-        labelStyle: GoogleFonts.spaceGrotesk(
+        labelStyle: TextStyle(
+          fontFamily: _fredoka,
           fontSize: 10.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onPrimary,

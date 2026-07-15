@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/cards_detail_entity.dart';
@@ -23,9 +21,11 @@ class VocabCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(vertical: 15),
+      margin: EdgeInsets.symmetric(vertical: 2),
       color: Theme.of(context).canvasColor,
-      shape: RoundedRectangleBorder(side: BorderSide.none),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadiusGeometry.circular(5),
+      ),
       borderOnForeground: false,
       elevation: 2.0,
       shadowColor: Theme.of(context).disabledColor.withAlpha(30),

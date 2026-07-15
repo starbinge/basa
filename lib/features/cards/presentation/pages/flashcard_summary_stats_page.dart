@@ -93,7 +93,7 @@ class _FlashcardSummaryStatsPageState extends State<FlashcardSummaryStatsPage> {
 
               Text(
                 "$totalCorrect / $totalQuestion",
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                style: Theme.of(context).textTheme.displaySmall?.copyWith(
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                   fontSize: context.screenWidth * 0.2,
@@ -114,7 +114,7 @@ class _FlashcardSummaryStatsPageState extends State<FlashcardSummaryStatsPage> {
               const SizedBox(height: 10),
               Text(
                 "Time Spent: ${_formatTime.timeDividerFromSeconds(durations: widget.timeSpent)}",
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w200,
                   color: Colors.white.withValues(alpha: 0.7),
                 ),

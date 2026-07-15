@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../core/widgets/stats_card.dart';
@@ -7,7 +6,6 @@ class CardStats extends StatelessWidget {
   const CardStats({super.key, required this.onTap});
 
   final VoidCallback onTap;
-
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -47,9 +45,7 @@ class CardStats extends StatelessWidget {
 
             Text(
               "Keep tracking the progress will help you to boost your language skills",
-              style: TextStyle(
-                color: TextTheme.of(context).bodySmall?.color?.withAlpha(100),
-              ),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
             SizedBox(height: 24),
           ],

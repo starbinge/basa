@@ -100,7 +100,23 @@ class CardsModel implements Comparable<CardsModel> {
       descriptions: descriptions,
     );
   }
-
+  Map<String, dynamic> toMap() => {
+    'flags': flags,
+    'id': id,
+    'noteId': noteId,
+    'queue': queue,
+    'tags': tags,
+    'reps': reps,
+    'odue': odue,
+    'left': left,
+    'ivl': ivl,
+    'factor': factor,
+    'defaultLanguage': defaultLanguage,
+    'translatedLanguage': translatedLanguage,
+    'audioPath': audioPath,
+    'imagePath': imagePath,
+    'descriptions': descriptions,
+  };
   CardsDetailEntity toEntity() {
     return CardsDetailEntity(
       id: id,

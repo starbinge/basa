@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../pages/main_card_page.dart';
@@ -92,8 +91,8 @@ class CardAppBar extends StatelessWidget {
                         fontSize: widget.deckName.length > 20
                             ? TextTheme.of(context).titleLarge?.fontSize
                             : widget.deckName.length > 12
-                                ? TextTheme.of(context).headlineMedium?.fontSize
-                                : TextTheme.of(context).displaySmall?.fontSize,
+                            ? TextTheme.of(context).headlineMedium?.fontSize
+                            : TextTheme.of(context).displaySmall?.fontSize,
                         color: Colors.white,
                       ),
                     ),

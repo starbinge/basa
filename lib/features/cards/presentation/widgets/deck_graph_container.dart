@@ -37,7 +37,17 @@ class DeckGraphContainer extends StatelessWidget {
           minY: 0,
           maxY: 100,
           alignment: BarChartAlignment.spaceAround,
-          gridData: FlGridData(show: false),
+          gridData: FlGridData(
+            show: true,
+            drawVerticalLine: false,
+            getDrawingHorizontalLine: (value) {
+              return FlLine(
+                color: Colors.grey.shade300,
+                strokeWidth: 2,
+                dashArray: [5, 5],
+              );
+            },
+          ),
           borderData: FlBorderData(show: false),
           barGroups: _data.asMap().entries.map((entry) {
             int dataIndex = entry.key;
@@ -47,11 +57,8 @@ class DeckGraphContainer extends StatelessWidget {
               barRods: [
                 BarChartRodData(
                   color: _getBarColor(deck.accuracyNumber.toDouble()),
-                  width: context.screenWidth * 0.07,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(10),
-                    topRight: Radius.circular(10),
-                  ),
+                  width: context.screenWidth * 0.09,
+                  borderRadius: BorderRadius.circular(20),
                   toY: deck.accuracyNumber.toDouble(),
                 ),
               ],
@@ -59,7 +66,19 @@ class DeckGraphContainer extends StatelessWidget {
           }).toList(),
           titlesData: FlTitlesData(
             show: true,
-            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+
+            leftTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                reservedSize: 40,
+                getTitlesWidget: (value, meta) {
+                  return Text(
+                    value.toInt().toString(),
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  );
+                },
+              ),
+            ),
             topTitles: AxisTitles(
               sideTitles: SideTitles(reservedSize: 30, showTitles: false),
             ),

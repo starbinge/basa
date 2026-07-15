@@ -1,7 +1,3 @@
-import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
-
-import 'audio_entity.dart';
-
 class CardsDetailEntity {
   final int id;
   final int noteId;

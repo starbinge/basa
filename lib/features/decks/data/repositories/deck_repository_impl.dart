@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
@@ -33,10 +32,7 @@ class DeckRepositoryImpl implements DeckRepository {
     required int deckId,
     required int additionalHours,
   }) =>
-      _dao.updatingActiveHour(
-        deckId: deckId,
-        additionalHours: additionalHours,
-      );
+      _dao.updatingActiveHour(deckId: deckId, additionalHours: additionalHours);
 
   @override
   Future<void> reConstructData({

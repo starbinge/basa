@@ -1,5 +1,5 @@
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
-import 'package:basa_app_project/features/cards/domain/usecases/format_time_usecase.dart';
+import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
@@ -231,5 +231,63 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     });
 
     return weeklyAccuracyList;
+  }
+
+  Future<List<CardsDetailEntity>> getTop3MostAccurateCards() async {
+    debugPrint("run top 3 highest");
+    final cardsTableData =
+        select(cardsTable).join([
+            innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid)),
+          ])
+          ..orderBy([OrderingTerm.desc(cardsTable.flags)])
+          ..limit(3);
+    final List<TypedResult> tables = await cardsTableData.get();
+    return tables.map((table) {
+      final card = table.readTable(cardsTable);
+      final note = table.readTable(notesTable);
+
+      return CardsModel.fromMap({
+        'card_id': card.id,
+        'nid': note.id,
+        'queue': card.queue,
+        'flds': note.flds,
+        'tags': note.tags,
+        'ivl': card.ivl,
+        'odue': card.odue,
+        'factor': card.factor,
+        'left': card.left,
+        'reps': card.reps,
+        'flags': card.flags,
+      }).toEntity();
+    }).toList();
+  }
+
+  Future<List<CardsDetailEntity>> getTop3LeastAccurateCards() async {
+    debugPrint("run top 3");
+    final cardsTableData =
+        select(cardsTable).join([
+            innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid)),
+          ])
+          ..orderBy([OrderingTerm.asc(cardsTable.flags)])
+          ..limit(3);
+    final List<TypedResult> tables = await cardsTableData.get();
+    return tables.map((table) {
+      final card = table.readTable(cardsTable);
+      final note = table.readTable(notesTable);
+
+      return CardsModel.fromMap({
+        'card_id': card.id,
+        'nid': note.id,
+        'queue': card.queue,
+        'flds': note.flds,
+        'tags': note.tags,
+        'ivl': card.ivl,
+        'odue': card.odue,
+        'factor': card.factor,
+        'left': card.left,
+        'reps': card.reps,
+        'flags': card.flags,
+      }).toEntity();
+    }).toList();
   }
 }

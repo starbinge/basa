@@ -4,7 +4,6 @@ import 'package:basa_app_project/features/cards/domain/entities/cards_detail_ent
 import 'package:basa_app_project/features/cards/domain/entities/cards_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/card_repo.dart';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
-import 'package:flutter/material.dart';
 
 class CardRepoImpl implements CardRepo {
   final CardsDao _cardsDao;

@@ -1,5 +1,6 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path/path.dart' as path;
@@ -11,13 +12,14 @@ class VocabBottomModal extends StatelessWidget {
   const VocabBottomModal({
     super.key,
     required this.listCard,
-    required this.widget,
+
     required AudioPlayer audioPlayer,
     required this.cardIndex,
+    required this.filePath,
   }) : _audioPlayer = audioPlayer;
 
   final List<CardsDetailEntity> listCard;
-  final MainCardPage widget;
+  final File filePath;
   final AudioPlayer _audioPlayer;
   final int cardIndex;
 
@@ -55,9 +57,7 @@ class VocabBottomModal extends StatelessWidget {
                     padding: EdgeInsets.all(20.w),
                     child: Text(
                       listCard[index].translatedLanguage,
-                      style: TextStyle(
-                        fontSize: TextTheme.of(context).bodyLarge?.fontSize,
-                      ),
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                 ],
@@ -73,10 +73,7 @@ class VocabBottomModal extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(12.r)),
                   ),
-                  margin: EdgeInsets.symmetric(
-                    horizontal: 20.w,
-                    vertical: 8.h,
-                  ),
+                  margin: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -90,14 +87,14 @@ class VocabBottomModal extends StatelessWidget {
                           color: Theme.of(
                             context,
                           ).primaryColorLight.withValues(alpha: 0.2),
-                            border: Border(
-                              bottom: BorderSide(
-                                color: Theme.of(
-                                  context,
-                                ).dividerColor.withValues(alpha: 0.1),
-                                width: 1.w,
-                              ),
+                          border: Border(
+                            bottom: BorderSide(
+                              color: Theme.of(
+                                context,
+                              ).dividerColor.withValues(alpha: 0.1),
+                              width: 1.w,
                             ),
+                          ),
                         ),
                         child: Text(
                           "Additional Context",
@@ -133,16 +130,15 @@ class VocabBottomModal extends StatelessWidget {
                                 contentPadding: EdgeInsets.zero,
                                 title: Text(
                                   description,
-                                  style: TextStyle(
-                                    fontSize: TextTheme.of(
-                                      context,
-                                    ).bodyMedium?.fontSize,
-                                    color: TextTheme.of(context)
-                                        .bodyMedium
-                                        ?.color
-                                        ?.withValues(alpha: 0.85),
-                                    height: 1.3,
-                                  ),
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color
+                                            ?.withValues(alpha: 0.85),
+                                        height: 1.3,
+                                      ),
                                 ),
                               ),
                             );
@@ -166,7 +162,7 @@ class VocabBottomModal extends StatelessWidget {
                 ),
                 onPressed: () {
                   final rawPath = path.join(
-                    widget.filePath.parent.path,
+                    filePath.parent.path,
                     listCard[index].audioPath.first,
                   );
                   debugPrint(rawPath);

@@ -82,7 +82,9 @@ class DeckNameInput extends StatelessWidget {
                 disabledBorder: InputBorder.none,
                 focusedErrorBorder: InputBorder.none,
                 hintText: "Give a name to your deck",
-                hintStyle: TextStyle(fontWeight: FontWeight.w200),
+                hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w200,
+                ),
               ),
               textAlign: TextAlign.center,
             )

@@ -3,11 +3,12 @@ import 'dart:math';
 import 'package:basa_app_project/features/cards/constants/date_constanta.dart';
 import 'package:basa_app_project/features/cards/constants/enums/flashcard_answer_enum.dart';
 import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
+import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
+import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/calculate_delta_time.dart';
-
-import '../../../../core/errors/cards_error.dart';
+import 'package:flutter/material.dart';
 
 class FlashcardRepoImpl implements FlashCardRepo {
   @override
@@ -133,6 +134,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
   Future<List<DeckAccuracy>> getWeeklyAccuracy({
     required CardsDao cardsDao,
   }) async {
+    debugPrint("Still running");
     final List<DeckAccuracy>? _weeklyAccuracy = await cardsDao
         .getWeeklyAccuracy();
     if (_weeklyAccuracy == null || _weeklyAccuracy.isEmpty) {
@@ -142,6 +144,62 @@ class FlashcardRepoImpl implements FlashCardRepo {
       return DeckAccuracy(
         monthName: data.monthName,
         accuracyNumber: data.accuracyNumber,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<List<CardsDetailEntity>> getTop3MostAccurateCards({
+    required CardsDao cardsDao,
+  }) async {
+    final List<CardsDetailEntity>? _top3MostAccucarateCards = await cardsDao
+        .getTop3MostAccurateCards();
+    if (_top3MostAccucarateCards == null || _top3MostAccucarateCards.isEmpty) {
+      return [];
+    }
+    return _top3MostAccucarateCards.map((card) {
+      return CardsDetailEntity(
+        id: card.id,
+        noteId: card.noteId,
+        queue: card.queue,
+        reps: card.reps,
+        odue: card.odue,
+        ivl: card.ivl,
+        factor: card.factor,
+        defaultLanguage: card.defaultLanguage,
+        translatedLanguage: card.translatedLanguage,
+        audioPath: card.audioPath,
+        descriptions: card.descriptions,
+        left: card.left,
+        flags: card.flags,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<List<CardsDetailEntity>> getTop3LeastAccurateCards({
+    required CardsDao cardsDao,
+  }) async {
+    final List<CardsDetailEntity>? _top3LeastCards = await cardsDao
+        .getTop3LeastAccurateCards();
+    if (_top3LeastCards == null || _top3LeastCards.isEmpty) {
+      return [];
+    }
+    return _top3LeastCards.map((card) {
+      return CardsDetailEntity(
+        id: card.id,
+        noteId: card.noteId,
+        queue: card.queue,
+        reps: card.reps,
+        odue: card.odue,
+        ivl: card.ivl,
+        factor: card.factor,
+        defaultLanguage: card.defaultLanguage,
+        translatedLanguage: card.translatedLanguage,
+        audioPath: card.audioPath,
+        descriptions: card.descriptions,
+        left: card.left,
+        flags: card.flags,
       );
     }).toList();
   }

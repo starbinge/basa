@@ -4,13 +4,10 @@ import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
 import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
-import 'package:basa_app_project/features/cards/domain/entities/cards_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
-import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:meta/meta.dart';
 
 import '../../../../../core/errors/cards_error.dart';
 
@@ -81,8 +78,9 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
           vR: _vR,
           vT: _vT,
         );
+        debugPrint("Generating Queue Done");
         if (_cardsDao == null) throw CardDaoNotExist();
-
+        debugPrint('Nilai vQ: $_vQ');
         // Updating Cards
         await _cardsDao.updateCards(
           updatedCardValue: CardsTableCompanion(
@@ -126,7 +124,6 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
       emit(FlashCardIsLoading());
       try {
         if (_cardsDao == null) throw CardDaoNotExist();
-
         debugPrint("Fetching");
 
         // 🔥 Jalankan semua query secara paralel sekaligus!
@@ -135,6 +132,8 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
           _flashCardRepo.getPreviousMonthAccuracy(cardsDao: _cardsDao),
           _flashCardRepo.getMonthlyAccuracy(cardsDao: _cardsDao),
           _flashCardRepo.getWeeklyAccuracy(cardsDao: _cardsDao),
+          _flashCardRepo.getTop3MostAccurateCards(cardsDao: _cardsDao),
+          _flashCardRepo.getTop3LeastAccurateCards(cardsDao: _cardsDao),
         ]);
 
         // Ambil hasil sesuai urutan indeksnya
@@ -142,7 +141,9 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
         final _previousMonthAccuracy = results[1] as DeckAccuracy;
         final _monthlyAccuracy = results[2] as List<DeckAccuracy>;
         final _weeklyAccuracy = results[3] as List<DeckAccuracy>;
-
+        final _top3MostAccurateCards = results[4] as List<CardsDetailEntity>;
+        final _top3LeastAccurateCards = results[5] as List<CardsDetailEntity>;
+        debugPrint(_top3LeastAccurateCards.length.toString());
         emit(
           AccuracyStatsFinished(
             stats: DeckAccuracyStats(
@@ -150,11 +151,14 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
               previousMonthDeckAccuracy: _previousMonthAccuracy,
               weeklyList: _weeklyAccuracy,
               monthlyList: _monthlyAccuracy,
+              top3MostAccurate: _top3MostAccurateCards,
+              top3LeastAccurate: _top3LeastAccurateCards,
             ),
           ),
         );
         debugPrint("Finished");
       } catch (e) {
+        debugPrint("Error di GettingAccuracyStats: $e");
         emit(FLashCardIsError(errorMessage: e.toString()));
       }
     });

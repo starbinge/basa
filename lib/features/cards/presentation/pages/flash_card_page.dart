@@ -1,8 +1,6 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:basa_app_project/core/pages/error_page.dart';
-import 'package:basa_app_project/core/widgets/button.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/track_per_card_timer.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
@@ -61,6 +59,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: BlocBuilder<FlashCardBloc, FlashCardState>(
         builder: (context, state) {
           if (state is FlashCardIsLoading) return CircularProgressIndicator();
