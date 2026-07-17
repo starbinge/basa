@@ -1,6 +1,6 @@
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_m3shapes_extended/flutter_m3shapes_extended.dart';
+import 'package:m3e_core/m3e_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ErrorPage extends StatefulWidget {

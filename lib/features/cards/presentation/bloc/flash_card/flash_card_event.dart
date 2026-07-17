@@ -24,3 +24,5 @@ class AnsweringFlashCard extends FlashCardEvent {
 }
 
 class GettingAccuracyStats extends FlashCardEvent {}
+
+class GettingTimeConsumeStats extends FlashCardEvent {}

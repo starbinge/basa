@@ -54,7 +54,7 @@ dependencies:
   audioplayers: ^6.8.1
   flip_card: ^0.7.0
   flutter_screenutil: ^5.9.3
-  flutter_m3shapes_extended: ^1.1.0
+  m3e_core: ^0.1.2
   intl: ^0.20.3
   fl_chart: ^1.2.0
 
@@ -95,42 +95,23 @@ flutter:
   # https://flutter.dev/to/asset-from-package
 
   fonts:
-    - family: Fredoka
+    - family: GoogleSans
       fonts:
-        - asset: assets/fonts/Fredoka/static/Fredoka-Light.ttf
-          weight: 300
-        - asset: assets/fonts/Fredoka/static/Fredoka-Regular.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans/static/GoogleSans-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Fredoka/static/Fredoka-Medium.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans/static/GoogleSans-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Fredoka/static/Fredoka-SemiBold.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans/static/GoogleSans-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/Fredoka/static/Fredoka-Bold.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans/static/GoogleSans-Bold.ttf
           weight: 700
-    - family: PlusJakartaSans
+    - family: GoogleSansFlex
       fonts:
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Light.ttf
-          weight: 300
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Regular.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans_Flex/static/GoogleSansFlex_24pt-Regular.ttf
           weight: 400
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Medium.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans_Flex/static/GoogleSansFlex_24pt-Medium.ttf
           weight: 500
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-SemiBold.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans_Flex/static/GoogleSansFlex_24pt-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Bold.ttf
+        - asset: assets/fonts/Google_Sans_Google_Sans_Flex/Google_Sans_Flex/static/GoogleSansFlex_24pt-Bold.ttf
           weight: 700
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-LightItalic.ttf
-          weight: 300
-          style: italic
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-Italic.ttf
-          weight: 400
-          style: italic
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-MediumItalic.ttf
-          weight: 500
-          style: italic
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-SemiBoldItalic.ttf
-          weight: 600
-          style: italic
-        - asset: assets/fonts/Plus_Jakarta_Sans/static/PlusJakartaSans-BoldItalic.ttf
-          weight: 700
-          style: italic

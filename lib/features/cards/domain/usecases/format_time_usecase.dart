@@ -14,10 +14,10 @@ class FormatTimeUseCase {
     return _finalTime;
   }
 
-  String getMonthNameFromEpoch(int epochMs) {
+  String gettimeNameFromEpoch(int epochMs) {
     DateTime date = DateTime.fromMillisecondsSinceEpoch(epochMs);
-    String monthName = DateFormat.MMM('id_ID').format(date);
+    String timeName = DateFormat.MMM('id_ID').format(date);
 
-    return monthName;
+    return timeName;
   }
 }

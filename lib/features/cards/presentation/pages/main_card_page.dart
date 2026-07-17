@@ -125,13 +125,26 @@ class _MainCardPageState extends State<MainCardPage> {
                     ),
                   ),
                   CardStats(
-                    onTap: () {
+                    onTapAccuracyStats: () {
                       final String currentPath = GoRouterState.of(
                         context,
                       ).uri.path;
 
                       context.push(
                         '$currentPath/deckStats/accuracy',
+                        extra: (
+                          fetchingCardsBloc: context.read<FetchingCardsBloc>(),
+                          filePath: widget.filePath,
+                        ),
+                      );
+                    },
+                    onTapTimeConsumeStats: () {
+                      final String currentPath = GoRouterState.of(
+                        context,
+                      ).uri.path;
+
+                      context.push(
+                        '$currentPath/deckStats/timeConsume',
                         extra: (
                           fetchingCardsBloc: context.read<FetchingCardsBloc>(),
                           filePath: widget.filePath,

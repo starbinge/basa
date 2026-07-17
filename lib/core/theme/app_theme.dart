@@ -5,8 +5,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 class AppTheme {
   AppTheme._();
 
-  static const _fredoka = 'Fredoka';
-  static const _jakartaSans = 'PlusJakartaSans';
+  static const _googleSans = 'GoogleSans';
+  static const _googleSansFlex = 'GoogleSansFlex';
 
   static ThemeData light(BuildContext context) {
     const colorScheme = ColorScheme(
@@ -39,13 +39,13 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
-      fontFamily: _fredoka,
+      fontFamily: _googleSans,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.surface,
 
       textTheme: TextTheme(
         displayLarge: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 51.sp,
           fontWeight: FontWeight.w700,
           height: 1.1,
@@ -53,7 +53,7 @@ class AppTheme {
           color: AppColors.onSurface,
         ),
         displayMedium: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 45.sp,
           fontWeight: FontWeight.w700,
           height: 1.15,
@@ -61,7 +61,7 @@ class AppTheme {
           color: AppColors.onSurface,
         ),
         displaySmall: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 36.sp,
           fontWeight: FontWeight.w600,
           height: 1.2,
@@ -69,7 +69,7 @@ class AppTheme {
           color: AppColors.onSurface,
         ),
         headlineLarge: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 32.sp,
           fontWeight: FontWeight.w700,
           height: 1.2,
@@ -77,53 +77,53 @@ class AppTheme {
           color: AppColors.onSurface,
         ),
         headlineMedium: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 19.sp,
           fontWeight: FontWeight.w600,
           height: 1.3,
           color: AppColors.onSurface,
         ),
         titleLarge: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 18.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onSurface,
         ),
         titleMedium: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 13.sp,
           fontWeight: FontWeight.w600,
           color: AppColors.onSurface,
         ),
         titleSmall: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 11.sp,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
         bodyLarge: TextStyle(
-          fontFamily: _jakartaSans,
+          fontFamily: _googleSansFlex,
           fontSize: 14.sp,
           fontWeight: FontWeight.w400,
           height: 1.6,
           color: AppColors.onSurface,
         ),
         bodyMedium: TextStyle(
-          fontFamily: _jakartaSans,
+          fontFamily: _googleSansFlex,
           fontSize: 13.sp,
           fontWeight: FontWeight.w400,
           height: 1.6,
           color: AppColors.onSurface,
         ),
         bodySmall: TextStyle(
-          fontFamily: _jakartaSans,
+          fontFamily: _googleSansFlex,
           fontSize: 11.sp,
           fontWeight: FontWeight.w400,
           height: 1.4,
           color: AppColors.onSurfaceVariant,
         ),
         labelLarge: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 11.sp,
           fontWeight: FontWeight.w700,
           height: 1.0,
@@ -131,14 +131,14 @@ class AppTheme {
           color: AppColors.onSurface,
         ),
         labelMedium: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 9.sp,
           fontWeight: FontWeight.w500,
           height: 1.0,
           color: AppColors.onSurface,
         ),
         labelSmall: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 8.sp,
           fontWeight: FontWeight.w400,
           height: 1.0,
@@ -159,7 +159,7 @@ class AppTheme {
           ),
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
           textStyle: const TextStyle(
-            fontFamily: _fredoka,
+            fontFamily: _googleSans,
             fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.7,
@@ -176,7 +176,7 @@ class AppTheme {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
           padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
           textStyle: const TextStyle(
-            fontFamily: _fredoka,
+            fontFamily: _googleSans,
             fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.7,
@@ -208,13 +208,13 @@ class AppTheme {
           borderSide: BorderSide(color: AppColors.error, width: 1.5.w),
         ),
         labelStyle: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 11.sp,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurfaceVariant,
         ),
         hintStyle: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 11.sp,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurfaceVariant.withAlpha(100),
@@ -228,12 +228,12 @@ class AppTheme {
         elevation: 2,
         type: BottomNavigationBarType.fixed,
         selectedLabelStyle: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 10.sp,
           fontWeight: FontWeight.w500,
         ),
         unselectedLabelStyle: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 10.sp,
           fontWeight: FontWeight.w400,
         ),
@@ -265,7 +265,7 @@ class AppTheme {
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.onSurface,
         titleTextStyle: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 18.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onSurface,
@@ -281,7 +281,7 @@ class AppTheme {
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.primary,
         labelStyle: TextStyle(
-          fontFamily: _fredoka,
+          fontFamily: _googleSans,
           fontSize: 10.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onPrimary,

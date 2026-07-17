@@ -3,9 +3,15 @@ import 'package:flutter/material.dart';
 import '../../../../core/widgets/stats_card.dart';
 
 class CardStats extends StatelessWidget {
-  const CardStats({super.key, required this.onTap});
+  const CardStats({
+    super.key,
+    required this.onTapAccuracyStats,
+    required this.onTapTimeConsumeStats,
+  });
 
-  final VoidCallback onTap;
+  final VoidCallback onTapAccuracyStats;
+  final VoidCallback onTapTimeConsumeStats;
+
   @override
   Widget build(BuildContext context) {
     return SliverToBoxAdapter(
@@ -26,19 +32,22 @@ class CardStats extends StatelessWidget {
               ),
               children: [
                 GestureDetector(
-                  onTap: onTap,
+                  onTap: onTapAccuracyStats,
                   child: StatsCard(
                     colorCards: Theme.of(context).colorScheme.secondary,
                     statsNumber: 20,
-                    statsTitle: 'Cards',
-                    statsIcon: Icons.collections_bookmark_sharp,
+                    statsTitle: 'Accuracy',
+                    statsIcon: Icons.polyline_outlined,
                   ),
                 ),
-                StatsCard(
-                  colorCards: Theme.of(context).colorScheme.primary,
-                  statsNumber: 20,
-                  statsTitle: 'Cards',
-                  statsIcon: Icons.collections_bookmark_sharp,
+                GestureDetector(
+                  onTap: onTapTimeConsumeStats,
+                  child: StatsCard(
+                    colorCards: Theme.of(context).colorScheme.primary,
+                    statsNumber: 20,
+                    statsTitle: 'Play Time',
+                    statsIcon: Icons.timer_outlined,
+                  ),
                 ),
               ],
             ),

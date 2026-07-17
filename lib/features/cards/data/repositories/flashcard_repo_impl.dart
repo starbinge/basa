@@ -104,7 +104,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
     }
     return _monthlyAccuracy.map((data) {
       return DeckAccuracy(
-        monthName: data.monthName,
+        timeName: data.timeName,
         accuracyNumber: data.accuracyNumber,
       );
     }).toList();
@@ -117,7 +117,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
     final DeckAccuracy? _previousMonthAccuracy = await cardsDao
         .getPreviousMonthAccuracy();
     return _previousMonthAccuracy ??
-        DeckAccuracy(monthName: "Month is Empty", accuracyNumber: 0);
+        DeckAccuracy(timeName: "Month is Empty", accuracyNumber: 0);
   }
 
   @override
@@ -127,7 +127,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
     final DeckAccuracy? _thisMonthAccuracy = await cardsDao
         .getThisMonthAccuracy();
     return _thisMonthAccuracy ??
-        DeckAccuracy(monthName: "Month is Empty", accuracyNumber: 0);
+        DeckAccuracy(timeName: "Month is Empty", accuracyNumber: 0);
   }
 
   @override
@@ -142,7 +142,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
     }
     return _weeklyAccuracy.map((data) {
       return DeckAccuracy(
-        monthName: data.monthName,
+        timeName: data.timeName,
         accuracyNumber: data.accuracyNumber,
       );
     }).toList();
@@ -200,6 +200,80 @@ class FlashcardRepoImpl implements FlashCardRepo {
         descriptions: card.descriptions,
         left: card.left,
         flags: card.flags,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<DeckTimeConsume> getThisMonthTimeConsume({
+    required CardsDao cardsDao,
+  }) async {
+    final DeckTimeConsume? _thisMonth = await cardsDao
+        .getThisMonthTimeConsume();
+    return _thisMonth ??
+        DeckTimeConsume(timeName: "Month is Empty", avgTime: 0, totalTime: 0);
+  }
+
+  @override
+  Future<DeckTimeConsume> getPreviousMonthTimeConsume({
+    required CardsDao cardsDao,
+  }) async {
+    final DeckTimeConsume? _previousMonth = await cardsDao
+        .getPreviousMonthTimeConsume();
+    return _previousMonth ??
+        DeckTimeConsume(timeName: "Month is Empty", avgTime: 0, totalTime: 0);
+  }
+
+  @override
+  Future<List<DeckTimeConsume>> getMonthlyTimeConsume({
+    required CardsDao cardsDao,
+  }) async {
+    final List<DeckTimeConsume>? _monthly = await cardsDao
+        .getMonthlyTimeConsumeList();
+    if (_monthly == null || _monthly.isEmpty) {
+      return [];
+    }
+    return _monthly.map((data) {
+      return DeckTimeConsume(
+        timeName: data.timeName,
+        avgTime: data.avgTime,
+        totalTime: data.totalTime,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<List<DeckTimeConsume>> getWeeklyTimeConsume({
+    required CardsDao cardsDao,
+  }) async {
+    final List<DeckTimeConsume>? _weekly = await cardsDao
+        .getWeeklyTimeConsumeList();
+    if (_weekly == null || _weekly.isEmpty) {
+      return [];
+    }
+    return _weekly.map((data) {
+      return DeckTimeConsume(
+        timeName: data.timeName,
+        avgTime: data.avgTime,
+        totalTime: data.totalTime,
+      );
+    }).toList();
+  }
+
+  @override
+  Future<List<DeckTimeConsume>> getDailyTimeConsume({
+    required CardsDao cardsDao,
+  }) async {
+    final List<DeckTimeConsume>? _daily = await cardsDao
+        .getDailyTimeConsumeList();
+    if (_daily == null || _daily.isEmpty) {
+      return [];
+    }
+    return _daily.map((data) {
+      return DeckTimeConsume(
+        timeName: data.timeName,
+        avgTime: data.avgTime,
+        totalTime: data.totalTime,
       );
     }).toList();
   }

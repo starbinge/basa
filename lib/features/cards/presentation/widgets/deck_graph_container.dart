@@ -5,16 +5,18 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../core/constants/screen_size.dart';
 
-class DeckGraphContainer extends StatelessWidget {
+class DeckGraphContainer<T> extends StatelessWidget {
   const DeckGraphContainer({
     super.key,
-    required List<DeckAccuracy> data,
+    required List<T> data,
     required GetTitleWidgetFunction getTitlesWidget,
+    required this.getYValue,
   }) : _getTitlesWidget = getTitlesWidget,
        _data = data;
 
-  final List<DeckAccuracy> _data;
+  final List<T> _data;
   final GetTitleWidgetFunction _getTitlesWidget;
+  final double Function(T item) getYValue;
 
   @override
   Widget build(BuildContext context) {
@@ -51,15 +53,17 @@ class DeckGraphContainer extends StatelessWidget {
           borderData: FlBorderData(show: false),
           barGroups: _data.asMap().entries.map((entry) {
             int dataIndex = entry.key;
-            DeckAccuracy deck = entry.value;
+            T deck = entry.value;
+            T item = entry.value;
+            double yValue = getYValue(item);
             return BarChartGroupData(
               x: dataIndex + 1,
               barRods: [
                 BarChartRodData(
-                  color: _getBarColor(deck.accuracyNumber.toDouble()),
+                  color: _getBarColor(yValue),
                   width: context.screenWidth * 0.09,
                   borderRadius: BorderRadius.circular(20),
-                  toY: deck.accuracyNumber.toDouble(),
+                  toY: yValue,
                 ),
               ],
             );

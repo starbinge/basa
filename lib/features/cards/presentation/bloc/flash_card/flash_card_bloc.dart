@@ -162,5 +162,40 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
         emit(FLashCardIsError(errorMessage: e.toString()));
       }
     });
+    on<GettingTimeConsumeStats>((stats, emit) async {
+      debugPrint("loading time consume");
+      emit(FlashCardIsLoading());
+      try {
+        if (_cardsDao == null) throw CardDaoNotExist();
+        debugPrint("Fetching time consume");
+
+        final results = await Future.wait([
+          _flashCardRepo.getThisMonthTimeConsume(cardsDao: _cardsDao),
+          _flashCardRepo.getPreviousMonthTimeConsume(cardsDao: _cardsDao),
+          _flashCardRepo.getMonthlyTimeConsume(cardsDao: _cardsDao),
+          _flashCardRepo.getWeeklyTimeConsume(cardsDao: _cardsDao),
+          _flashCardRepo.getDailyTimeConsume(cardsDao: _cardsDao),
+        ]);
+
+        final _thisMonthTimeConsume = results[0] as DeckTimeConsume;
+        final _previousMonthTimeConsume = results[1] as DeckTimeConsume;
+        final _monthlyTimeConsume = results[2] as List<DeckTimeConsume>;
+        final _weeklyTimeConsume = results[3] as List<DeckTimeConsume>;
+        final _dailyTimeConsume = results[4] as List<DeckTimeConsume>;
+        emit(
+          TimeConsumeStatsFinished(
+            thisMonth: _thisMonthTimeConsume,
+            previousMonth: _previousMonthTimeConsume,
+            monthlyAverage: _monthlyTimeConsume,
+            weeklyAverage: _weeklyTimeConsume,
+            dailyAverage: _dailyTimeConsume,
+          ),
+        );
+        debugPrint("Finished time consume");
+      } catch (e) {
+        debugPrint("Error di GettingTimeConsumeStats: $e");
+        emit(FLashCardIsError(errorMessage: e.toString()));
+      }
+    });
   }
 }

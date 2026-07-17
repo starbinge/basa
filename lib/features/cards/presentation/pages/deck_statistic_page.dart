@@ -1,28 +1,18 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
-import 'package:basa_app_project/features/cards/constants/enums/chart_category_enum.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
-import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
-import 'package:basa_app_project/features/cards/domain/entities/cards_entity.dart';
-import 'package:basa_app_project/features/cards/domain/entities/segmented_button_entity.dart';
+import 'package:basa_app_project/features/cards/domain/entities/time_consume_stats_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/card_tirelist_container.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/deck_graph_container.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/segmented_button.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/vocab_cards.dart';
-import 'package:drift/backends.dart';
-import 'package:fl_chart/fl_chart.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/layouts/accuracy_stats_layout.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/layouts/play_time_stats_layout.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_m3shapes_extended/flutter_m3shapes_extended.dart';
-import 'package:flutter_screenutil/flutter_screenutil.dart';
-
-import '../../domain/usecases/get_sidetitles_chart_usecase.dart';
-import '../widgets/stats_percentage_container.dart';
+import 'package:intl/date_symbols.dart';
+import 'package:intl/intl.dart';
 
 class DeckStatisticPage extends StatefulWidget {
   const DeckStatisticPage({
@@ -41,24 +31,24 @@ class DeckStatisticPage extends StatefulWidget {
 }
 
 class _DeckStatisticPageState extends State<DeckStatisticPage> {
-  PageController _pageController = PageController();
-  int _openedPage = 0;
   bool _isAudioPlated = false;
   AudioPlayer _audioPlayer = AudioPlayer();
-  @override
-  void initState() {
-    super.initState();
-  }
 
-  final Map<ChartCategoryEnum, String> buttonSegment = {
-    ChartCategoryEnum.Monthly: "Monthly",
-    ChartCategoryEnum.Weekly: "Weekly",
-  };
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    final DateTime _now = DateTime.now();
+    final String _monthName = DateFormat.MMMM('en_US').format(_now);
+    final int _year = _now.year;
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        title: Text("Statistics"),
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
       ),
@@ -71,185 +61,63 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
             return ErrorPage(message: state.errorMessage);
           }
           if (state is AccuracyStatsFinished) {
-            final DeckAccuracy _thisMonthStats =
-                state.stats.thisMonthDeckAccuracy;
-            final DeckAccuracy _previousMonthStats =
-                state.stats.previousMonthDeckAccuracy;
-            final List<DeckAccuracy> _monthlyData = state.stats.monthlyList;
-            final List<DeckAccuracy> _weeklyData = state.stats.weeklyList;
-            debugPrint(state.stats.top3LeastAccurate.length.toString());
             return SafeArea(
               child: CustomScrollView(
                 physics: BouncingScrollPhysics(),
                 slivers: [
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        'Deck Accuracy',
-                        style: Theme.of(context).textTheme.displaySmall,
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: StatsPercentageContainer(
-                        thisMonthStats: _thisMonthStats.accuracyNumber,
-                        previousMonthStats: _previousMonthStats.accuracyNumber,
-                        titleCards: 'This Month\'s Card Accuracy',
-                        backgroundIcon: Icons.polyline_outlined,
-                        backgroundColor: Theme.of(context).primaryColor,
-                      ),
-                    ),
-                  ),
-                  SliverToBoxAdapter(child: SizedBox(height: 20)),
-                  SliverToBoxAdapter(
-                    child: Container(
-                      child: Column(
-                        spacing: 10,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Statistic Graphs",
-                            style: Theme.of(context).textTheme.titleLarge,
-                          ),
-                          Text(
-                            "Visually served information of your accuracy for this deck.",
-                            style: Theme.of(context).textTheme.bodySmall,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              border: BoxBorder.all(width: 1),
-                            ),
-                            padding: EdgeInsets.symmetric(
-                              horizontal: 10,
-                              vertical: 5,
-                            ),
-                            child: SegmentedButtonCustom(
-                              listOfButtons: [
-                                SegmentedButtonEntity(
-                                  onTap: () {
-                                    _pageController.previousPage(
-                                      duration: Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                    );
-                                    setState(() {
-                                      _openedPage = 0;
-                                    });
-                                  },
-                                  backgroundColor: ColorPreference(
-                                    selectedColor: Colors.pink,
-                                    unselectedColor: Colors.transparent,
-                                  ),
-                                  foregroundColor: ColorPreference(
-                                    selectedColor: Colors.white,
-                                    unselectedColor: Colors.grey,
-                                  ),
-                                  text: "Monthly",
-                                  selectionParamter: _openedPage == 0,
-                                  borderRadiusSize: 30,
-                                ),
-                                SegmentedButtonEntity(
-                                  onTap: () {
-                                    _pageController.nextPage(
-                                      duration: Duration(milliseconds: 300),
-                                      curve: Curves.easeInOut,
-                                    );
-                                    setState(() {
-                                      _openedPage = 1;
-                                    });
-                                  },
-                                  backgroundColor: ColorPreference(
-                                    selectedColor: Colors.pink,
-                                    unselectedColor: Colors.transparent,
-                                  ),
-                                  foregroundColor: ColorPreference(
-                                    selectedColor: Colors.white,
-                                    unselectedColor: Colors.grey,
-                                  ),
-                                  text: "Weekly",
-                                  selectionParamter: _openedPage == 1,
-                                  borderRadiusSize: 30,
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 300.h,
-                            child: PageView(
-                              physics: BouncingScrollPhysics(),
-                              onPageChanged: (int pageIndex) => setState(() {
-                                _openedPage = pageIndex;
-                              }),
-                              controller: _pageController,
-                              children: [
-                                DeckGraphContainer(
-                                  data: _monthlyData,
-                                  getTitlesWidget:
-                                      (double axisX, TitleMeta meta) {
-                                        return getMonthlyTitleByIndexFunction(
-                                          axisX: axisX,
-                                          meta: meta,
-                                        );
-                                      },
-                                ),
-                                DeckGraphContainer(
-                                  data: _weeklyData,
-                                  getTitlesWidget:
-                                      (double axisX, TitleMeta meta) {
-                                        return getWeeklyTitleByIndexFunction(
-                                          axisX: axisX,
-                                          meta: meta,
-                                        );
-                                      },
-                                ),
-                              ],
-                            ),
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            width: double.infinity,
-                            child: Text(
-                              textAlign: TextAlign.left,
-                              "🛈 Press the bar to see more detail information",
-                              style: Theme.of(context).textTheme.labelMedium
-                                  ?.copyWith(color: Colors.grey),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  CardTierListContainer(
-                    titleText: 'Top 3 Most Accurate Vocabularies',
-                    iconShape: Icons.emoji_events_rounded,
-                    backgroundColor: Colors.amber,
-                    strokeColor: Colors.orange.shade900,
-                    iconColor: Colors.white,
-                    cardsData: state.stats.top3MostAccurate,
-                    carouselBackgroundColor: Theme.of(context).primaryColor,
-                    carouselForgroundColor: Colors.white,
-                    isAudioPlay: _isAudioPlated,
+                  AccuracyStatsLayout(
+                    stats: state.stats,
+                    isAudioPlayed: _isAudioPlated,
                     audioPlayer: _audioPlayer,
                     filePath: widget.filePath,
                   ),
-                  CardTierListContainer(
-                    titleText: "Top 3 Least Accurate Vocabularies",
-                    iconShape: Icons.trending_down_rounded,
-                    backgroundColor: Theme.of(context).colorScheme.error,
-                    strokeColor: Colors.red.shade900,
-                    iconColor: Colors.white,
-                    cardsData: state.stats.top3LeastAccurate,
-                    carouselBackgroundColor: Theme.of(
-                      context,
-                    ).colorScheme.error,
-                    carouselForgroundColor: Colors.white,
-                    isAudioPlay: _isAudioPlated,
-                    audioPlayer: _audioPlayer,
-                    filePath: widget.filePath,
+                ],
+              ),
+            );
+          }
+          if (state is TimeConsumeStatsFinished) {
+            final DeckTimeConsume _thisMonth = state.thisMonth;
+            final List<TimeConsumeStatsEntity> _dailyData = [];
+            final List<TimeConsumeStatsEntity> _monthlyData = [];
+            final List<TimeConsumeStatsEntity> _weeklyData = [];
+            state.monthlyAverage.forEach((data) {
+              _monthlyData.add(
+                TimeConsumeStatsEntity.fromMillieSeconds(
+                  timeAvg: data.avgTime,
+                  totalTime: data.totalTime,
+                ),
+              );
+            });
+            state.weeklyAverage.forEach((data) {
+              _weeklyData.add(
+                TimeConsumeStatsEntity.fromMillieSeconds(
+                  timeAvg: data.avgTime,
+                  totalTime: data.totalTime,
+                ),
+              );
+            });
+            state.dailyAverage.forEach((data) {
+              _dailyData.add(
+                TimeConsumeStatsEntity.fromMillieSeconds(
+                  timeAvg: data.avgTime,
+                  totalTime: data.totalTime,
+                ),
+              );
+            });
+            final TimeConsumeStatsEntity _timeStats =
+                TimeConsumeStatsEntity.fromMillieSeconds(
+                  timeAvg: _thisMonth.avgTime,
+                  totalTime: _thisMonth.totalTime,
+                );
+            return SafeArea(
+              child: CustomScrollView(
+                physics: BouncingScrollPhysics(),
+                slivers: [
+                  PlayTimeStatsLayout(
+                    timeStats: _timeStats,
+                    monthlyData: _monthlyData,
+                    weeklyData: _weeklyData,
+                    dailyData: _dailyData,
                   ),
                 ],
               ),

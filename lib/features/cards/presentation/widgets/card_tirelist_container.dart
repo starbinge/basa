@@ -3,10 +3,9 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/vocab_bottom_modal.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/vocab_cards.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_m3shapes_extended/flutter_m3shapes_extended.dart';
+import 'package:m3e_core/m3e_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CardTierListContainer extends StatelessWidget {
@@ -105,6 +104,8 @@ class CardTierListContainer extends StatelessWidget {
               child: CarouselView.weighted(
                 onTap: (int cardIndex) async {
                   await showModalBottomSheet(
+                    isScrollControlled: true,
+                    showDragHandle: true,
                     context: context,
                     builder: (BuildContext context) {
                       return VocabBottomModal(
@@ -144,13 +145,21 @@ class CardTierListContainer extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Text(
+                                  maxLines: 3,
                                   card.defaultLanguage,
-                                  softWrap: false,
+                                  softWrap: true,
+                                  textAlign: TextAlign.center,
                                   overflow: TextOverflow.fade,
                                   style: Theme.of(context)
                                       .textTheme
                                       .displaySmall
-                                      ?.copyWith(color: carouselForgroundColor),
+                                      ?.copyWith(
+                                        color: carouselForgroundColor,
+                                        fontSize:
+                                            card.defaultLanguage.length > 30
+                                            ? 25
+                                            : 30,
+                                      ),
                                 ),
                                 Text(
                                   card.translatedLanguage,

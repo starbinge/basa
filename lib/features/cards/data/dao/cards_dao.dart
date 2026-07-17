@@ -1,6 +1,7 @@
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
+import 'package:basa_app_project/features/cards/domain/usecases/time_range_generator_usecase.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
@@ -103,7 +104,7 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     final result = await query.getSingleOrNull();
     final double avg = result?.read(_avgAccuracy) ?? 0;
     return DeckAccuracy(
-      monthName: DateFormat.MMMM('en_US').format(_now),
+      timeName: DateFormat.MMMM('en_US').format(_now),
       accuracyNumber: avg.round(),
     );
   }
@@ -131,7 +132,7 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     final result = await query.getSingleOrNull();
     final double avg = result?.read(_avgAccuracy) ?? 0;
     return DeckAccuracy(
-      monthName: DateFormat.MMMM('en_US').format(_lastMonth),
+      timeName: DateFormat.MMMM('en_US').format(_lastMonth),
       accuracyNumber: avg.round(),
     );
   }
@@ -156,8 +157,8 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     for (int i = 1; i <= 12; i++) {
       final DateTime _now = DateTime.now();
       final DateTime _thisMonth = DateTime(_now.year, i);
-      final String _monthName = DateFormat.MMMM('en_US').format(_thisMonth);
-      groupedByMonth[_monthName] = [];
+      final String _timeName = DateFormat.MMMM('en_US').format(_thisMonth);
+      groupedByMonth[_timeName] = [];
     }
     for (var log in logs) {
       final date = DateTime.fromMillisecondsSinceEpoch(log.id);
@@ -166,13 +167,13 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     }
 
     final List<DeckAccuracy> monthlyAccuracyList = [];
-    groupedByMonth.forEach((monthName, monthLogs) {
+    groupedByMonth.forEach((timeName, monthLogs) {
       final total = monthLogs.length;
       final correct = monthLogs.where((log) => log.ease == 3).length;
       final accuracy = total > 0 ? (correct * 100 / total).round() : 0;
 
       monthlyAccuracyList.add(
-        DeckAccuracy(monthName: monthName, accuracyNumber: accuracy),
+        DeckAccuracy(timeName: timeName, accuracyNumber: accuracy),
       );
     });
 
@@ -226,7 +227,7 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
       final accuracy = total > 0 ? (correct * 100 / total).round() : 0;
 
       weeklyAccuracyList.add(
-        DeckAccuracy(monthName: dayName, accuracyNumber: accuracy),
+        DeckAccuracy(timeName: dayName, accuracyNumber: accuracy),
       );
     });
 
@@ -289,5 +290,165 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
         'flags': card.flags,
       }).toEntity();
     }).toList();
+  }
+
+  DeckTimeConsume _processStats(String timeName, List<RevlogTableData> data) {
+    if (data.isEmpty) {
+      return DeckTimeConsume(timeName: timeName, avgTime: 0, totalTime: 0);
+    }
+    final int totalTime = data.fold(0, (sum, log) => sum + log.time);
+    final int avgTime = (totalTime / data.length).round();
+    return DeckTimeConsume(
+      timeName: timeName,
+      avgTime: avgTime,
+      totalTime: totalTime,
+    );
+  }
+
+  Future<DeckTimeConsume> getThisMonthTimeConsume() async {
+    final DateTime _now = DateTime.now();
+    final int _begin = getStartOfMonthEpoch(time: _now);
+    final int _end = getStartOfNextMonthEpoch(time: _now);
+
+    final totalTime = revlogTable.time.sum();
+    final totalCards = revlogTable.id.count();
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([totalTime, totalCards])
+      ..where(
+        revlogTable.id.isBiggerOrEqualValue(_begin) &
+            revlogTable.id.isSmallerOrEqualValue(_end),
+      );
+
+    final result = await query.getSingleOrNull();
+    final int sumTime = result?.read(totalTime) ?? 0;
+    final int count = result?.read(totalCards) ?? 0;
+    final int avg = count > 0 ? (sumTime / count).round() : 0;
+
+    return DeckTimeConsume(
+      timeName: DateFormat.MMMM('en_US').format(_now),
+      avgTime: avg,
+      totalTime: sumTime,
+    );
+  }
+
+  Future<DeckTimeConsume> getPreviousMonthTimeConsume() async {
+    final DateTime _now = DateTime.now();
+    final DateTime _lastMonth = DateTime(_now.year, _now.month - 1);
+    final int _begin = getStartOfPreviousMonthEpoch(time: _now);
+    final int _end = getStartOfMonthEpoch(time: _now);
+
+    final totalTime = revlogTable.time.sum();
+    final totalCards = revlogTable.id.count();
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([totalTime, totalCards])
+      ..where(
+        revlogTable.id.isBiggerOrEqualValue(_begin) &
+            revlogTable.id.isSmallerOrEqualValue(_end),
+      );
+
+    final result = await query.getSingleOrNull();
+    final int sumTime = result?.read(totalTime) ?? 0;
+    final int count = result?.read(totalCards) ?? 0;
+    final int avg = count > 0 ? (sumTime / count).round() : 0;
+
+    return DeckTimeConsume(
+      timeName: DateFormat.MMMM('en_US').format(_lastMonth),
+      avgTime: avg,
+      totalTime: sumTime,
+    );
+  }
+
+  Future<List<DeckTimeConsume>> getMonthlyTimeConsumeList() async {
+    final int currentYear = DateTime.now().year;
+    final int _begin = DateTime(currentYear, 1, 1).millisecondsSinceEpoch;
+    final int _end = DateTime(currentYear + 1, 1, 1).millisecondsSinceEpoch;
+
+    final query = select(revlogTable)
+      ..where(
+        (data) =>
+            data.id.isBiggerOrEqualValue(_begin) &
+            data.id.isSmallerOrEqualValue(_end),
+      );
+
+    final List<RevlogTableData> logs = await query.get();
+    if (logs.isEmpty) return [];
+
+    final Map<String, List<RevlogTableData>> groupedByMonth =
+        getMonthlyObject<RevlogTableData>(currentYear);
+
+    for (var log in logs) {
+      final date = DateTime.fromMillisecondsSinceEpoch(log.id);
+      final monthKey = DateFormat.MMMM('en_US').format(date);
+      groupedByMonth[monthKey]?.add(log);
+    }
+
+    return groupedByMonth.entries
+        .map((entry) => _processStats(entry.key, entry.value))
+        .toList();
+  }
+
+  Future<List<DeckTimeConsume>> getWeeklyTimeConsumeList() async {
+    final now = DateTime.now();
+    final DateTime startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+    final int _begin = DateTime(
+      startOfWeek.year,
+      startOfWeek.month,
+      startOfWeek.day,
+    ).millisecondsSinceEpoch;
+    final int _end = _begin + (7 * 24 * 60 * 60 * 1000);
+
+    final query = select(revlogTable)
+      ..where(
+        (data) =>
+            data.id.isBiggerOrEqualValue(_begin) &
+            data.id.isSmallerOrEqualValue(_end),
+      );
+
+    final List<RevlogTableData> logs = await query.get();
+    if (logs.isEmpty) return [];
+
+    final Map<String, List<RevlogTableData>> groupedByDay =
+        getWeeklyObject<RevlogTableData>();
+    for (var log in logs) {
+      final date = DateTime.fromMillisecondsSinceEpoch(log.id);
+      final dayKey = DateFormat.EEEE('en_US').format(date);
+
+      groupedByDay[dayKey]?.add(log);
+    }
+
+    return groupedByDay.entries
+        .map((entry) => _processStats(entry.key, entry.value))
+        .toList();
+  }
+
+  Future<List<DeckTimeConsume>> getDailyTimeConsumeList() async {
+    final int currentYear = DateTime.now().year;
+    final int _begin = DateTime(currentYear, 1, 1).millisecondsSinceEpoch;
+    final int _end = DateTime(currentYear + 1, 1, 1).millisecondsSinceEpoch;
+
+    final query = select(revlogTable)
+      ..where(
+        (data) =>
+            data.id.isBiggerOrEqualValue(_begin) &
+            data.id.isSmallerOrEqualValue(_end),
+      );
+
+    final List<RevlogTableData> logs = await query.get();
+    if (logs.isEmpty) return [];
+
+    final Map<int, List<RevlogTableData>> groupedByDate =
+        getDailyObject<RevlogTableData>();
+
+    for (var log in logs) {
+      final date = DateTime.fromMillisecondsSinceEpoch(log.id);
+      final dateKey = date.day;
+      groupedByDate[dateKey]?.add(log);
+    }
+
+    return groupedByDate.entries
+        .map((entry) => _processStats(entry.key.toString(), entry.value))
+        .toList();
   }
 }

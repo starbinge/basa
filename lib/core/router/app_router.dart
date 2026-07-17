@@ -108,7 +108,10 @@ final appRouter = GoRouter(
                         cardsDao: activeCardsDao,
                       )..add(GettingAccuracyStats());
                     case StatisticsPageEnum.timeConsume:
-                      throw UnimplementedError();
+                      return FlashCardBloc(
+                        flashCardRepo: flashCardRepo,
+                        cardsDao: activeCardsDao,
+                      )..add(GettingTimeConsumeStats());
                   }
                 },
                 child: DeckStatisticPage(

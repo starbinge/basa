@@ -51,42 +51,42 @@ class DeckAccuracyStats {
 }
 
 class DeckAccuracy {
-  final String monthName;
+  final String timeName;
   final int accuracyNumber;
 
   //
-  DeckAccuracy({required this.monthName, required this.accuracyNumber});
+  DeckAccuracy({required this.timeName, required this.accuracyNumber});
 
   factory DeckAccuracy.fromMap(Map<String, dynamic> map) => DeckAccuracy(
-    monthName: map['monthName'] as String,
+    timeName: map['timeName'] as String,
     accuracyNumber: (map['accuracyNumber'] as num).toInt(),
   );
 
   Map<String, dynamic> toMap() => {
-    'monthName': monthName,
+    'timeName': timeName,
     'accuracyNumber': accuracyNumber,
   };
 }
 
 class DeckTimeConsume {
-  final String monthName;
+  final String timeName;
   final int avgTime;
   final int totalTime;
 
   DeckTimeConsume({
-    required this.monthName,
+    required this.timeName,
     required this.avgTime,
     required this.totalTime,
   });
 
   factory DeckTimeConsume.fromMap(Map<String, dynamic> map) => DeckTimeConsume(
-    monthName: map['monthName'] as String,
+    timeName: map['timeName'] as String,
     avgTime: (map['avgTime'] as num).toInt(),
     totalTime: map['totalTime'] as int,
   );
 
   Map<String, dynamic> toMap() => {
-    'monthName': monthName,
+    'timeName': timeName,
     'avgTime': avgTime,
     'totalTime': totalTime,
   };

@@ -422,14 +422,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.0.0"
-  flutter_m3shapes_extended:
-    dependency: "direct main"
-    description:
-      name: flutter_m3shapes_extended
-      sha256: "93258d82efcc72c249f69b0fd991b535d5a2da99a5dd1aa77af07a6b4f86600f"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -640,6 +632,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.3"
+  m3e_core:
+    dependency: "direct main"
+    description:
+      name: m3e_core
+      sha256: "2f6376e65fdf250d2ecf7b889a76f0476189f0a0f546219f5f0b95b3f1414311"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.2"
   matcher:
     dependency: transitive
     description:
@@ -672,6 +672,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
+  motor:
+    dependency: transitive
+    description:
+      name: motor
+      sha256: cbd49f21b00e568c2b1a55f134ed803614a107782f4fea7769693bca32940c58
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   native_toolchain_c:
     dependency: transitive
     description:

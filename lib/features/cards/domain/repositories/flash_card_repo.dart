@@ -41,4 +41,21 @@ abstract class FlashCardRepo {
   Future<List<CardsDetailEntity>> getTop3LeastAccurateCards({
     required CardsDao cardsDao,
   });
+
+  Future<DeckTimeConsume> getThisMonthTimeConsume({required CardsDao cardsDao});
+
+  Future<DeckTimeConsume> getPreviousMonthTimeConsume({
+    required CardsDao cardsDao,
+  });
+
+  Future<List<DeckTimeConsume>> getMonthlyTimeConsume({
+    required CardsDao cardsDao,
+  });
+
+  Future<List<DeckTimeConsume>> getWeeklyTimeConsume({
+    required CardsDao cardsDao,
+  });
+  Future<List<DeckTimeConsume>> getDailyTimeConsume({
+    required CardsDao cardsDao,
+  });
 }
