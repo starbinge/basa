@@ -1,5 +1,4 @@
 import 'package:flip_card/flip_card.dart';
-import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,16 +10,13 @@ class FlashCardSlider extends StatefulWidget {
     super.key,
     required this.itemCount,
     required this.flashCards,
-    required FlipCardController flipCardController,
     required PageController pageController,
     required this.onCardFlipped,
     required this.onPageChanged,
-  }) : _flipCardController = flipCardController,
-       _pageController = pageController;
+  }) : _pageController = pageController;
 
   final int itemCount;
   final List<CardsDetailEntity> flashCards;
-  final FlipCardController _flipCardController;
   final PageController _pageController;
   final void Function(bool isFront) onCardFlipped;
   final void Function(int index) onPageChanged;
@@ -53,7 +49,6 @@ class _FlashCardSliderState extends State<FlashCardSlider> {
             padding: EdgeInsets.symmetric(vertical: 60.h, horizontal: 25.w),
             child: FlipCard(
               onFlipDone: widget.onCardFlipped,
-              controller: widget._flipCardController,
               key: ValueKey(cardIndex),
               side: CardSide.FRONT,
               fill: Fill.fillBack,

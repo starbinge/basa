@@ -1,10 +1,11 @@
 import 'package:basa_app_project/core/data/external_database/external_database.dart';
 import 'package:basa_app_project/features/cards/constants/enums/flashcard_answer_enum.dart';
+import 'package:basa_app_project/features/cards/constants/enums/order_enums.dart';
 import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
-import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
+import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
 import 'package:bloc/bloc.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
@@ -120,30 +121,92 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
       }
     });
     on<GettingAccuracyStats>((stats, emit) async {
-      debugPrint("loading");
+      final now = DateTime.now();
+      final DateTime startOfWeek = now.subtract(
+        Duration(days: now.weekday - 1),
+      );
+      final int _beginWeek = DateTime(
+        startOfWeek.year,
+        startOfWeek.month,
+        startOfWeek.day,
+      ).millisecondsSinceEpoch;
+      final int _endWeek = _beginWeek + (7 * 24 * 60 * 60 * 1000);
+      final int _todayTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).millisecondsSinceEpoch;
+      final int _tomorrowTime = DateTime(
+        now.year,
+        now.month,
+        now.day + 1,
+      ).millisecondsSinceEpoch;
+      debugPrint("loading accuracy");
       emit(FlashCardIsLoading());
       try {
         if (_cardsDao == null) throw CardDaoNotExist();
-        debugPrint("Fetching");
+        debugPrint("Fetching accuracy");
 
-        // 🔥 Jalankan semua query secara paralel sekaligus!
         final results = await Future.wait([
           _flashCardRepo.getThisMonthAccuracy(cardsDao: _cardsDao),
           _flashCardRepo.getPreviousMonthAccuracy(cardsDao: _cardsDao),
           _flashCardRepo.getMonthlyAccuracy(cardsDao: _cardsDao),
           _flashCardRepo.getWeeklyAccuracy(cardsDao: _cardsDao),
-          _flashCardRepo.getTop3MostAccurateCards(cardsDao: _cardsDao),
-          _flashCardRepo.getTop3LeastAccurateCards(cardsDao: _cardsDao),
+          _flashCardRepo.getDailyAccuracy(cardsDao: _cardsDao),
+          _flashCardRepo.getAccuracyTopCards(
+            cardsDao: _cardsDao,
+            begin: getStartOfMonthEpoch(time: DateTime.now()),
+            end: getStartOfNextMonthEpoch(time: DateTime.now()),
+            orderBy: OrderEnums.desc,
+          ),
+          _flashCardRepo.getAccuracyTopCards(
+            cardsDao: _cardsDao,
+            begin: _beginWeek,
+            end: _endWeek,
+            orderBy: OrderEnums.desc,
+          ),
+          _flashCardRepo.getAccuracyTopCards(
+            cardsDao: _cardsDao,
+            begin: _todayTime,
+            end: _tomorrowTime,
+            orderBy: OrderEnums.desc,
+          ),
+          _flashCardRepo.getAccuracyTopCards(
+            cardsDao: _cardsDao,
+            begin: getStartOfMonthEpoch(time: DateTime.now()),
+            end: getStartOfNextMonthEpoch(time: DateTime.now()),
+            orderBy: OrderEnums.asc,
+          ),
+          _flashCardRepo.getAccuracyTopCards(
+            cardsDao: _cardsDao,
+            begin: _beginWeek,
+            end: _endWeek,
+            orderBy: OrderEnums.asc,
+          ),
+          _flashCardRepo.getAccuracyTopCards(
+            cardsDao: _cardsDao,
+            begin: _todayTime,
+            end: _tomorrowTime,
+            orderBy: OrderEnums.asc,
+          ),
         ]);
 
-        // Ambil hasil sesuai urutan indeksnya
         final _thisMonthAccuracy = results[0] as DeckAccuracy;
         final _previousMonthAccuracy = results[1] as DeckAccuracy;
         final _monthlyAccuracy = results[2] as List<DeckAccuracy>;
         final _weeklyAccuracy = results[3] as List<DeckAccuracy>;
-        final _top3MostAccurateCards = results[4] as List<CardsDetailEntity>;
-        final _top3LeastAccurateCards = results[5] as List<CardsDetailEntity>;
-        debugPrint(_top3LeastAccurateCards.length.toString());
+        final _dailyAccuracy = results[4] as List<DeckAccuracy>;
+
+        // Top 3 Most Accurate Cards
+        final _monthlyTop3MostAccurate = results[5] as List<CardsDetailEntity>;
+        final _weeklyTop3MostAccurate = results[6] as List<CardsDetailEntity>;
+        final _todayTop3MostAccurate = results[7] as List<CardsDetailEntity>;
+
+        // Top 3 Least Accurate Cards
+        final _monthlyTop3LeastAccurate = results[8] as List<CardsDetailEntity>;
+        final _weeklyTop3LeastAccurate = results[9] as List<CardsDetailEntity>;
+        final _todayTop3LeastAccurate = results[10] as List<CardsDetailEntity>;
+
         emit(
           AccuracyStatsFinished(
             stats: DeckAccuracyStats(
@@ -151,18 +214,43 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
               previousMonthDeckAccuracy: _previousMonthAccuracy,
               weeklyList: _weeklyAccuracy,
               monthlyList: _monthlyAccuracy,
-              top3MostAccurate: _top3MostAccurateCards,
-              top3LeastAccurate: _top3LeastAccurateCards,
+              top3TodayMostAccurate: _todayTop3MostAccurate,
+              top3TodayLeastAccurate: _todayTop3LeastAccurate,
+              top3WeeklyMostAccurate: _weeklyTop3MostAccurate,
+              top3WeeklyLeastAccurate: _weeklyTop3LeastAccurate,
+              top3MonthlyMostAccurate: _monthlyTop3MostAccurate,
+              top3MonthlyLeastAccurate: _monthlyTop3LeastAccurate,
+              dailyAccuracyList: _dailyAccuracy,
             ),
           ),
         );
-        debugPrint("Finished");
+        debugPrint("Finished accuracy");
       } catch (e) {
         debugPrint("Error di GettingAccuracyStats: $e");
         emit(FLashCardIsError(errorMessage: e.toString()));
       }
     });
     on<GettingTimeConsumeStats>((stats, emit) async {
+      final now = DateTime.now();
+      final DateTime startOfWeek = now.subtract(
+        Duration(days: now.weekday - 1),
+      );
+      final int _beginWeek = DateTime(
+        startOfWeek.year,
+        startOfWeek.month,
+        startOfWeek.day,
+      ).millisecondsSinceEpoch;
+      final int _endWeek = _beginWeek + (7 * 24 * 60 * 60 * 1000);
+      final int _todayTime = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).millisecondsSinceEpoch;
+      final int _tomorrowTime = DateTime(
+        now.year,
+        now.month,
+        now.day + 1,
+      ).millisecondsSinceEpoch;
       debugPrint("loading time consume");
       emit(FlashCardIsLoading());
       try {
@@ -175,6 +263,43 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
           _flashCardRepo.getMonthlyTimeConsume(cardsDao: _cardsDao),
           _flashCardRepo.getWeeklyTimeConsume(cardsDao: _cardsDao),
           _flashCardRepo.getDailyTimeConsume(cardsDao: _cardsDao),
+          _flashCardRepo.getTopTimeConsumeCards(
+            cardsDao: _cardsDao,
+            begin: getStartOfMonthEpoch(time: DateTime.now()),
+            end: getStartOfNextMonthEpoch(time: DateTime.now()),
+            orderBy: OrderEnums.asc,
+          ),
+          _flashCardRepo.getTopTimeConsumeCards(
+            cardsDao: _cardsDao,
+            begin: _beginWeek,
+            end: _endWeek,
+            orderBy: OrderEnums.asc,
+          ),
+          _flashCardRepo.getTopTimeConsumeCards(
+            cardsDao: _cardsDao,
+            begin: _todayTime,
+            end: _tomorrowTime,
+            orderBy: OrderEnums.asc,
+          ),
+
+          _flashCardRepo.getTopTimeConsumeCards(
+            cardsDao: _cardsDao,
+            begin: getStartOfMonthEpoch(time: DateTime.now()),
+            end: getStartOfNextMonthEpoch(time: DateTime.now()),
+            orderBy: OrderEnums.desc,
+          ),
+          _flashCardRepo.getTopTimeConsumeCards(
+            cardsDao: _cardsDao,
+            begin: _beginWeek,
+            end: _endWeek,
+            orderBy: OrderEnums.desc,
+          ),
+          _flashCardRepo.getTopTimeConsumeCards(
+            cardsDao: _cardsDao,
+            begin: _todayTime,
+            end: _tomorrowTime,
+            orderBy: OrderEnums.desc,
+          ),
         ]);
 
         final _thisMonthTimeConsume = results[0] as DeckTimeConsume;
@@ -182,6 +307,26 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
         final _monthlyTimeConsume = results[2] as List<DeckTimeConsume>;
         final _weeklyTimeConsume = results[3] as List<DeckTimeConsume>;
         final _dailyTimeConsume = results[4] as List<DeckTimeConsume>;
+
+        // Top 3 Least Draining Time Cards
+        final _monthlyLeast3TimeConsumeCards =
+            results[5] as List<CardsDetailEntity>;
+        final _weeklyLeast3TimeConsumeCards =
+            results[6] as List<CardsDetailEntity>;
+        final _todayLeast3TimeConsumeCards =
+            results[7] as List<CardsDetailEntity>;
+
+        // Top 3 Most Draining Time Cards
+
+        final _monthlyTop3TimeConsumeCards =
+            results[8] as List<CardsDetailEntity>;
+
+        final _weeklyTop3TimeConsumeCards =
+            results[9] as List<CardsDetailEntity>;
+
+        final _todayTop3TimeConsumeCards =
+            results[10] as List<CardsDetailEntity>;
+
         emit(
           TimeConsumeStatsFinished(
             thisMonth: _thisMonthTimeConsume,
@@ -189,6 +334,12 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
             monthlyAverage: _monthlyTimeConsume,
             weeklyAverage: _weeklyTimeConsume,
             dailyAverage: _dailyTimeConsume,
+            top3TodayCards: _todayTop3TimeConsumeCards,
+            top3MonthlyCards: _monthlyTop3TimeConsumeCards,
+            top3WeeklyCards: _weeklyTop3TimeConsumeCards,
+            top3LeastWeeklyCards: _weeklyLeast3TimeConsumeCards,
+            top3LeastMonthlyCards: _monthlyLeast3TimeConsumeCards,
+            top3LeastTodayCards: _todayLeast3TimeConsumeCards,
           ),
         );
         debugPrint("Finished time consume");

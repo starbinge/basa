@@ -1,52 +1,115 @@
-import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 
 class DeckAccuracyStats {
-  // ini tujuannya untuk menyimpan
   final DeckAccuracy thisMonthDeckAccuracy;
   final DeckAccuracy previousMonthDeckAccuracy;
   final List<DeckAccuracy> weeklyList;
   final List<DeckAccuracy> monthlyList;
-  final List<CardsDetailEntity> top3MostAccurate;
-  final List<CardsDetailEntity> top3LeastAccurate;
+  final List<DeckAccuracy> dailyAccuracyList;
+  final List<CardsDetailEntity> top3TodayMostAccurate;
+  final List<CardsDetailEntity> top3TodayLeastAccurate;
+  final List<CardsDetailEntity> top3WeeklyMostAccurate;
+  final List<CardsDetailEntity> top3WeeklyLeastAccurate;
+  final List<CardsDetailEntity> top3MonthlyMostAccurate;
+  final List<CardsDetailEntity> top3MonthlyLeastAccurate;
 
   DeckAccuracyStats({
     required this.thisMonthDeckAccuracy,
     required this.previousMonthDeckAccuracy,
     required this.weeklyList,
     required this.monthlyList,
-    required this.top3MostAccurate,
-    required this.top3LeastAccurate,
+    required this.dailyAccuracyList,
+    required this.top3TodayMostAccurate,
+    required this.top3TodayLeastAccurate,
+    required this.top3WeeklyMostAccurate,
+    required this.top3WeeklyLeastAccurate,
+    required this.top3MonthlyMostAccurate,
+    required this.top3MonthlyLeastAccurate,
   });
 
-  factory DeckAccuracyStats.fromMap(
-    Map<String, dynamic> map,
-  ) => DeckAccuracyStats(
-    thisMonthDeckAccuracy: DeckAccuracy.fromMap(map['thisMonthDeckAccuracy']),
-    previousMonthDeckAccuracy: DeckAccuracy.fromMap(
-      map['previousMonthDeckAccuracy'],
-    ),
-    weeklyList: (map['weeklyList'] as List<DeckAccuracy>)
-        .map((data) => DeckAccuracy.fromMap(data as Map<String, dynamic>))
-        .toList(),
-    monthlyList: (map['monthlyList'] as List<DeckAccuracy>)
-        .map((data) => DeckAccuracy.fromMap(data as Map<String, dynamic>))
-        .toList(),
-    top3MostAccurate: (map['top3MostAccurate'] as List<CardsDetailEntity>)
-        .map((data) => CardsDetailEntity.fromMap(data as Map<String, dynamic>))
-        .toList(),
-    top3LeastAccurate: (map['top3LeastAccurate'] as List<CardsDetailEntity>)
-        .map((data) => CardsDetailEntity.fromMap(data as Map<String, dynamic>))
-        .toList(),
-  );
+  factory DeckAccuracyStats.fromMap(Map<String, dynamic> map) =>
+      DeckAccuracyStats(
+        thisMonthDeckAccuracy: DeckAccuracy.fromMap(
+          map['thisMonthDeckAccuracy'],
+        ),
+        previousMonthDeckAccuracy: DeckAccuracy.fromMap(
+          map['previousMonthDeckAccuracy'],
+        ),
+        weeklyList: (map['weeklyList'] as List<DeckAccuracy>)
+            .map((data) => DeckAccuracy.fromMap(data as Map<String, dynamic>))
+            .toList(),
+        monthlyList: (map['monthlyList'] as List<DeckAccuracy>)
+            .map((data) => DeckAccuracy.fromMap(data as Map<String, dynamic>))
+            .toList(),
+        dailyAccuracyList: (map['dailyAccuracyList'] as List<DeckAccuracy>)
+            .map((data) => DeckAccuracy.fromMap(data as Map<String, dynamic>))
+            .toList(),
+        top3TodayMostAccurate:
+            (map['top3TodayMostAccurate'] as List<CardsDetailEntity>)
+                .map(
+                  (data) =>
+                      CardsDetailEntity.fromMap(data as Map<String, dynamic>),
+                )
+                .toList(),
+        top3TodayLeastAccurate:
+            (map['top3TodayLeastAccurate'] as List<CardsDetailEntity>)
+                .map(
+                  (data) =>
+                      CardsDetailEntity.fromMap(data as Map<String, dynamic>),
+                )
+                .toList(),
+        top3WeeklyMostAccurate:
+            (map['top3WeeklyMostAccurate'] as List<CardsDetailEntity>)
+                .map(
+                  (data) =>
+                      CardsDetailEntity.fromMap(data as Map<String, dynamic>),
+                )
+                .toList(),
+        top3WeeklyLeastAccurate:
+            (map['top3WeeklyLeastAccurate'] as List<CardsDetailEntity>)
+                .map(
+                  (data) =>
+                      CardsDetailEntity.fromMap(data as Map<String, dynamic>),
+                )
+                .toList(),
+        top3MonthlyMostAccurate:
+            (map['top3MonthlyMostAccurate'] as List<CardsDetailEntity>)
+                .map(
+                  (data) =>
+                      CardsDetailEntity.fromMap(data as Map<String, dynamic>),
+                )
+                .toList(),
+        top3MonthlyLeastAccurate:
+            (map['top3MonthlyLeastAccurate'] as List<CardsDetailEntity>)
+                .map(
+                  (data) =>
+                      CardsDetailEntity.fromMap(data as Map<String, dynamic>),
+                )
+                .toList(),
+      );
 
   Map<String, dynamic> toMap() => {
     'thisMonthDeckAccuracy': thisMonthDeckAccuracy.toMap(),
     'previousMonthDeckAccuracy': previousMonthDeckAccuracy.toMap(),
     'weeklyList': weeklyList.map((data) => data.toMap()),
     'monthlyList': monthlyList.map((data) => data.toMap()),
-    'top3MostAccurate': top3MostAccurate.map((data) => data.toMap()),
-    'top3LeastAccurate': top3LeastAccurate.map((data) => data.toMap()),
+    'dailyAccuracyList': dailyAccuracyList.map((data) => data.toMap()),
+    'top3TodayMostAccurate': top3TodayMostAccurate.map((data) => data.toMap()),
+    'top3TodayLeastAccurate': top3TodayLeastAccurate.map(
+      (data) => data.toMap(),
+    ),
+    'top3WeeklyMostAccurate': top3WeeklyMostAccurate.map(
+      (data) => data.toMap(),
+    ),
+    'top3WeeklyLeastAccurate': top3WeeklyLeastAccurate.map(
+      (data) => data.toMap(),
+    ),
+    'top3MonthlyMostAccurate': top3MonthlyMostAccurate.map(
+      (data) => data.toMap(),
+    ),
+    'top3MonthlyLeastAccurate': top3MonthlyLeastAccurate.map(
+      (data) => data.toMap(),
+    ),
   };
 }
 

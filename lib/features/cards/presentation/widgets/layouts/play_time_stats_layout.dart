@@ -1,15 +1,16 @@
+import 'dart:io';
+
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/constants/screen_size.dart';
-import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:basa_app_project/core/widgets/callendar_heatmap.dart';
-import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
+import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_stats_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_sidetitles_chart_usecase.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/card_tirelist_container.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/deck_graph_container.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/time_consume_stats_header.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
 import 'package:m3e_core/m3e_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,13 +23,30 @@ class PlayTimeStatsLayout extends StatefulWidget {
     required this.monthlyData,
     required this.weeklyData,
     required this.dailyData,
+    required this.top3TodayMostDrainingCards,
+    required this.top3WeeklyMostDrainingCards,
+    required this.top3MonthlyMostDrainingCards,
+    required this.isAudioPlay,
+    required this.audioPlayer,
+    required this.filePath,
+    required this.top3TodayLeastDrainingCards,
+    required this.top3WeeklyLeastDrainingCards,
+    required this.top3MonthlyLeastDrainingCards,
   });
 
   final TimeConsumeStatsEntity timeStats;
   final List<TimeConsumeStatsEntity> monthlyData;
   final List<TimeConsumeStatsEntity> weeklyData;
   final List<TimeConsumeStatsEntity> dailyData;
-
+  final List<CardsDetailEntity> top3TodayMostDrainingCards;
+  final List<CardsDetailEntity> top3WeeklyMostDrainingCards;
+  final List<CardsDetailEntity> top3MonthlyMostDrainingCards;
+  final bool isAudioPlay;
+  final AudioPlayer audioPlayer;
+  final File filePath;
+  final List<CardsDetailEntity> top3TodayLeastDrainingCards;
+  final List<CardsDetailEntity> top3WeeklyLeastDrainingCards;
+  final List<CardsDetailEntity> top3MonthlyLeastDrainingCards;
   @override
   State<PlayTimeStatsLayout> createState() => _PlayTimeStatsLayoutState();
 }
@@ -50,21 +68,23 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
     return SliverMainAxisGroup(
       slivers: [
         SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TimeConsumeStatsHeader(
-                  widget: widget,
-                  displayLarge: displayLarge,
-                  displayMedium: displayMedium,
-                  headlineSmall: headlineSmall,
-                  labelLarge: labelLarge,
-                ),
-                SizedBox(height: 30),
-              ],
+          child: RepaintBoundary(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  TimeConsumeStatsHeader(
+                    widget: widget,
+                    displayLarge: displayLarge,
+                    displayMedium: displayMedium,
+                    headlineSmall: headlineSmall,
+                    labelLarge: labelLarge,
+                  ),
+                  SizedBox(height: 30),
+                ],
+              ),
             ),
           ),
         ),
@@ -73,13 +93,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
             spacing: 10,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AnimatedSwitcher(
-                switchInCurve: Curves.easeIn,
-                switchOutCurve: Curves.easeOut,
-                duration: const Duration(milliseconds: 500),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(opacity: animation, child: child);
-                },
+              RepaintBoundary(
                 child: Text(
                   _selectedPage != 2 ? "$_monthName $_year" : "$_year",
                   key: ValueKey<int>(_selectedPage),
@@ -89,7 +103,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                 ),
               ),
               Text(
-                "Time Periodically Statistics",
+                "Active Time Statistics",
                 style: Theme.of(
                   context,
                 ).textTheme.titleLarge?.copyWith(fontSize: 15),
@@ -100,7 +114,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                   child: Text(
                     textAlign: TextAlign.center,
                     maxLines: 2,
-                    "Visually served information of your accuracy for this deck.",
+                    "Visually served information of your activity for this deck.",
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
@@ -168,7 +182,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                 ),
               ),
               SizedBox(
-                height: 300.h,
+                height: 1120.h,
                 child: PageView(
                   physics: BouncingScrollPhysics(),
                   onPageChanged: (int pageIndex) => setState(() {
@@ -176,28 +190,148 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                   }),
                   controller: _pageController,
                   children: [
-                    CallendarHeatmap(dailyData: widget.dailyData),
-                    DeckGraphContainer(
-                      data: widget.weeklyData,
-                      getTitlesWidget: (double axisX, TitleMeta meta) {
-                        return getWeeklyTitleByIndexFunction(
-                          axisX: axisX,
-                          meta: meta,
-                        );
-                      },
-                      getYValue: (TimeConsumeStatsEntity item) =>
-                          double.parse(item.totalTime.minutes),
+                    Column(
+                      children: [
+                        CallendarHeatmap(
+                          itemCount: widget.dailyData.length,
+                          getValue: (i) {
+                            final minutes = int.parse(
+                              widget.dailyData[i].totalTime.minutes,
+                            );
+                            return minutes == 0
+                                ? 0.0
+                                : minutes / widget.dailyData.length;
+                          },
+                        ),
+                        CardTierListContainer(
+                          titleText: "Top 3 Most Draining Time Cards",
+                          iconShape: Icons.av_timer_rounded,
+                          backgroundColor: Theme.of(context).primaryColorDark,
+                          strokeColor: Colors.blue.shade900,
+                          iconColor: Colors.white,
+                          cardsData: widget.top3TodayMostDrainingCards,
+                          carouselBackgroundColor: Theme.of(
+                            context,
+                          ).primaryColorDark,
+                          carouselForgroundColor: Colors.white,
+                          isAudioPlay: widget.isAudioPlay,
+                          audioPlayer: widget.audioPlayer,
+                          filePath: widget.filePath,
+                        ),
+                        CardTierListContainer(
+                          titleText: "Top 3 Least Draining Time Cards",
+                          iconShape: Icons.av_timer_rounded,
+                          backgroundColor: Theme.of(context).colorScheme.error,
+                          strokeColor: Colors.red.shade900,
+                          iconColor: Colors.white,
+                          cardsData: widget.top3TodayLeastDrainingCards,
+                          carouselBackgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.error,
+                          carouselForgroundColor: Colors.white,
+                          isAudioPlay: widget.isAudioPlay,
+                          audioPlayer: widget.audioPlayer,
+                          filePath: widget.filePath,
+                        ),
+                      ],
                     ),
-                    DeckGraphContainer<TimeConsumeStatsEntity>(
-                      data: widget.monthlyData,
-                      getTitlesWidget: (double axisX, TitleMeta meta) {
-                        return getMonthlyTitleByIndexFunction(
-                          axisX: axisX,
-                          meta: meta,
-                        );
-                      },
-                      getYValue: (TimeConsumeStatsEntity item) =>
-                          double.parse(item.totalTime.minutes),
+                    RepaintBoundary(
+                      child: Column(
+                        children: [
+                          DeckGraphContainer(
+                            data: widget.weeklyData,
+                            getTitlesWidget: (double axisX, TitleMeta meta) {
+                              return getWeeklyTitleByIndexFunction(
+                                axisX: axisX,
+                                meta: meta,
+                              );
+                            },
+                            getYValue: (TimeConsumeStatsEntity item) =>
+                                double.parse(item.totalTime.minutes),
+                          ),
+                          CardTierListContainer(
+                            titleText: "Top 3 Most Draining Time Cards",
+                            iconShape: Icons.av_timer_rounded,
+                            backgroundColor: Theme.of(context).primaryColor,
+                            strokeColor: Colors.blue.shade900,
+                            iconColor: Colors.white,
+                            cardsData: widget.top3WeeklyMostDrainingCards,
+                            carouselBackgroundColor: Theme.of(
+                              context,
+                            ).primaryColorDark,
+                            carouselForgroundColor: Colors.white,
+                            isAudioPlay: widget.isAudioPlay,
+                            audioPlayer: widget.audioPlayer,
+                            filePath: widget.filePath,
+                          ),
+                          CardTierListContainer(
+                            titleText: "Top 3 Least Draining Time Cards",
+                            iconShape: Icons.av_timer_rounded,
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                            strokeColor: Colors.red.shade900,
+                            iconColor: Colors.white,
+                            cardsData: widget.top3WeeklyLeastDrainingCards,
+                            carouselBackgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                            carouselForgroundColor: Colors.white,
+                            isAudioPlay: widget.isAudioPlay,
+                            audioPlayer: widget.audioPlayer,
+                            filePath: widget.filePath,
+                          ),
+                        ],
+                      ),
+                    ),
+                    RepaintBoundary(
+                      child: Column(
+                        children: [
+                          DeckGraphContainer<TimeConsumeStatsEntity>(
+                            data: widget.monthlyData,
+                            getTitlesWidget: (double axisX, TitleMeta meta) {
+                              return getMonthlyTitleByIndexFunction(
+                                axisX: axisX,
+                                meta: meta,
+                              );
+                            },
+                            getYValue: (TimeConsumeStatsEntity item) =>
+                                double.parse(item.totalTime.minutes),
+                          ),
+                          CardTierListContainer(
+                            titleText: "Top 3 Most Draining Time Cards",
+                            iconShape: Icons.av_timer_rounded,
+                            backgroundColor: Theme.of(context).primaryColorDark,
+                            strokeColor: Colors.blue.shade900,
+                            iconColor: Colors.white,
+                            cardsData: widget.top3MonthlyMostDrainingCards,
+                            carouselBackgroundColor: Theme.of(
+                              context,
+                            ).primaryColorDark,
+                            carouselForgroundColor: Colors.white,
+                            isAudioPlay: widget.isAudioPlay,
+                            audioPlayer: widget.audioPlayer,
+                            filePath: widget.filePath,
+                          ),
+                          CardTierListContainer(
+                            titleText: "Top 3 Least Draining Time Cards",
+                            iconShape: Icons.av_timer_rounded,
+                            backgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                            strokeColor: Colors.red.shade900,
+                            iconColor: Colors.white,
+                            cardsData: widget.top3MonthlyLeastDrainingCards,
+                            carouselBackgroundColor: Theme.of(
+                              context,
+                            ).colorScheme.error,
+                            carouselForgroundColor: Colors.white,
+                            isAudioPlay: widget.isAudioPlay,
+                            audioPlayer: widget.audioPlayer,
+                            filePath: widget.filePath,
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

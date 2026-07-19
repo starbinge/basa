@@ -1,5 +1,5 @@
+import 'package:basa_app_project/features/cards/constants/enums/order_enums.dart';
 import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
-import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 
@@ -35,11 +35,13 @@ abstract class FlashCardRepo {
 
   Future<List<DeckAccuracy>> getMonthlyAccuracy({required CardsDao cardsDao});
 
-  Future<List<CardsDetailEntity>> getTop3MostAccurateCards({
+  Future<List<DeckAccuracy>> getDailyAccuracy({required CardsDao cardsDao});
+
+  Future<List<CardsDetailEntity>> getAccuracyTopCards({
     required CardsDao cardsDao,
-  });
-  Future<List<CardsDetailEntity>> getTop3LeastAccurateCards({
-    required CardsDao cardsDao,
+    required int begin,
+    required int end,
+    required OrderEnums orderBy,
   });
 
   Future<DeckTimeConsume> getThisMonthTimeConsume({required CardsDao cardsDao});
@@ -57,5 +59,11 @@ abstract class FlashCardRepo {
   });
   Future<List<DeckTimeConsume>> getDailyTimeConsume({
     required CardsDao cardsDao,
+  });
+  Future<List<CardsDetailEntity>> getTopTimeConsumeCards({
+    required CardsDao cardsDao,
+    required int begin,
+    required int end,
+    required OrderEnums orderBy,
   });
 }

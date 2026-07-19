@@ -37,146 +37,145 @@ class CardTierListContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
+    return Padding(
       padding: const EdgeInsets.all(8.0),
 
-      sliver: SliverMainAxisGroup(
-        slivers: [
-          SliverToBoxAdapter(
-            child: Center(
-              child: Column(
-                spacing: 20,
-                children: [
-                  Stack(
-                    fit: StackFit.loose,
-                    alignment: AlignmentGeometry.center,
-                    children: [
-                      M3EContainer.c9SidedCookie(
-                            border: BorderSide(width: 3, color: strokeColor),
-                            padding: const EdgeInsets.all(35),
-                            color: backgroundColor,
-                            child: const Icon(
-                              Icons.transform_sharp,
-                              color: Colors.transparent,
-                            ),
-                          )
-                          .animate(
-                            autoPlay: true,
-                            onComplete: (controller) {
-                              controller.repeat();
-                            },
-                          )
-                          .rotate(
-                            curve: Curves.fastOutSlowIn,
-                            duration: const Duration(seconds: 5),
-                          ),
+      child: Column(
+        children: [
+          Center(
+            child: Column(
+              spacing: 20,
+              children: [
+                Stack(
+                  fit: StackFit.loose,
+                  alignment: AlignmentGeometry.center,
+                  children: [
+                    RepaintBoundary(
+                      child:
+                          M3EContainer.c9SidedCookie(
+                                border: BorderSide(
+                                  width: 3,
+                                  color: strokeColor,
+                                ),
+                                padding: const EdgeInsets.all(35),
+                                color: backgroundColor,
+                                child: const Icon(
+                                  Icons.transform_sharp,
+                                  color: Colors.transparent,
+                                ),
+                              )
+                              .animate(
+                                autoPlay: true,
+                                onComplete: (controller) {
+                                  controller.repeat();
+                                },
+                              )
+                              .rotate(
+                                curve: Curves.fastOutSlowIn,
+                                duration: const Duration(seconds: 5),
+                              ),
+                    ),
 
-                      Icon(iconShape, size: 50, color: iconColor),
-                    ],
-                  ),
-                  SizedBox(
-                    width: double.infinity / 2,
-                    child: Text(
-                      softWrap: true,
-                      titleText,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: Theme.of(
-                          context,
-                        ).textTheme.displayLarge?.fontFamily,
-                        fontSize: Theme.of(
-                          context,
-                        ).textTheme.titleLarge?.fontSize,
-                        fontWeight: Theme.of(
-                          context,
-                        ).textTheme.titleLarge?.fontWeight,
-                      ),
+                    Icon(iconShape, size: 50, color: iconColor),
+                  ],
+                ),
+                SizedBox(
+                  width: double.infinity / 2,
+                  child: Text(
+                    softWrap: true,
+                    titleText,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: Theme.of(
+                        context,
+                      ).textTheme.displayLarge?.fontFamily,
+                      fontSize: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.fontSize,
+                      fontWeight: Theme.of(
+                        context,
+                      ).textTheme.titleLarge?.fontWeight,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          SliverToBoxAdapter(child: SizedBox(height: 20)),
-          SliverToBoxAdapter(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: 180.h),
-              child: CarouselView.weighted(
-                onTap: (int cardIndex) async {
-                  await showModalBottomSheet(
-                    isScrollControlled: true,
-                    showDragHandle: true,
-                    context: context,
-                    builder: (BuildContext context) {
-                      return VocabBottomModal(
-                        listCard: cardsData,
-                        filePath: filePath,
-                        audioPlayer: audioPlayer,
-                        cardIndex: cardIndex,
-                      );
-                    },
-                  );
-                  audioPlayer.stop();
-                },
-                flexWeights: const <int>[8, 1, 1],
-                // 💡 Tambahkan ini agar jarak antar kartu tidak terlalu nempel
-                itemSnapping: true,
-                backgroundColor: Colors.transparent,
-                children: cardsData.map((card) {
-                  return ClipRRect(
-                    // 💡 Biar ujung kartunya membulat ngikutin desain M3
-                    borderRadius: BorderRadius.circular(20),
-                    child: Container(
-                      decoration: BoxDecoration(color: carouselBackgroundColor),
-                      child: Center(
-                        child: Stack(
-                          fit: StackFit.expand,
-                          alignment: AlignmentGeometry.bottomRight,
-                          clipBehavior: Clip.antiAlias,
-                          children: [
-                            ClipRRect(
-                              child: Icon(
-                                Icons.translate_rounded,
-                                size: 300,
-                                color: Colors.white.withValues(alpha: 0.2),
+          SizedBox(height: 20),
+          ConstrainedBox(
+            constraints: BoxConstraints(maxHeight: 180.h),
+            child: CarouselView.weighted(
+              onTap: (int cardIndex) async {
+                await showModalBottomSheet(
+                  isScrollControlled: true,
+                  showDragHandle: true,
+                  context: context,
+                  builder: (BuildContext context) {
+                    return VocabBottomModal(
+                      listCard: cardsData,
+                      filePath: filePath,
+                      audioPlayer: audioPlayer,
+                      cardIndex: cardIndex,
+                    );
+                  },
+                );
+                audioPlayer.stop();
+              },
+              flexWeights: const <int>[8, 1, 1],
+              // 💡 Tambahkan ini agar jarak antar kartu tidak terlalu nempel
+              itemSnapping: true,
+              backgroundColor: Colors.transparent,
+              children: cardsData.map((card) {
+                return ClipRRect(
+                  // 💡 Biar ujung kartunya membulat ngikutin desain M3
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    decoration: BoxDecoration(color: carouselBackgroundColor),
+                    child: Center(
+                      child: Stack(
+                        fit: StackFit.expand,
+                        alignment: AlignmentGeometry.bottomRight,
+                        clipBehavior: Clip.antiAlias,
+                        children: [
+                          ClipRRect(
+                            child: Icon(
+                              Icons.translate_rounded,
+                              size: 300,
+                              color: Colors.white.withValues(alpha: 0.2),
+                            ),
+                          ),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                maxLines: 3,
+                                card.defaultLanguage,
+                                softWrap: true,
+                                textAlign: TextAlign.center,
+                                overflow: TextOverflow.fade,
+                                style: Theme.of(context).textTheme.displaySmall
+                                    ?.copyWith(
+                                      color: carouselForgroundColor,
+                                      fontSize: card.defaultLanguage.length > 30
+                                          ? 25
+                                          : 30,
+                                    ),
                               ),
-                            ),
-                            Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  maxLines: 3,
-                                  card.defaultLanguage,
-                                  softWrap: true,
-                                  textAlign: TextAlign.center,
-                                  overflow: TextOverflow.fade,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .displaySmall
-                                      ?.copyWith(
-                                        color: carouselForgroundColor,
-                                        fontSize:
-                                            card.defaultLanguage.length > 30
-                                            ? 25
-                                            : 30,
-                                      ),
-                                ),
-                                Text(
-                                  card.translatedLanguage,
-                                  softWrap: false,
-                                  overflow: TextOverflow.fade,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(color: carouselForgroundColor),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              Text(
+                                card.translatedLanguage,
+                                softWrap: false,
+                                overflow: TextOverflow.fade,
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: carouselForgroundColor),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                  );
-                }).toList(),
-              ),
+                  ),
+                );
+              }).toList(),
             ),
           ),
         ],

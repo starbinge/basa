@@ -1,3 +1,4 @@
+import 'package:basa_app_project/features/cards/constants/enums/order_enums.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
@@ -234,64 +235,6 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     return weeklyAccuracyList;
   }
 
-  Future<List<CardsDetailEntity>> getTop3MostAccurateCards() async {
-    debugPrint("run top 3 highest");
-    final cardsTableData =
-        select(cardsTable).join([
-            innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid)),
-          ])
-          ..orderBy([OrderingTerm.desc(cardsTable.flags)])
-          ..limit(3);
-    final List<TypedResult> tables = await cardsTableData.get();
-    return tables.map((table) {
-      final card = table.readTable(cardsTable);
-      final note = table.readTable(notesTable);
-
-      return CardsModel.fromMap({
-        'card_id': card.id,
-        'nid': note.id,
-        'queue': card.queue,
-        'flds': note.flds,
-        'tags': note.tags,
-        'ivl': card.ivl,
-        'odue': card.odue,
-        'factor': card.factor,
-        'left': card.left,
-        'reps': card.reps,
-        'flags': card.flags,
-      }).toEntity();
-    }).toList();
-  }
-
-  Future<List<CardsDetailEntity>> getTop3LeastAccurateCards() async {
-    debugPrint("run top 3");
-    final cardsTableData =
-        select(cardsTable).join([
-            innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid)),
-          ])
-          ..orderBy([OrderingTerm.asc(cardsTable.flags)])
-          ..limit(3);
-    final List<TypedResult> tables = await cardsTableData.get();
-    return tables.map((table) {
-      final card = table.readTable(cardsTable);
-      final note = table.readTable(notesTable);
-
-      return CardsModel.fromMap({
-        'card_id': card.id,
-        'nid': note.id,
-        'queue': card.queue,
-        'flds': note.flds,
-        'tags': note.tags,
-        'ivl': card.ivl,
-        'odue': card.odue,
-        'factor': card.factor,
-        'left': card.left,
-        'reps': card.reps,
-        'flags': card.flags,
-      }).toEntity();
-    }).toList();
-  }
-
   DeckTimeConsume _processStats(String timeName, List<RevlogTableData> data) {
     if (data.isEmpty) {
       return DeckTimeConsume(timeName: timeName, avgTime: 0, totalTime: 0);
@@ -450,5 +393,138 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     return groupedByDate.entries
         .map((entry) => _processStats(entry.key.toString(), entry.value))
         .toList();
+  }
+
+  Future<List<DeckAccuracy>> getDailyAccuracyList() async {
+    final now = DateTime.now();
+    final int _begin = DateTime(now.year, now.month, 1).millisecondsSinceEpoch;
+    final int _end = DateTime(now.year, now.month + 1, 1).millisecondsSinceEpoch;
+
+    final query = select(revlogTable)
+      ..where(
+        (data) =>
+            data.id.isBiggerOrEqualValue(_begin) &
+            data.id.isSmallerOrEqualValue(_end),
+      );
+
+    final List<RevlogTableData> logs = await query.get();
+    if (logs.isEmpty) return [];
+
+    final daysInMonth = DateTime(now.year, now.month + 1, 0).day;
+    final Map<int, List<RevlogTableData>> groupedByDate = {};
+    for (int i = 1; i <= daysInMonth; i++) {
+      groupedByDate[i] = [];
+    }
+
+    for (var log in logs) {
+      final date = DateTime.fromMillisecondsSinceEpoch(log.id);
+      final dateKey = date.day;
+      groupedByDate[dateKey]?.add(log);
+    }
+
+    return groupedByDate.entries.map((entry) {
+      final dayLogs = entry.value;
+      final total = dayLogs.length;
+      final correct = dayLogs.where((log) => log.ease == 3).length;
+      final accuracy = total > 0 ? (correct * 100 / total).round() : 0;
+      return DeckAccuracy(
+        timeName: entry.key.toString(),
+        accuracyNumber: accuracy,
+      );
+    }).toList();
+  }
+
+  Future<List<CardsDetailEntity>> getTimeConsumeTopCards({
+    required int begin,
+    required int end,
+    required OrderEnums orderBy,
+  }) async {
+    final totalTime = revlogTable.time.sum();
+    final query =
+        select(revlogTable).join([
+            innerJoin(cardsTable, revlogTable.cid.equalsExp(cardsTable.id)),
+            innerJoin(notesTable, cardsTable.nid.equalsExp(notesTable.id)),
+          ])
+          ..addColumns([totalTime])
+          ..where(revlogTable.id.isBetweenValues(begin, end))
+          ..groupBy([revlogTable.cid])
+          ..orderBy([
+            orderBy == OrderEnums.asc
+                ? OrderingTerm.asc(totalTime)
+                : OrderingTerm.desc(totalTime),
+          ])
+          ..limit(3);
+
+    final List<TypedResult> results = await query.get();
+
+    if (results.isEmpty) return [];
+
+    return results.map((result) {
+      final CardsTableData cardTable = result.readTable(cardsTable);
+      final NotesTableData noteTable = result.readTable(notesTable);
+
+      final model = CardsModel.fromMap({
+        'card_id': cardTable.id,
+        'nid': noteTable.id,
+        'queue': cardTable.queue,
+        'flds': noteTable.flds,
+        'tags': noteTable.tags,
+        'ivl': cardTable.ivl,
+        'odue': cardTable.odue,
+        'factor': cardTable.factor,
+        'left': cardTable.left,
+        'reps': cardTable.reps,
+        'flags': cardTable.flags,
+      });
+
+      return model.toEntity();
+    }).toList();
+  }
+
+  Future<List<CardsDetailEntity>> getAccuracyTopCards({
+    required int begin,
+    required int end,
+    required OrderEnums orderBy,
+  }) async {
+    final correctCount = revlogTable.ease.equals(3).cast<int>().sum();
+    final query =
+        select(revlogTable).join([
+            innerJoin(cardsTable, revlogTable.cid.equalsExp(cardsTable.id)),
+            innerJoin(notesTable, cardsTable.nid.equalsExp(notesTable.id)),
+          ])
+          ..addColumns([correctCount])
+          ..where(revlogTable.id.isBetweenValues(begin, end))
+          ..groupBy([revlogTable.cid])
+          ..orderBy([
+            orderBy == OrderEnums.asc
+                ? OrderingTerm.asc(correctCount)
+                : OrderingTerm.desc(correctCount),
+          ])
+          ..limit(3);
+
+    final List<TypedResult> results = await query.get();
+
+    if (results.isEmpty) return [];
+
+    return results.map((result) {
+      final CardsTableData cardTable = result.readTable(cardsTable);
+      final NotesTableData noteTable = result.readTable(notesTable);
+
+      final model = CardsModel.fromMap({
+        'card_id': cardTable.id,
+        'nid': noteTable.id,
+        'queue': cardTable.queue,
+        'flds': noteTable.flds,
+        'tags': noteTable.tags,
+        'ivl': cardTable.ivl,
+        'odue': cardTable.odue,
+        'factor': cardTable.factor,
+        'left': cardTable.left,
+        'reps': cardTable.reps,
+        'flags': cardTable.flags,
+      });
+
+      return model.toEntity();
+    }).toList();
   }
 }

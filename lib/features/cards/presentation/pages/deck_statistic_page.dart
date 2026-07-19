@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
@@ -11,7 +10,6 @@ import 'package:basa_app_project/features/cards/presentation/widgets/layouts/acc
 import 'package:basa_app_project/features/cards/presentation/widgets/layouts/play_time_stats_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbols.dart';
 import 'package:intl/intl.dart';
 
 class DeckStatisticPage extends StatefulWidget {
@@ -118,6 +116,15 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                     monthlyData: _monthlyData,
                     weeklyData: _weeklyData,
                     dailyData: _dailyData,
+                    top3TodayMostDrainingCards: state.top3TodayCards,
+                    top3WeeklyMostDrainingCards: state.top3WeeklyCards,
+                    top3MonthlyMostDrainingCards: state.top3MonthlyCards,
+                    isAudioPlay: _isAudioPlated,
+                    audioPlayer: _audioPlayer,
+                    filePath: widget.filePath,
+                    top3TodayLeastDrainingCards: state.top3LeastTodayCards,
+                    top3WeeklyLeastDrainingCards: state.top3LeastWeeklyCards,
+                    top3MonthlyLeastDrainingCards: state.top3LeastMonthlyCards,
                   ),
                 ],
               ),

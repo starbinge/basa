@@ -6,7 +6,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path/path.dart' as path;
 
 import '../../domain/entities/cards_detail_entity.dart';
-import '../pages/main_card_page.dart';
 
 class VocabBottomModal extends StatelessWidget {
   const VocabBottomModal({

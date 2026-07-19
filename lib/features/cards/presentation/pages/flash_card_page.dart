@@ -5,10 +5,10 @@ import 'package:basa_app_project/features/cards/domain/entities/cards_detail_ent
 import 'package:basa_app_project/features/cards/domain/usecases/track_per_card_timer.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
-import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:m3e_core/m3e_core.dart';
 
 import '../../constants/enums/flashcard_answer_enum.dart';
 import '../widgets/flash_card_slider.dart';
@@ -37,7 +37,6 @@ class _FleshCardPageState extends State<FleshCardPage> {
   final Stopwatch _sessionStopWatch = Stopwatch();
   final TrackPerCardTimer _cardTimer = TrackPerCardTimer();
   final PageController _pageController = PageController();
-  final FlipCardController _flipCardController = FlipCardController();
   bool isThisBack = false;
   int activeIndex = 0;
   int wrongAnswer = 0;
@@ -81,7 +80,6 @@ class _FleshCardPageState extends State<FleshCardPage> {
                     child: FlashCardSlider(
                       itemCount: flashCards.length,
                       flashCards: flashCards,
-                      flipCardController: _flipCardController,
                       pageController: _pageController,
                       onCardFlipped: (isBack) {
                         setState(() {
@@ -102,20 +100,9 @@ class _FleshCardPageState extends State<FleshCardPage> {
                     decoration: BoxDecoration(),
                     width: double.infinity,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          style: ButtonStyle(
-                            iconSize: WidgetStatePropertyAll(30),
-                            foregroundColor: WidgetStatePropertyAll(
-                              Colors.white,
-                            ),
-                            backgroundColor: WidgetStatePropertyAll(
-                              isThisBack
-                                  ? Theme.of(context).colorScheme.secondary
-                                  : Theme.of(context).disabledColor,
-                            ),
-                          ),
+                        M3EButton(
                           onPressed: isThisBack
                               ? () => onPressedAction(
                                   answer: FlashcardAnswerEnum.wrong,
@@ -123,35 +110,23 @@ class _FleshCardPageState extends State<FleshCardPage> {
                                   flashCards: flashCards[activeIndex],
                                 )
                               : null,
-                          icon: Icon(Icons.close),
-                        ),
-                        IconButton(
-                          style: ButtonStyle(
-                            iconSize: WidgetStatePropertyAll(30),
-                            foregroundColor: WidgetStatePropertyAll(
-                              Colors.white,
-                            ),
-                            backgroundColor: WidgetStatePropertyAll(
-                              Colors.black,
-                            ),
-                          ),
-                          onPressed: () {
-                            _flipCardController.toggleCard();
-                          },
-                          icon: Icon(Icons.flip_camera_android),
-                        ),
-                        IconButton(
-                          style: ButtonStyle(
-                            iconSize: WidgetStatePropertyAll(30),
-                            foregroundColor: WidgetStatePropertyAll(
-                              Colors.white,
-                            ),
+                          size: M3EButtonSize.md,
+                          enabled: isThisBack,
+                          decoration: M3EButtonDecoration(
                             backgroundColor: WidgetStatePropertyAll(
                               isThisBack
-                                  ? Theme.of(context).primaryColor
+                                  ? Theme.of(context).colorScheme.error
                                   : Theme.of(context).disabledColor,
                             ),
+                            foregroundColor: WidgetStatePropertyAll(
+                              Colors.white,
+                            ),
+                            fixedSize: Size(72, 72),
                           ),
+                          child: Icon(Icons.close, size: 28),
+                        ),
+                        SizedBox(width: 16),
+                        M3EButton(
                           onPressed: isThisBack
                               ? () => onPressedAction(
                                   answer: FlashcardAnswerEnum.correct,
@@ -159,7 +134,20 @@ class _FleshCardPageState extends State<FleshCardPage> {
                                   flashCards: flashCards[activeIndex],
                                 )
                               : null,
-                          icon: Icon(Icons.check),
+                          size: M3EButtonSize.md,
+                          enabled: isThisBack,
+                          decoration: M3EButtonDecoration(
+                            backgroundColor: WidgetStatePropertyAll(
+                              isThisBack
+                                  ? Theme.of(context).primaryColor
+                                  : Theme.of(context).disabledColor,
+                            ),
+                            foregroundColor: WidgetStatePropertyAll(
+                              Colors.white,
+                            ),
+                            fixedSize: Size(72, 72),
+                          ),
+                          child: Icon(Icons.check, size: 28),
                         ),
                       ],
                     ),
