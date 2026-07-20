@@ -20,6 +20,7 @@ import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
 
 import '../../../../core/data/initial_database/initial_database.dart';
+import '../../../../core/utils/anki_collection_resolver.dart';
 import '../../domain/repositories/deck_repository.dart';
 
 class DeckCollectionPage extends StatefulWidget {
@@ -74,14 +75,14 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
+                      final collectionFile = resolveAnkiCollectionFile(
+                        deckList[index].extractedPath,
+                      );
+                      if (collectionFile == null) return;
+                      final fileName = path.basename(collectionFile.path);
                       GoRouter.of(context).push(
-                        '/cards/${deckList[index].id}/collection.anki2/${deckList[index].deckName}/${deckList[index].deckLanguage}/${deckList[index].activeHour}',
-                        extra: File(
-                          path.join(
-                            deckList[index].extractedPath,
-                            'collection.anki2',
-                          ),
-                        ),
+                        '/cards/${deckList[index].id}/$fileName/${deckList[index].deckName}/${deckList[index].deckLanguage}/${deckList[index].activeHour}',
+                        extra: collectionFile,
                       );
                     },
                     child: DeckContainer(

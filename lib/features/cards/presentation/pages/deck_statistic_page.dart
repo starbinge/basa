@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
+import 'package:basa_app_project/core/widgets/stats_empty_state.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_stats_entity.dart';
@@ -59,6 +60,24 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
             return ErrorPage(message: state.errorMessage);
           }
           if (state is AccuracyStatsFinished) {
+            final stats = state.stats;
+            final bool isEmpty =
+                stats.dailyAccuracyList.isEmpty &&
+                stats.weeklyList.isEmpty &&
+                stats.monthlyList.isEmpty &&
+                stats.top3TodayMostAccurate.isEmpty &&
+                stats.top3TodayLeastAccurate.isEmpty &&
+                stats.top3WeeklyMostAccurate.isEmpty &&
+                stats.top3WeeklyLeastAccurate.isEmpty &&
+                stats.top3MonthlyMostAccurate.isEmpty &&
+                stats.top3MonthlyLeastAccurate.isEmpty;
+            if (isEmpty) {
+              return SafeArea(
+                child: StatsEmptyState(
+                  icon: Icons.bar_chart_rounded,
+                ),
+              );
+            }
             return SafeArea(
               child: CustomScrollView(
                 physics: BouncingScrollPhysics(),
@@ -74,6 +93,23 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
             );
           }
           if (state is TimeConsumeStatsFinished) {
+            final bool isEmpty =
+                state.dailyAverage.isEmpty &&
+                state.weeklyAverage.isEmpty &&
+                state.monthlyAverage.isEmpty &&
+                state.top3TodayCards.every((c) => c.id == 0) &&
+                state.top3WeeklyCards.every((c) => c.id == 0) &&
+                state.top3MonthlyCards.every((c) => c.id == 0) &&
+                state.top3LeastTodayCards.every((c) => c.id == 0) &&
+                state.top3LeastWeeklyCards.every((c) => c.id == 0) &&
+                state.top3LeastMonthlyCards.every((c) => c.id == 0);
+            if (isEmpty) {
+              return SafeArea(
+                child: StatsEmptyState(
+                  icon: Icons.timer_outlined,
+                ),
+              );
+            }
             final DeckTimeConsume _thisMonth = state.thisMonth;
             final List<TimeConsumeStatsEntity> _dailyData = [];
             final List<TimeConsumeStatsEntity> _monthlyData = [];

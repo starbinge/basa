@@ -30,7 +30,7 @@ class AccuracyStatsHeader extends StatelessWidget {
               Text(
                 "$thisMonthStats",
                 style: displayLarge?.copyWith(
-                  fontSize: 120.sp,
+                  fontSize: thisMonthStats == 100 ? 80.sp : 120.sp,
                   fontWeight: FontWeight.w900,
                   color: Colors.white,
                   height: 1.0,
@@ -51,10 +51,7 @@ class AccuracyStatsHeader extends StatelessWidget {
               ),
               SizedBox(width: 12.w),
               Container(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 10.w,
-                  vertical: 4.h,
-                ),
+                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
                 decoration: BoxDecoration(
                   color: difference >= 0
                       ? Colors.green.withValues(alpha: 0.3)

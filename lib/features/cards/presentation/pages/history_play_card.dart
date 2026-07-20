@@ -1,3 +1,4 @@
+import 'package:basa_app_project/core/widgets/stats_empty_state.dart';
 import 'package:basa_app_project/features/cards/domain/entities/card_history_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/vocab_cards.dart';
 import 'package:flutter/material.dart';
@@ -10,122 +11,141 @@ class HistoryPlayCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isEmpty =
+        cardHistoryEntity.todayHistory.isEmpty &&
+        cardHistoryEntity.weeklyHistory.isEmpty;
     return Scaffold(
       body: CustomScrollView(
         slivers: [
           SliverAppBar(),
-          SliverMainAxisGroup(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Container(
-                  constraints: BoxConstraints(maxHeight: 250),
-                  child: Column(
-                    spacing: 20,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Stack(
-                        alignment: AlignmentGeometry.center,
-                        children: [
-                          M3EShape.c9SidedCookie(
-                                width: 100,
-                                height: 100,
-                                color: Theme.of(context).primaryColorDark,
-                              )
-                              .animate(
-                                onComplete: (controller) => controller.repeat(),
-                              )
-                              .rotate(
-                                duration: Duration(seconds: 5),
-                                curve: Curves.linear,
+          if (isEmpty)
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: StatsEmptyState(
+                icon: Icons.history_rounded,
+                title: "No history yet",
+                subtitle: "Your study history will appear here.",
+              ),
+            )
+          else
+            SliverMainAxisGroup(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Container(
+                    constraints: BoxConstraints(maxHeight: 250),
+                    child: Column(
+                      spacing: 20,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Stack(
+                          alignment: AlignmentGeometry.center,
+                          children: [
+                            M3EShape.c9SidedCookie(
+                                  width: 100,
+                                  height: 100,
+                                  color: Theme.of(context).primaryColorDark,
+                                )
+                                .animate(
+                                  onComplete: (controller) =>
+                                      controller.repeat(),
+                                )
+                                .rotate(
+                                  duration: Duration(seconds: 5),
+                                  curve: Curves.linear,
+                                ),
+                            Icon(Icons.history, size: 50, color: Colors.white),
+                          ],
+                        ),
+                        Text(
+                          "History",
+                          style: Theme.of(context).textTheme.displayMedium,
+                        ),
+                        Text(
+                          "We try to keep your memories, as much as we can.",
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(color: Colors.grey),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                SliverPadding(
+                  padding: EdgeInsetsGeometry.all(10),
+                  sliver: SliverToBoxAdapter(
+                    child: Column(
+                      spacing: 20,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (cardHistoryEntity.todayHistory.isNotEmpty) ...[
+                          Text(
+                            "Today History",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: BoxBorder.all(
+                                width: 0.5,
+                                color: Colors.grey.withValues(alpha: 0.3),
                               ),
-                          Icon(Icons.history, size: 50, color: Colors.white),
+                            ),
+                            constraints: BoxConstraints(maxHeight: 400),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount:
+                                  cardHistoryEntity.todayHistory.length,
+                              itemBuilder: ((context, indexItem) {
+                                return VocabCard(
+                                  listCard: cardHistoryEntity.todayHistory,
+                                  index: indexItem,
+                                  playButtonPressed: () {},
+                                  onLongPressed: () {},
+                                  onCardTap: () {},
+                                );
+                              }),
+                            ),
+                          ),
                         ],
-                      ),
-                      Text(
-                        "History",
-                        style: Theme.of(context).textTheme.displayMedium,
-                      ),
-                      Text(
-                        "We try to keep your memories, as much as we can.",
-                        style: Theme.of(
-                          context,
-                        ).textTheme.labelLarge?.copyWith(color: Colors.grey),
-                      ),
-                    ],
+                        if (cardHistoryEntity.weeklyHistory.isNotEmpty) ...[
+                          Text(
+                            "This Week History",
+                            style: Theme.of(context).textTheme.titleLarge,
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: BoxBorder.all(
+                                width: 0.5,
+                                color: Colors.grey.withValues(alpha: 0.3),
+                              ),
+                            ),
+                            constraints: BoxConstraints(maxHeight: 400),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount:
+                                  cardHistoryEntity.weeklyHistory.length,
+                              itemBuilder: ((context, indexItem) {
+                                return VocabCard(
+                                  listCard: cardHistoryEntity.weeklyHistory,
+                                  index: indexItem,
+                                  playButtonPressed: () {},
+                                  onLongPressed: () {},
+                                  onCardTap: () {},
+                                );
+                              }),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              SliverPadding(
-                padding: EdgeInsetsGeometry.all(10),
-                sliver: SliverToBoxAdapter(
-                  child: Column(
-                    spacing: 20,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Today History",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: BoxBorder.all(
-                            width: 0.5,
-                            color: Colors.grey.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        constraints: BoxConstraints(maxHeight: 400),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: cardHistoryEntity.todayHistory.length,
-                          itemBuilder: ((context, indexItem) {
-                            return VocabCard(
-                              listCard: cardHistoryEntity.todayHistory,
-                              index: indexItem,
-                              playButtonPressed: () {},
-                              onLongPressed: () {},
-                              onCardTap: () {},
-                            );
-                          }),
-                        ),
-                      ),
-                      Text(
-                        "This Week History",
-                        style: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      Container(
-                        padding: EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border: BoxBorder.all(
-                            width: 0.5,
-                            color: Colors.grey.withValues(alpha: 0.3),
-                          ),
-                        ),
-                        constraints: BoxConstraints(maxHeight: 400),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          itemCount: cardHistoryEntity.weeklyHistory.length,
-                          itemBuilder: ((context, indexItem) {
-                            return VocabCard(
-                              listCard: cardHistoryEntity.weeklyHistory,
-                              index: indexItem,
-                              playButtonPressed: () {},
-                              onLongPressed: () {},
-                              onCardTap: () {},
-                            );
-                          }),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );

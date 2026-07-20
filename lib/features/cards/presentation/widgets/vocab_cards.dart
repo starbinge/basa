@@ -20,6 +20,9 @@ class VocabCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasAudio =
+        listCard[index].audioPath.isNotEmpty &&
+        listCard[index].audioPath.first.isNotEmpty;
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.symmetric(vertical: 2),
@@ -41,11 +44,13 @@ class VocabCard extends StatelessWidget {
         ),
         title: Text(listCard[index].defaultLanguage),
         subtitle: Text(listCard[index].translatedLanguage),
-        leading: IconButton(
-          splashColor: Theme.of(context).primaryColor,
-          onPressed: playButtonPressed,
-          icon: Icon(Icons.play_arrow),
-        ),
+        leading: hasAudio
+            ? IconButton(
+                splashColor: Theme.of(context).primaryColor,
+                onPressed: playButtonPressed,
+                icon: Icon(Icons.play_arrow),
+              )
+            : null,
       ),
     );
   }

@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../../core/data/initial_database/initial_database.dart';
 import '../../../../core/errors/input_errors.dart';
+import '../../../../core/utils/anki_collection_resolver.dart';
 import '../../../../core/utils/reading_json_file.dart';
 
 class DeckRepositoryImpl implements DeckRepository {
@@ -99,6 +100,7 @@ class DeckRepositoryImpl implements DeckRepository {
       zipFile: deckInByte,
       destinationDir: deckDirectory,
     );
+    await cleanupLegacyCollection(deckDirectory.path);
     final File jsonFile = File(path.join(deckDirectory.path, 'media'));
     await reConstructData(
       mediaFile: jsonFile,

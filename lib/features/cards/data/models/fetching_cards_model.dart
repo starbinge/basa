@@ -56,17 +56,25 @@ class CardsModel implements Comparable<CardsModel> {
         .toList();
 
     //Taking only Default Language
-    final String defaultLanguage = textFields.isNotEmpty ? textFields[0] : "";
+    String defaultLanguage = textFields.isNotEmpty ? textFields[0] : "";
 
     //Taking only translated Language
-    final String translatedLanguage = textFields.length > 1
-        ? textFields[1]
-        : "";
+    String translatedLanguage = textFields.length > 1 ? textFields[1] : "";
 
     //Taking additional explanations
-    final List<String> descriptions = textFields.length > 2
+    List<String> descriptions = textFields.length > 2
         ? textFields.sublist(2)
         : [];
+
+    if (RegExp(r'^[\d_\-.\s/]+$').hasMatch(defaultLanguage) &&
+        descriptions.isNotEmpty) {
+      defaultLanguage = descriptions.removeAt(0);
+    }
+
+    if (RegExp(r'^[\d_\-.\s/]+$').hasMatch(translatedLanguage) &&
+        descriptions.isNotEmpty) {
+      translatedLanguage = descriptions.removeAt(0);
+    }
 
     //Taking only Audio Path
     final List<String> audioPath = extractAudios(fields: fields);
