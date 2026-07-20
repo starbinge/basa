@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
@@ -40,27 +41,11 @@ class MainCardPage extends StatefulWidget {
 class _MainCardPageState extends State<MainCardPage> {
   final AudioPlayer _audioPlayer = AudioPlayer();
   final ScrollController _scrollController = ScrollController();
-  bool _showBackToTopButton = false;
-
+  Timer? _debounce;
+  String _findCard = "";
   @override
   void initState() {
     super.initState();
-
-    _scrollController.addListener(() {
-      if (_scrollController.offset >= 2000) {
-        if (!_showBackToTopButton) {
-          setState(() {
-            _showBackToTopButton = true;
-          });
-        }
-      } else {
-        if (_showBackToTopButton) {
-          setState(() {
-            _showBackToTopButton = false;
-          });
-        }
-      }
-    });
   }
 
   void dispose() {
@@ -108,92 +93,255 @@ class _MainCardPageState extends State<MainCardPage> {
                   message: 'This deck doesn\'t have any cards yet.',
                 );
               }
-              return CustomScrollView(
-                controller: _scrollController,
-                slivers: [
-                  CardAppBar(flagEmoji: flagEmoji, widget: widget),
-                  SliverToBoxAdapter(
-                    child: TextButton(
-                      onPressed: () {
-                        final bloc = context.read<FetchingCardsBloc>();
-                        context.push(
-                          '${GoRouterState.of(context).matchedLocation}/flashcard',
-                          extra: bloc,
-                        );
-                      },
-                      child: Text("Flash Card"),
-                    ),
-                  ),
-                  CardStats(
-                    onTapAccuracyStats: () {
-                      final String currentPath = GoRouterState.of(
-                        context,
-                      ).uri.path;
-
-                      context.push(
-                        '$currentPath/deckStats/accuracy',
-                        extra: (
-                          fetchingCardsBloc: context.read<FetchingCardsBloc>(),
-                          filePath: widget.filePath,
-                        ),
+              final List filteredCards = _findCard.isEmpty
+                  ? listCard // Kalau belum ngetik apa-apa, pakai list utuh
+                  : listCard.where((card) {
+                      return card.defaultLanguage.toLowerCase().contains(
+                        _findCard.toLowerCase(),
                       );
-                    },
-                    onTapTimeConsumeStats: () {
-                      final String currentPath = GoRouterState.of(
-                        context,
-                      ).uri.path;
+                    }).toList();
 
-                      context.push(
-                        '$currentPath/deckStats/timeConsume',
-                        extra: (
-                          fetchingCardsBloc: context.read<FetchingCardsBloc>(),
-                          filePath: widget.filePath,
+              return Stack(
+                alignment: AlignmentGeometry.bottomCenter,
+                children: [
+                  CustomScrollView(
+                    controller: _scrollController,
+                    slivers: [
+                      CardAppBar(
+                        flagEmoji: flagEmoji,
+                        widget: widget,
+                        flashCardButton: () {
+                          final bloc = context.read<FetchingCardsBloc>();
+                          context.push(
+                            '${GoRouterState.of(context).matchedLocation}/flashcard',
+                            extra: bloc,
+                          );
+                        },
+                        quizButton: () {},
+                        historyButton: () {
+                          context.push(
+                            '${GoRouterState.of(context).matchedLocation}/history',
+                            extra: state.cardHistoryEntity,
+                          );
+                        },
+                      ),
+                      CardStats(
+                        onTapAccuracyStats: () {
+                          final String currentPath = GoRouterState.of(
+                            context,
+                          ).uri.path;
+
+                          context.push(
+                            '$currentPath/deckStats/accuracy',
+                            extra: (
+                              fetchingCardsBloc: context
+                                  .read<FetchingCardsBloc>(),
+                              filePath: widget.filePath,
+                            ),
+                          );
+                        },
+                        onTapTimeConsumeStats: () {
+                          final String currentPath = GoRouterState.of(
+                            context,
+                          ).uri.path;
+
+                          context.push(
+                            '$currentPath/deckStats/timeConsume',
+                            extra: (
+                              fetchingCardsBloc: context
+                                  .read<FetchingCardsBloc>(),
+                              filePath: widget.filePath,
+                            ),
+                          );
+                        },
+                        thisMonthAccuracyStats:
+                            state.thisMonthAccuracyNumber.accuracyNumber,
+                        previousMonthAccuracyStats:
+                            state.previousMonthAccuracyNumber.accuracyNumber,
+                        weeklyTimeConsumeData: state.weeklyTimeConsumeData,
+                      ),
+                      SliverPadding(
+                        padding: EdgeInsetsGeometry.all(10),
+                        sliver: SliverToBoxAdapter(
+                          child: Column(
+                            spacing: 20,
+                            children: [
+                              Text(
+                                "Vocabularies",
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineMedium,
+                              ),
+                              SizedBox(height: 10),
+                              SearchBar(
+                                onChanged: (value) {
+                                  if (_debounce?.isActive ?? false) {
+                                    _debounce?.cancel();
+                                  }
+
+                                  _debounce = Timer(
+                                    const Duration(milliseconds: 500),
+                                    () {
+                                      setState(() {
+                                        _findCard = value;
+                                      });
+                                    },
+                                  );
+                                },
+                                side: WidgetStatePropertyAll(
+                                  BorderSide(
+                                    width: 0.8,
+                                    color: Colors.grey.withValues(alpha: 0.2),
+                                  ),
+                                ),
+                                hintText: "Search Vocabularies...",
+                                elevation: WidgetStatePropertyAll(0),
+                                trailing: {
+                                  Padding(
+                                    padding: EdgeInsetsGeometry.all(10),
+                                    child: Icon(Icons.search),
+                                  ),
+                                },
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(5),
+                                clipBehavior: Clip.antiAlias,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                    width: 0.5,
+                                    color: Colors.grey.withValues(alpha: 0.2),
+                                  ),
+                                ),
+                                constraints: BoxConstraints(maxHeight: 500),
+                                child: filteredCards.isEmpty
+                                    ? const Center(
+                                        child: Text(
+                                          "Tidak ada kosakata yang cocok",
+                                        ),
+                                      )
+                                    : Scrollbar(
+                                        child: ListView.builder(
+                                          padding: EdgeInsetsGeometry.zero,
+                                          itemCount: filteredCards.length,
+                                          itemBuilder: (context, int itemIndex) {
+                                            final cardData =
+                                                filteredCards[itemIndex];
+
+                                            final int originalIndex = listCard
+                                                .indexOf(cardData);
+                                            if (_findCard.isNotEmpty ||
+                                                _findCard != "") {
+                                              final int targetIndex = listCard
+                                                  .indexWhere(
+                                                    (card) => card
+                                                        .defaultLanguage
+                                                        .toLowerCase()
+                                                        .contains(
+                                                          _findCard
+                                                              .toLowerCase(),
+                                                        ),
+                                                  );
+
+                                              if (targetIndex != -1) {
+                                                return VocabCard(
+                                                  listCard: listCard,
+
+                                                  index: originalIndex,
+                                                  playButtonPressed: () {
+                                                    final rawPath = path.join(
+                                                      widget
+                                                          .filePath
+                                                          .parent
+                                                          .path,
+                                                      listCard[itemIndex]
+                                                          .audioPath
+                                                          .first,
+                                                    );
+                                                    debugPrint(rawPath);
+                                                    _audioPlayer.play(
+                                                      DeviceFileSource(
+                                                        rawPath.replaceAll(
+                                                          '\\',
+                                                          '/',
+                                                        ),
+                                                      ),
+                                                    );
+                                                  },
+                                                  onLongPressed: () {},
+                                                  onCardTap: () {
+                                                    showModalBottomSheet(
+                                                      showDragHandle: true,
+                                                      isScrollControlled: true,
+                                                      useSafeArea: true,
+                                                      context: context,
+                                                      builder: (context) {
+                                                        return VocabBottomModal(
+                                                          listCard: listCard,
+                                                          filePath:
+                                                              widget.filePath,
+                                                          audioPlayer:
+                                                              _audioPlayer,
+                                                          cardIndex:
+                                                              originalIndex,
+                                                        );
+                                                      },
+                                                    ).then((_) {
+                                                      _audioPlayer.stop();
+                                                    });
+                                                  },
+                                                );
+                                              }
+                                            }
+                                            return VocabCard(
+                                              listCard: listCard,
+                                              index: itemIndex,
+                                              playButtonPressed: () {
+                                                final rawPath = path.join(
+                                                  widget.filePath.parent.path,
+                                                  listCard[itemIndex]
+                                                      .audioPath
+                                                      .first,
+                                                );
+                                                debugPrint(rawPath);
+                                                _audioPlayer.play(
+                                                  DeviceFileSource(
+                                                    rawPath.replaceAll(
+                                                      '\\',
+                                                      '/',
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              onCardTap: () {
+                                                showModalBottomSheet(
+                                                  showDragHandle: true,
+                                                  isScrollControlled: true,
+                                                  useSafeArea: true,
+                                                  context: context,
+                                                  builder: (context) {
+                                                    return VocabBottomModal(
+                                                      listCard: listCard,
+                                                      filePath: widget.filePath,
+                                                      audioPlayer: _audioPlayer,
+                                                      cardIndex: itemIndex,
+                                                    );
+                                                  },
+                                                ).then((_) {
+                                                  _audioPlayer.stop();
+                                                });
+                                              },
+                                              onLongPressed: () {},
+                                            );
+                                          },
+                                        ),
+                                      ),
+                              ),
+                            ],
+                          ),
                         ),
-                      );
-                    },
-                  ),
-                  SliverPadding(
-                    padding: EdgeInsetsGeometry.all(10),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate((
-                        BuildContext context,
-                        int index,
-                      ) {
-                        return VocabCard(
-                          listCard: listCard,
-                          index: index,
-                          playButtonPressed: () {
-                            final rawPath = path.join(
-                              widget.filePath.parent.path,
-                              listCard[index].audioPath.first,
-                            );
-                            debugPrint(rawPath);
-                            _audioPlayer.play(
-                              DeviceFileSource(rawPath.replaceAll('\\', '/')),
-                            );
-                          },
-                          onCardTap: () {
-                            showModalBottomSheet(
-                              showDragHandle: true,
-                              isScrollControlled: true,
-                              useSafeArea: true,
-                              context: context,
-                              builder: (context) {
-                                return VocabBottomModal(
-                                  listCard: listCard,
-                                  filePath: widget.filePath,
-                                  audioPlayer: _audioPlayer,
-                                  cardIndex: index,
-                                );
-                              },
-                            ).then((_) {
-                              _audioPlayer.stop();
-                            });
-                          },
-                          onLongPressed: () {},
-                        );
-                      }),
-                    ),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -201,22 +349,7 @@ class _MainCardPageState extends State<MainCardPage> {
             return const ErrorPage();
           },
         ),
-        floatingActionButton: _showBackToTopButton
-            ? FloatingActionButton(
-                onPressed: _scrollToTop,
-                backgroundColor: Theme.of(context).colorScheme.secondary,
-                child: const Icon(Icons.arrow_upward, color: Colors.white),
-              )
-            : null,
       ),
-    );
-  }
-
-  void _scrollToTop() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOutCubic,
     );
   }
 }

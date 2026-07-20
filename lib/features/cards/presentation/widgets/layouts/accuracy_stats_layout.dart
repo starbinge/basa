@@ -12,7 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:intl/intl.dart';
 import 'package:m3e_core/m3e_core.dart';
 
-import '../stats_percentage_container.dart';
+import '../accuracy_stats_header.dart';
 
 class AccuracyStatsLayout extends StatefulWidget {
   const AccuracyStatsLayout({
@@ -59,12 +59,9 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
           child: RepaintBoundary(
             child: Padding(
               padding: EdgeInsets.all(20),
-              child: StatsPercentageContainer(
+              child: AccuracyStatsHeader(
                 thisMonthStats: _thisMonthStats.accuracyNumber,
                 previousMonthStats: _previousMonthStats.accuracyNumber,
-                titleCards: 'This Month\'s Card Accuracy',
-                backgroundIcon: Icons.polyline_outlined,
-                backgroundColor: Theme.of(context).primaryColor,
               ),
             ),
           ),

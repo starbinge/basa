@@ -173,7 +173,12 @@ class FlashcardRepoImpl implements FlashCardRepo {
     required OrderEnums orderBy,
   }) async {
     final List<CardsDetailEntity>? _topCards = await cardsDao
-        .getAccuracyTopCards(begin: begin, end: end, orderBy: orderBy);
+        .getAccuracyTopCards(
+          begin: begin,
+          end: end,
+          orderBy: orderBy,
+          limit: 3,
+        );
     if (_topCards == null || _topCards.isEmpty) {
       return [];
     }
@@ -278,7 +283,12 @@ class FlashcardRepoImpl implements FlashCardRepo {
     required OrderEnums orderBy,
   }) async {
     final List<CardsDetailEntity>? _listCards = await cardsDao
-        .getTimeConsumeTopCards(begin: begin, end: end, orderBy: orderBy);
+        .getTimeConsumeTopCards(
+          begin: begin,
+          end: end,
+          orderBy: orderBy,
+          limit: 3,
+        );
     if (_listCards == null || _listCards.isEmpty) {
       return [
         CardsDetailEntity(
@@ -299,6 +309,41 @@ class FlashcardRepoImpl implements FlashCardRepo {
       ];
     }
     return _listCards;
-    ;
+  }
+
+  @override
+  Future<List<CardsDetailEntity>> getHistoryCards({
+    required CardsDao cardsDao,
+    required int begin,
+    required int end,
+    required OrderEnums orderBy,
+  }) async {
+    final List<CardsDetailEntity>? _listCards = await cardsDao
+        .getTimeConsumeTopCards(
+          begin: begin,
+          end: end,
+          orderBy: orderBy,
+          limit: 10,
+        );
+    if (_listCards == null || _listCards.isEmpty) {
+      return [
+        CardsDetailEntity(
+          id: 0,
+          noteId: 0,
+          queue: 0,
+          reps: 0,
+          odue: 0,
+          ivl: 0,
+          defaultLanguage: "",
+          translatedLanguage: "",
+          descriptions: [""],
+          audioPath: [""],
+          factor: 0,
+          left: 0,
+          flags: 0,
+        ),
+      ];
+    }
+    return _listCards;
   }
 }

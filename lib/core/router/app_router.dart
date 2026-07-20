@@ -4,6 +4,7 @@ import 'package:basa_app_project/core/data/initial_database/initial_database.dar
 import 'package:basa_app_project/core/router/app_shell.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/repositories/flashcard_repo_impl.dart';
+import 'package:basa_app_project/features/cards/domain/entities/card_history_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
@@ -11,6 +12,7 @@ import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/fla
 import 'package:basa_app_project/features/cards/presentation/pages/deck_statistic_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flash_card_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flashcard_summary_stats_page.dart';
+import 'package:basa_app_project/features/cards/presentation/pages/history_play_card.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/main_card_page.dart';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:basa_app_project/features/decks/data/repositories/deck_repository_impl.dart';
@@ -120,6 +122,15 @@ final appRouter = GoRouter(
                   filePath: extras.filePath ?? File(""),
                 ),
               ),
+            );
+          },
+        ),
+        GoRoute(
+          path: 'history',
+          pageBuilder: (context, state) {
+            final extra = state.extra as CardHistoryEntity;
+            return MaterialPage(
+              child: HistoryPlayCard(cardHistoryEntity: extra),
             );
           },
         ),

@@ -1,7 +1,6 @@
 import 'package:basa_app_project/core/router/app_router.dart';
 import 'package:basa_app_project/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/data/external_database/external_database_accessor.dart';
@@ -14,7 +13,7 @@ void main() async {
   final initialDb = AppDatabase();
   final dbAccessor = ExternalDatabaseAccessor();
   final deckRepository = DeckRepositoryImpl(decksDao: initialDb.decksDao);
-  debugRepaintRainbowEnabled = true;
+
   runApp(
     MultiRepositoryProvider(
       providers: [

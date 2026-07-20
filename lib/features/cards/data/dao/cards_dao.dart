@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:basa_app_project/features/cards/constants/enums/order_enums.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
@@ -6,6 +8,7 @@ import 'package:basa_app_project/features/cards/domain/usecases/time_range_gener
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 
 import '../../../../core/data/external_database/external_database.dart';
 import '../models/fetching_cards_model.dart';
@@ -21,10 +24,10 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
       cardsTable,
     ).join([innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid))]);
     final List<TypedResult> tables = await cardsTableData.get();
+
     return tables.map((table) {
       final card = table.readTable(cardsTable);
       final note = table.readTable(notesTable);
-
       return CardsModel.fromMap({
         'card_id': card.id,
         'nid': note.id,
@@ -398,7 +401,11 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
   Future<List<DeckAccuracy>> getDailyAccuracyList() async {
     final now = DateTime.now();
     final int _begin = DateTime(now.year, now.month, 1).millisecondsSinceEpoch;
-    final int _end = DateTime(now.year, now.month + 1, 1).millisecondsSinceEpoch;
+    final int _end = DateTime(
+      now.year,
+      now.month + 1,
+      1,
+    ).millisecondsSinceEpoch;
 
     final query = select(revlogTable)
       ..where(
@@ -438,6 +445,7 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     required int begin,
     required int end,
     required OrderEnums orderBy,
+    required int limit,
   }) async {
     final totalTime = revlogTable.time.sum();
     final query =
@@ -453,7 +461,7 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
                 ? OrderingTerm.asc(totalTime)
                 : OrderingTerm.desc(totalTime),
           ])
-          ..limit(3);
+          ..limit(limit);
 
     final List<TypedResult> results = await query.get();
 
@@ -485,6 +493,7 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     required int begin,
     required int end,
     required OrderEnums orderBy,
+    required int limit,
   }) async {
     final correctCount = revlogTable.ease.equals(3).cast<int>().sum();
     final query =
@@ -500,7 +509,7 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
                 ? OrderingTerm.asc(correctCount)
                 : OrderingTerm.desc(correctCount),
           ])
-          ..limit(3);
+          ..limit(limit);
 
     final List<TypedResult> results = await query.get();
 

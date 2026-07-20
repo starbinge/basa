@@ -57,6 +57,7 @@ dependencies:
   m3e_core: ^0.1.2
   intl: ^0.20.3
   fl_chart: ^1.2.0
+  logger: ^2.7.0
 
 dev_dependencies:
   flutter_test:

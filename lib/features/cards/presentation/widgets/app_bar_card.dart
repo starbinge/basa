@@ -1,12 +1,24 @@
+import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:m3e_core/m3e_core.dart';
 
 import '../pages/main_card_page.dart';
 
 class CardAppBar extends StatelessWidget {
-  const CardAppBar({super.key, required this.flagEmoji, required this.widget});
+  const CardAppBar({
+    super.key,
+    required this.flagEmoji,
+    required this.widget,
+    required this.flashCardButton,
+    required this.quizButton,
+    required this.historyButton,
+  });
 
   final String? flagEmoji;
   final MainCardPage widget;
+  final VoidCallback flashCardButton;
+  final VoidCallback quizButton;
+  final VoidCallback historyButton;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +35,21 @@ class CardAppBar extends StatelessWidget {
         fontSize: TextTheme.of(context).titleLarge?.fontSize,
         fontWeight: TextTheme.of(context).titleLarge?.fontWeight,
       ),
-      title: Text("Cards"),
+      title: Center(
+        child: Container(
+          width: double.infinity,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(child: Text("Cards", textAlign: TextAlign.center)),
+              IconButton(onPressed: historyButton, icon: Icon(Icons.history)),
+            ],
+          ),
+        ),
+      ),
+
       centerTitle: true,
-      expandedHeight: 340.0,
+      expandedHeight: 350.0,
       pinned: true,
       backgroundColor: Theme.of(context).colorScheme.primary,
       elevation: 5,
@@ -95,6 +119,48 @@ class CardAppBar extends StatelessWidget {
                             : TextTheme.of(context).displaySmall?.fontSize,
                         color: Colors.white,
                       ),
+                    ),
+                    SizedBox(height: 20),
+                    Row(
+                      spacing: 20,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        M3EButton.icon(
+                          decoration: M3EButtonDecoration(
+                            foregroundColor: WidgetStatePropertyAll(
+                              AppColors.primaryDark,
+                            ),
+                            backgroundColor: WidgetStatePropertyAll(
+                              AppColors.primaryContainer,
+                            ),
+                          ),
+                          onPressed: flashCardButton,
+                          icon: Icon(Icons.shuffle_on_rounded),
+                          label: Text(
+                            "Flash  Card",
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(color: AppColors.primaryDark),
+                          ),
+                        ),
+
+                        M3EButton.icon(
+                          decoration: M3EButtonDecoration(
+                            foregroundColor: WidgetStatePropertyAll(
+                              AppColors.tertiaryDark,
+                            ),
+                            backgroundColor: WidgetStatePropertyAll(
+                              AppColors.tertiaryContainer,
+                            ),
+                          ),
+                          onPressed: quizButton,
+                          icon: Icon(Icons.quiz_rounded),
+                          label: Text(
+                            "Play Quiz",
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(color: AppColors.tertiaryDark),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

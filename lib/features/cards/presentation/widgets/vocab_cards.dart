@@ -21,6 +21,7 @@ class VocabCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.symmetric(vertical: 2),
       color: Theme.of(context).canvasColor,
       shape: RoundedRectangleBorder(

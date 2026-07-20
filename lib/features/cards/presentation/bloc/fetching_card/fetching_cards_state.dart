@@ -17,10 +17,18 @@ final class FetchingCardIsFinished extends FetchingCardsState {
   final CardsEntity cardsEntity;
   final CardsDao cardsDao;
   final File filePath;
+  final List<DeckTimeConsume> weeklyTimeConsumeData;
+  final DeckAccuracy thisMonthAccuracyNumber;
+  final DeckAccuracy previousMonthAccuracyNumber;
+  final CardHistoryEntity cardHistoryEntity;
 
   FetchingCardIsFinished({
     required this.cardsEntity,
     required this.cardsDao,
     required this.filePath,
+    required this.weeklyTimeConsumeData,
+    required this.thisMonthAccuracyNumber,
+    required this.previousMonthAccuracyNumber,
+    required this.cardHistoryEntity,
   });
 }

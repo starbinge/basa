@@ -37,6 +37,7 @@ final class TimeConsumeStatsFinished extends FlashCardState {
   final List<CardsDetailEntity> top3LeastWeeklyCards;
   final List<CardsDetailEntity> top3LeastMonthlyCards;
   final List<CardsDetailEntity> top3LeastTodayCards;
+
   TimeConsumeStatsFinished({
     required this.thisMonth,
     required this.previousMonth,
