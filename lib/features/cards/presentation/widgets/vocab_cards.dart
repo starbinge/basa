@@ -1,3 +1,4 @@
+import 'package:basa_app_project/core/widgets/animated_play_pause_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/entities/cards_detail_entity.dart';
@@ -7,14 +8,18 @@ class VocabCard extends StatelessWidget {
     super.key,
     required this.listCard,
     required this.index,
+    required this.isPlaying,
     required this.playButtonPressed,
+    required this.pauseButtonPressed,
     required this.onLongPressed,
     required this.onCardTap,
   });
 
   final List<CardsDetailEntity> listCard;
   final int index;
+  final bool isPlaying;
   final VoidCallback playButtonPressed;
+  final VoidCallback pauseButtonPressed;
   final VoidCallback onLongPressed;
   final VoidCallback onCardTap;
 
@@ -23,6 +28,7 @@ class VocabCard extends StatelessWidget {
     final bool hasAudio =
         listCard[index].audioPath.isNotEmpty &&
         listCard[index].audioPath.first.isNotEmpty;
+
     return Card(
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.symmetric(vertical: 2),
@@ -37,18 +43,23 @@ class VocabCard extends StatelessWidget {
         onTap: onCardTap,
         onLongPress: onLongPressed,
         splashColor: Theme.of(context).primaryColor.withAlpha(100),
-        titleTextStyle: TextStyle(
-          color: Theme.of(context).primaryColorDark,
-          fontWeight: FontWeight.bold,
-          fontSize: TextTheme.of(context).titleLarge?.fontSize,
+        title: Text(
+          listCard[index].defaultLanguage,
+          style: TextStyle(
+            color: Theme.of(context).primaryColorDark,
+            fontWeight: FontWeight.bold,
+            fontSize: TextTheme.of(context).titleLarge?.fontSize,
+          ),
         ),
-        title: Text(listCard[index].defaultLanguage),
-        subtitle: Text(listCard[index].translatedLanguage),
+        subtitle: Text(
+          listCard[index].translatedLanguage,
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
         leading: hasAudio
-            ? IconButton(
-                splashColor: Theme.of(context).primaryColor,
-                onPressed: playButtonPressed,
-                icon: Icon(Icons.play_arrow),
+            ? AnimatedPlayPauseButton(
+                isPlaying: isPlaying,
+                onPressed: isPlaying ? pauseButtonPressed : playButtonPressed,
+                color: Theme.of(context).primaryColor,
               )
             : null,
       ),

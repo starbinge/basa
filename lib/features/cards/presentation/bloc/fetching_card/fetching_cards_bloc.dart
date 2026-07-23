@@ -40,27 +40,6 @@ class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
 
         final decksDao = await _appDatabase.decksDao;
         final repo = CardRepoImpl(decksDao: decksDao, cardsDao: db.cardsDao);
-        final now = DateTime.now();
-        final DateTime startOfWeek = now.subtract(
-          Duration(days: now.weekday - 1),
-        );
-        final int _beginWeek = DateTime(
-          startOfWeek.year,
-          startOfWeek.month,
-          startOfWeek.day,
-        ).millisecondsSinceEpoch;
-        final int _endWeek = _beginWeek + (7 * 24 * 60 * 60 * 1000);
-        final int _todayTime = DateTime(
-          now.year,
-          now.month,
-          now.day,
-        ).millisecondsSinceEpoch;
-        final int _tomorrowTime = DateTime(
-          now.year,
-          now.month,
-          now.day + 1,
-        ).millisecondsSinceEpoch;
-
         final results = await Future.wait([
           db.cardsDao.getThisMonthAccuracy(),
           db.cardsDao.getPreviousMonthAccuracy(),
@@ -70,20 +49,6 @@ class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
             deckName: event.deckName,
             deckCountry: event.deckCountry,
           ),
-
-          // History
-          db.cardsDao.getTimeConsumeTopCards(
-            begin: _todayTime,
-            end: _tomorrowTime,
-            orderBy: OrderEnums.desc,
-            limit: 50,
-          ),
-          db.cardsDao.getTimeConsumeTopCards(
-            begin: _beginWeek,
-            end: _endWeek,
-            orderBy: OrderEnums.asc,
-            limit: 50,
-          ),
         ]);
 
         final CardsEntity cardsEntity = results[3] as CardsEntity;
@@ -92,11 +57,6 @@ class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
         final List<DeckTimeConsume> weeklyTimeConsumeData =
             results[2] as List<DeckTimeConsume>;
 
-        final List<CardsDetailEntity> _todayHistory =
-            results[4] as List<CardsDetailEntity>;
-
-        final List<CardsDetailEntity> _weeklyHistory =
-            results[5] as List<CardsDetailEntity>;
         emit(
           FetchingCardIsFinished(
             cardsEntity: cardsEntity,
@@ -105,14 +65,40 @@ class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
             weeklyTimeConsumeData: weeklyTimeConsumeData,
             thisMonthAccuracyNumber: thisMonthAccuracy,
             previousMonthAccuracyNumber: previousMonthAccuracy,
-            cardHistoryEntity: CardHistoryEntity(
-              weeklyHistory: _weeklyHistory,
-              todayHistory: _todayHistory,
-            ),
           ),
         );
       } catch (e) {
         emit(FetchingCardIsError(errorMessage: e.toString()));
+      }
+    });
+
+    on<RefreshStats>((event, emit) async {
+      if (state is! FetchingCardIsFinished) return;
+      final current = state as FetchingCardIsFinished;
+      try {
+        final results = await Future.wait([
+          current.cardsDao.getThisMonthAccuracy(),
+          current.cardsDao.getPreviousMonthAccuracy(),
+          current.cardsDao.getWeeklyTimeConsumeList(),
+        ]);
+
+        final DeckAccuracy thisMonthAccuracy = results[0] as DeckAccuracy;
+        final DeckAccuracy previousMonthAccuracy = results[1] as DeckAccuracy;
+        final List<DeckTimeConsume> weeklyTimeConsumeData =
+            results[2] as List<DeckTimeConsume>;
+
+        emit(
+          FetchingCardIsFinished(
+            cardsEntity: current.cardsEntity,
+            cardsDao: current.cardsDao,
+            filePath: current.filePath,
+            weeklyTimeConsumeData: weeklyTimeConsumeData,
+            thisMonthAccuracyNumber: thisMonthAccuracy,
+            previousMonthAccuracyNumber: previousMonthAccuracy,
+          ),
+        );
+      } catch (e) {
+        debugPrint('RefreshStats error: $e');
       }
     });
   }

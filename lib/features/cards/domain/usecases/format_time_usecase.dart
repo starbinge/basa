@@ -8,7 +8,8 @@ class FormatTimeUseCase {
     int _inSeconds = _durations.inSeconds % 60;
 
     if (_inMinutes > 0) {
-      _finalTime = "${_inMinutes} : ${_inSeconds}";
+      _finalTime =
+          "${_inMinutes.toString().length == 1 ? 0 : ""}${_inMinutes} : ${_inSeconds}";
     } else
       (_finalTime = "0 : ${_inSeconds}");
     return _finalTime;

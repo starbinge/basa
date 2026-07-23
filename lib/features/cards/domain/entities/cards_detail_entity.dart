@@ -22,16 +22,17 @@ class CardsDetailEntity {
     required this.reps,
     required this.odue,
     required this.ivl,
-    required this.defaultLanguage,
-    required this.translatedLanguage,
+    required this.left,
+    required String defaultLanguage,
+    required String translatedLanguage,
     required this.descriptions,
     required this.audioPath,
     this.imagePath,
     this.tags,
     required this.factor,
-    required this.left,
     required this.flags,
-  });
+  }) : defaultLanguage = defaultLanguage.replaceAll(RegExp(r'\{|\}'), '').trim(),
+       translatedLanguage = translatedLanguage.replaceAll(RegExp(r'\{|\}'), '').trim();
 
   factory CardsDetailEntity.fromMap(Map<String, dynamic> map) =>
       CardsDetailEntity(

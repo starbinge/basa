@@ -41,8 +41,6 @@ class _FlashCardSliderState extends State<FlashCardSlider> {
       physics: NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int cardIndex) {
         final card = widget.flashCards[cardIndex];
-        final String defaultLanguage = card.defaultLanguage;
-        final String translatedLanguage = card.translatedLanguage;
 
         return Center(
           child: Padding(
@@ -54,11 +52,11 @@ class _FlashCardSliderState extends State<FlashCardSlider> {
               fill: Fill.fillBack,
               direction: FlipDirection.HORIZONTAL,
               front: _buildCardContainer(
-                text: defaultLanguage,
+                text: card.defaultLanguage,
                 backgroundColor: const Color(0xFFFFFFFF),
               ),
               back: _buildCardContainer(
-                text: translatedLanguage,
+                text: card.translatedLanguage,
                 backgroundColor: const Color(0xFFF5F5F5),
               ),
             ),

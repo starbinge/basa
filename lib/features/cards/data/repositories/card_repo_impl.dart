@@ -4,7 +4,6 @@ import 'package:basa_app_project/features/cards/domain/entities/cards_detail_ent
 import 'package:basa_app_project/features/cards/domain/entities/cards_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/card_repo.dart';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
-import 'package:flutter/material.dart';
 
 class CardRepoImpl implements CardRepo {
   final CardsDao _cardsDao;
@@ -21,7 +20,7 @@ class CardRepoImpl implements CardRepo {
     required String deckCountry,
   }) async {
     try {
-      final List<CardsModel> _cardsModel = await _cardsDao.getCards();
+      final List<CardsModel> _cardsModel = await _cardsDao.getCards(50);
       final List<CardsDetailEntity> _listCard = _cardsModel
           .map((card) => card.toEntity())
           .toList();

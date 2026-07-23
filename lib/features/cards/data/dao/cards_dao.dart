@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:basa_app_project/features/cards/constants/enums/order_enums.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
@@ -8,7 +6,6 @@ import 'package:basa_app_project/features/cards/domain/usecases/time_range_gener
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
 
 import '../../../../core/data/external_database/external_database.dart';
 import '../models/fetching_cards_model.dart';
@@ -19,13 +16,15 @@ part 'cards_dao.g.dart';
 class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
   CardsDao(super.attachedDatabase);
 
-  Future<List<CardsModel>> getCards() async {
-    final cardsTableData = select(
-      cardsTable,
-    ).join([innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid))]);
-    final List<TypedResult> tables = await cardsTableData.get();
-
-    return tables.map((table) {
+  Future<List<CardsModel>> getCards(int limit, {int? offset}) async {
+    final query =
+        select(cardsTable).join([
+            innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid)),
+          ])
+          ..orderBy([OrderingTerm.asc(cardsTable.queue)])
+          ..limit(limit, offset: offset);
+    final result = await query.get();
+    return result.map((table) {
       final card = table.readTable(cardsTable);
       final note = table.readTable(notesTable);
       return CardsModel.fromMap({

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:basa_app_project/core/constants/common_path.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/core/utils/file_picker.dart';
@@ -15,6 +13,7 @@ import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/
 import 'package:basa_app_project/features/decks/presentation/widgets/deck_container.dart';
 import 'package:basa_app_project/features/decks/presentation/widgets/deck_input_page_widgets/import_deck_form.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:path/path.dart' as path;
@@ -85,12 +84,17 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                         extra: collectionFile,
                       );
                     },
-                    child: DeckContainer(
-                      indexDeck: index + 1,
-                      deckName: deckList[index].deckName,
-                      deckLanguage: deckList[index].deckLanguage,
-                      iconColor: deckList[index].deckColor,
-                    ),
+                    child:
+                        DeckContainer(
+                          indexDeck: index + 1,
+                          deckName: deckList[index].deckName,
+                          deckLanguage: deckList[index].deckLanguage,
+                          iconColor: deckList[index].deckColor,
+                        ).animate().scale(
+                          delay: (Duration(milliseconds: index * 200)),
+                          duration: Duration(milliseconds: 600),
+                          curve: Curves.fastEaseInToSlowEaseOut,
+                        ),
                   );
                 },
               );

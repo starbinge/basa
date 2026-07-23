@@ -25,3 +25,5 @@ class GetCardById extends FetchingCardsEvent {
 
   GetCardById({required this.cardId, required this.cardRepo});
 }
+
+class RefreshStats extends FetchingCardsEvent {}

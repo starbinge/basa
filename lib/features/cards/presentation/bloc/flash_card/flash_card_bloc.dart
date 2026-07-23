@@ -19,6 +19,7 @@ part 'flash_card_state.dart';
 class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
   final FlashCardRepo _flashCardRepo;
   final CardsDao? _cardsDao;
+  List<CardsDetailEntity> _allSortedCards = [];
 
   FlashCardBloc({required FlashCardRepo flashCardRepo, CardsDao? cardsDao})
     : _cardsDao = cardsDao,
@@ -30,12 +31,18 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
     on<GenerateFlashCard>((data, emit) {
       emit(FlashCardIsLoading());
       try {
-        final _cardList = List<CardsDetailEntity>.from(data.listCard);
+        if (_allSortedCards.isEmpty) {
+          _allSortedCards = List<CardsDetailEntity>.from(data.listCard)
+            ..sort((a, b) => a.queue.compareTo(b.queue));
+        }
 
-        _cardList.sort((a, b) => a.queue.compareTo(b.queue));
+        int effectiveIndex = data.startIndex;
+        if (effectiveIndex >= _allSortedCards.length) {
+          effectiveIndex = 0;
+        }
 
-        final topTenCards = _cardList.take(10).toList();
-        emit(FLashCardIsFinished(listCard: topTenCards));
+        final sliced = _allSortedCards.skip(effectiveIndex).take(10).toList();
+        emit(FLashCardIsFinished(listCard: sliced));
       } catch (e) {
         emit(FLashCardIsError(errorMessage: e.toString()));
         throw FlashCardNotExist();

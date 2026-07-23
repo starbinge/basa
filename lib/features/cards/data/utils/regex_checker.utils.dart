@@ -36,3 +36,4 @@ String cleanTotalHtml(String text) {
 
   return clean.trim();
 }
+

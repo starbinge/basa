@@ -148,25 +148,27 @@ class CardTierListContainer extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                maxLines: 3,
                                 card.defaultLanguage,
-                                softWrap: true,
                                 textAlign: TextAlign.center,
+                                maxLines: 2,
                                 overflow: TextOverflow.fade,
-                                style: Theme.of(context).textTheme.displaySmall
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .displaySmall
                                     ?.copyWith(
                                       color: carouselForgroundColor,
-                                      fontSize: card.defaultLanguage.length > 30
-                                          ? 25
-                                          : 30,
+                                      fontSize: card.defaultLanguage.length > 30 ? 25.0 : 30.0,
                                     ),
                               ),
                               Text(
                                 card.translatedLanguage,
-                                softWrap: false,
                                 overflow: TextOverflow.fade,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: carouselForgroundColor),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
+                                      color: carouselForgroundColor,
+                                    ),
                               ),
                             ],
                           ),

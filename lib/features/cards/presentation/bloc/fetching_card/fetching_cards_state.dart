@@ -20,7 +20,6 @@ final class FetchingCardIsFinished extends FetchingCardsState {
   final List<DeckTimeConsume> weeklyTimeConsumeData;
   final DeckAccuracy thisMonthAccuracyNumber;
   final DeckAccuracy previousMonthAccuracyNumber;
-  final CardHistoryEntity cardHistoryEntity;
 
   FetchingCardIsFinished({
     required this.cardsEntity,
@@ -29,6 +28,5 @@ final class FetchingCardIsFinished extends FetchingCardsState {
     required this.weeklyTimeConsumeData,
     required this.thisMonthAccuracyNumber,
     required this.previousMonthAccuracyNumber,
-    required this.cardHistoryEntity,
   });
 }

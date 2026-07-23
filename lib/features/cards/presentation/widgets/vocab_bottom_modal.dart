@@ -1,13 +1,14 @@
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:basa_app_project/core/widgets/animated_play_pause_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path/path.dart' as path;
 
 import '../../domain/entities/cards_detail_entity.dart';
 
-class VocabBottomModal extends StatelessWidget {
+class VocabBottomModal extends StatefulWidget {
   const VocabBottomModal({
     super.key,
     required this.listCard,
@@ -23,8 +24,44 @@ class VocabBottomModal extends StatelessWidget {
   final int cardIndex;
 
   @override
+  State<VocabBottomModal> createState() => _VocabBottomModalState();
+}
+
+class _VocabBottomModalState extends State<VocabBottomModal> {
+  bool _isPlaying = false;
+
+  @override
+  void initState() {
+    super.initState();
+    widget._audioPlayer.onPlayerComplete.listen((_) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = false;
+        });
+      }
+    });
+  }
+
+  void _togglePlay() {
+    final rawPath = path.join(
+      widget.filePath.parent.path,
+      widget.listCard[widget.cardIndex].audioPath.first,
+    );
+    debugPrint(rawPath);
+
+    if (_isPlaying) {
+      widget._audioPlayer.pause();
+    } else {
+      widget._audioPlayer.play(DeviceFileSource(rawPath.replaceAll('\\', '/')));
+    }
+    setState(() {
+      _isPlaying = !_isPlaying;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final int index = cardIndex;
+    final int index = widget.cardIndex;
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
@@ -41,28 +78,31 @@ class VocabBottomModal extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.all(20.w),
                     child: Text(
+                      widget.listCard[index].defaultLanguage,
                       textAlign: TextAlign.center,
-                      listCard[index].defaultLanguage,
                       style: TextStyle(
-                        fontSize: TextTheme.of(context).headlineLarge?.fontSize,
+                        fontSize: TextTheme.of(context)
+                            .headlineLarge
+                            ?.fontSize,
                         color: Theme.of(context).primaryColor,
-                        fontWeight: TextTheme.of(
-                          context,
-                        ).headlineLarge?.fontWeight,
+                        fontWeight: TextTheme.of(context)
+                            .headlineLarge
+                            ?.fontWeight,
                       ),
                     ),
                   ),
                   Padding(
                     padding: EdgeInsets.all(20.w),
                     child: Text(
-                      listCard[index].translatedLanguage,
-                      style: Theme.of(context).textTheme.bodyLarge,
+                      widget.listCard[index].translatedLanguage,
+                      style:
+                          Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 20.h),
-              if (listCard[index].descriptions.isNotEmpty)
+              if (widget.listCard[index].descriptions.isNotEmpty)
                 Card(
                   shadowColor: Theme.of(
                     context,
@@ -111,10 +151,10 @@ class VocabBottomModal extends StatelessWidget {
                         child: ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          itemCount: listCard[index].descriptions.length,
+                          itemCount: widget.listCard[index].descriptions.length,
                           itemBuilder: (context, descIndex) {
                             final description =
-                                listCard[index].descriptions[descIndex];
+                                widget.listCard[index].descriptions[descIndex];
                             return Padding(
                               padding: EdgeInsets.only(bottom: 10.h),
                               child: ListTile(
@@ -148,28 +188,13 @@ class VocabBottomModal extends StatelessWidget {
                   ),
                 ),
               SizedBox(height: 50.h),
-              IconButton(
-                style: ButtonStyle(
-                  maximumSize: WidgetStateProperty.all(Size(100.w, 100.h)),
-                  minimumSize: WidgetStateProperty.all(Size(60.w, 60.h)),
-                  foregroundColor: const WidgetStatePropertyAll<Color>(
-                    Colors.white,
-                  ),
-                  backgroundColor: WidgetStatePropertyAll<Color>(
-                    Theme.of(context).primaryColor,
-                  ),
-                ),
-                onPressed: () {
-                  final rawPath = path.join(
-                    filePath.parent.path,
-                    listCard[index].audioPath.first,
-                  );
-                  debugPrint(rawPath);
-                  _audioPlayer.play(
-                    DeviceFileSource(rawPath.replaceAll('\\', '/')),
-                  );
-                },
-                icon: const Icon(Icons.play_arrow),
+              AnimatedPlayPauseButton(
+                isPlaying: _isPlaying,
+                onPressed: _togglePlay,
+                size: 48,
+                color: Colors.white,
+                backgroundColor: Theme.of(context).primaryColor,
+                padding: EdgeInsets.all(16.w),
               ),
             ],
           ),

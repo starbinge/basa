@@ -5,8 +5,9 @@ sealed class FlashCardEvent {}
 
 class GenerateFlashCard extends FlashCardEvent {
   final List<CardsDetailEntity> listCard;
+  final int startIndex;
 
-  GenerateFlashCard({required this.listCard});
+  GenerateFlashCard({required this.listCard, this.startIndex = 0});
 }
 
 class AnsweringFlashCard extends FlashCardEvent {

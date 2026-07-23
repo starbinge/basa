@@ -10,10 +10,12 @@ import 'package:basa_app_project/features/cards/domain/repositories/flash_card_r
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/deck_statistic_page.dart';
+import 'package:basa_app_project/features/cards/presentation/pages/ending_game_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flash_card_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flashcard_summary_stats_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/history_play_card.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/main_card_page.dart';
+import 'package:basa_app_project/features/cards/presentation/pages/quiz_game_page.dart';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:basa_app_project/features/decks/data/repositories/deck_repository_impl.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
@@ -43,35 +45,31 @@ final appRouter = GoRouter(
         GoRoute(
           path: 'flashcard',
           pageBuilder: (context, state) {
-            final fetchingCardsBloc = state.extra as FetchingCardsBloc;
-            final FlashCardRepo flashCardRepo = FlashcardRepoImpl();
-            File? activeFilePath;
-            List<CardsDetailEntity> rawCards = [];
-            CardsDao? activeCardsDao;
-
-            if (fetchingCardsBloc.state is FetchingCardIsFinished) {
-              final finishedState =
-                  fetchingCardsBloc.state as FetchingCardIsFinished;
-              rawCards = finishedState.cardsEntity.listCard;
-              activeCardsDao = finishedState.cardsDao;
-              activeFilePath = finishedState.filePath;
-            }
+            final extras =
+                state.extra
+                    as ({
+                      List<CardsDetailEntity> listCards,
+                      CardsDao cardsDao,
+                      File filePath,
+                      int startIndex,
+                    });
 
             return MaterialPage(
-              child: MultiBlocProvider(
-                providers: [
-                  BlocProvider(
-                    create: (context) => FlashCardBloc(
-                      flashCardRepo: flashCardRepo,
-                      cardsDao: activeCardsDao,
-                    )..add(GenerateFlashCard(listCard: rawCards)),
-                  ),
-                  BlocProvider.value(value: fetchingCardsBloc),
-                ],
+              child: BlocProvider(
+                create: (context) =>
+                    FlashCardBloc(
+                      flashCardRepo: FlashcardRepoImpl(),
+                      cardsDao: extras.cardsDao,
+                    )..add(
+                      GenerateFlashCard(
+                        listCard: extras.listCards,
+                        startIndex: extras.startIndex,
+                      ),
+                    ),
                 child: FleshCardPage(
                   deckId: int.parse(state.pathParameters['id']!),
                   fileName: state.pathParameters['fileName']!,
-                  filePath: activeFilePath ?? state.extra as File,
+                  filePath: extras.filePath,
                   deckName: state.pathParameters['deckName']!,
                   deckCountry: state.pathParameters['deckCountry']!,
                 ),
@@ -125,12 +123,36 @@ final appRouter = GoRouter(
             );
           },
         ),
+        // GoRoute(
+        //   path: 'history',
+        //   pageBuilder: (context, state) {
+        //     final extra = state.extra as CardHistoryEntity;
+        //     return MaterialPage(
+        //       child: HistoryPlayCard(cardHistoryEntity: extra),
+        //     );
+        //   },
+        // ),
         GoRoute(
-          path: 'history',
+          path: 'quizgame',
           pageBuilder: (context, state) {
-            final extra = state.extra as CardHistoryEntity;
+            final extra =
+                state.extra
+                    as ({
+                      List<CardsDetailEntity> listCards,
+                      CardsDao cardsDao,
+                      FlashCardRepo flashCardRepo,
+                      File filePath,
+                      int startIndex,
+                    });
+
             return MaterialPage(
-              child: HistoryPlayCard(cardHistoryEntity: extra),
+              child: QuizGamePage(
+                listCards: extra.listCards,
+                cardsDao: extra.cardsDao,
+                flashCardRepo: extra.flashCardRepo,
+                filePath: extra.filePath,
+                startIndex: extra.startIndex,
+              ),
             );
           },
         ),
@@ -155,6 +177,19 @@ final appRouter = GoRouter(
               wrongAnswer: state.pathParameters['wrongAnswer']!,
               timeSpent: state.pathParameters['timeSpent']!,
             ),
+          ),
+        );
+      },
+    ),
+    GoRoute(
+      name: 'stats-quiz-game',
+      path: '/stats-quiz-game',
+      pageBuilder: (context, state) {
+        final extra = state.extra as ({int totalAnswered, bool isLate});
+        return MaterialPage(
+          child: EndingGamePage(
+            totalAnswered: extra.totalAnswered,
+            isLate: extra.isLate,
           ),
         );
       },

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
+import 'package:basa_app_project/features/cards/data/repositories/flashcard_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:flutter/material.dart';
@@ -43,9 +44,19 @@ class _MainCardPageState extends State<MainCardPage> {
   final ScrollController _scrollController = ScrollController();
   Timer? _debounce;
   String _findCard = "";
+  int _currentPlayingCardIndex = -1;
+  int _startGenerateIndex = 0;
+
   @override
   void initState() {
     super.initState();
+    _audioPlayer.onPlayerComplete.listen((_) {
+      if (mounted) {
+        setState(() {
+          _currentPlayingCardIndex = -1;
+        });
+      }
+    });
   }
 
   void dispose() {
@@ -94,7 +105,7 @@ class _MainCardPageState extends State<MainCardPage> {
                 );
               }
               final List filteredCards = _findCard.isEmpty
-                  ? listCard // Kalau belum ngetik apa-apa, pakai list utuh
+                  ? listCard
                   : listCard.where((card) {
                       return card.defaultLanguage.toLowerCase().contains(
                         _findCard.toLowerCase(),
@@ -110,18 +121,43 @@ class _MainCardPageState extends State<MainCardPage> {
                       CardAppBar(
                         flagEmoji: flagEmoji,
                         widget: widget,
-                        flashCardButton: () {
+                        flashCardButton: () async {
                           final bloc = context.read<FetchingCardsBloc>();
-                          context.push(
+                          await context.push(
                             '${GoRouterState.of(context).matchedLocation}/flashcard',
-                            extra: bloc,
+                            extra: (
+                              listCards: state.cardsEntity.listCard,
+                              cardsDao: state.cardsDao,
+                              filePath: widget.filePath,
+                              startIndex: _startGenerateIndex,
+                            ),
                           );
+                          if (mounted) {
+                            setState(() => _startGenerateIndex += 10);
+                            bloc.add(RefreshStats());
+                          }
                         },
-                        quizButton: () {},
+                        quizButton: () async {
+                          final bloc = context.read<FetchingCardsBloc>();
+                          await context.push(
+                            '${GoRouterState.of(context).matchedLocation}/quizgame',
+                            extra: (
+                              listCards: state.cardsEntity.listCard,
+                              cardsDao: state.cardsDao,
+                              flashCardRepo: FlashcardRepoImpl(),
+                              filePath: widget.filePath,
+                              startIndex: _startGenerateIndex,
+                            ),
+                          );
+                          if (mounted) {
+                            setState(() => _startGenerateIndex += 10);
+                            bloc.add(RefreshStats());
+                          }
+                        },
                         historyButton: () {
                           context.push(
                             '${GoRouterState.of(context).matchedLocation}/history',
-                            extra: state.cardHistoryEntity,
+                            // extra: state.cardHistoryEntity,
                           );
                         },
                       ),
@@ -248,6 +284,9 @@ class _MainCardPageState extends State<MainCardPage> {
                                                   listCard: listCard,
 
                                                   index: originalIndex,
+                                                  isPlaying:
+                                                      _currentPlayingCardIndex ==
+                                                      originalIndex,
                                                   playButtonPressed: () {
                                                     final rawPath = path.join(
                                                       widget
@@ -259,6 +298,10 @@ class _MainCardPageState extends State<MainCardPage> {
                                                           .first,
                                                     );
                                                     debugPrint(rawPath);
+                                                    setState(() {
+                                                      _currentPlayingCardIndex =
+                                                          originalIndex;
+                                                    });
                                                     _audioPlayer.play(
                                                       DeviceFileSource(
                                                         rawPath.replaceAll(
@@ -267,6 +310,13 @@ class _MainCardPageState extends State<MainCardPage> {
                                                         ),
                                                       ),
                                                     );
+                                                  },
+                                                  pauseButtonPressed: () {
+                                                    setState(() {
+                                                      _currentPlayingCardIndex =
+                                                          -1;
+                                                    });
+                                                    _audioPlayer.pause();
                                                   },
                                                   onLongPressed: () {},
                                                   onCardTap: () {
@@ -296,6 +346,9 @@ class _MainCardPageState extends State<MainCardPage> {
                                             return VocabCard(
                                               listCard: listCard,
                                               index: itemIndex,
+                                              isPlaying:
+                                                  _currentPlayingCardIndex ==
+                                                  itemIndex,
                                               playButtonPressed: () {
                                                 final rawPath = path.join(
                                                   widget.filePath.parent.path,
@@ -304,6 +357,10 @@ class _MainCardPageState extends State<MainCardPage> {
                                                       .first,
                                                 );
                                                 debugPrint(rawPath);
+                                                setState(() {
+                                                  _currentPlayingCardIndex =
+                                                      itemIndex;
+                                                });
                                                 _audioPlayer.play(
                                                   DeviceFileSource(
                                                     rawPath.replaceAll(
@@ -312,6 +369,12 @@ class _MainCardPageState extends State<MainCardPage> {
                                                     ),
                                                   ),
                                                 );
+                                              },
+                                              pauseButtonPressed: () {
+                                                setState(() {
+                                                  _currentPlayingCardIndex = -1;
+                                                });
+                                                _audioPlayer.pause();
                                               },
                                               onCardTap: () {
                                                 showModalBottomSheet(

@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/track_per_card_timer.dart';
-import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -189,15 +188,6 @@ class _FleshCardPageState extends State<FleshCardPage> {
       Future.delayed(const Duration(milliseconds: 300), () {
         if (!mounted) return;
 
-        context.read<FetchingCardsBloc>().add(
-          FetchCards(
-            deckId: widget.deckId,
-            deckName: widget.deckName,
-            deckCountry: widget.deckCountry,
-            filePath: widget.filePath,
-            fileName: widget.fileName,
-          ),
-        );
         final String _timeSpent = _sessionStopWatch.elapsed.inSeconds
             .toString();
         GoRouter.of(context).pushReplacement(
