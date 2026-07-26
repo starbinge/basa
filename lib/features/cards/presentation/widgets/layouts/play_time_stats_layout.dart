@@ -4,14 +4,13 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/constants/screen_size.dart';
 import 'package:basa_app_project/core/widgets/callendar_heatmap.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
-import 'package:basa_app_project/features/cards/domain/entities/time_consume_stats_entity.dart';
+import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_sidetitles_chart_usecase.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/card_tirelist_container.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/deck_graph_container.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/time_consume_stats_header.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:m3e_core/m3e_core.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -34,10 +33,10 @@ class PlayTimeStatsLayout extends StatefulWidget {
     required this.top3MonthlyLeastDrainingCards,
   });
 
-  final TimeConsumeStatsEntity timeStats;
-  final List<TimeConsumeStatsEntity> monthlyData;
-  final List<TimeConsumeStatsEntity> weeklyData;
-  final List<TimeConsumeStatsEntity> dailyData;
+  final TimeConsumeEntity timeStats;
+  final List<TimeConsumeEntity> monthlyData;
+  final List<TimeConsumeEntity> weeklyData;
+  final List<TimeConsumeEntity> dailyData;
   final List<CardsDetailEntity> top3TodayMostDrainingCards;
   final List<CardsDetailEntity> top3WeeklyMostDrainingCards;
   final List<CardsDetailEntity> top3MonthlyMostDrainingCards;
@@ -62,7 +61,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
     final headlineSmall = Theme.of(context).textTheme.headlineSmall;
     final labelLarge = Theme.of(context).textTheme.labelLarge;
     final DateTime _now = DateTime.now();
-    final String _monthName = DateFormat.MMMM('en_US').format(_now);
+    final String _monthName = widget.timeStats.timeLabel;
     final int _year = _now.year;
 
     return SliverMainAxisGroup(
@@ -195,9 +194,9 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                         CallendarHeatmap(
                           itemCount: widget.dailyData.length,
                           getValue: (i) {
-                            final minutes = int.parse(
-                              widget.dailyData[i].totalTime.minutes,
-                            );
+                            final minutes =
+                                widget.dailyData[i].totalTime.hour * 60 +
+                                widget.dailyData[i].totalTime.minute;
                             return minutes == 0
                                 ? 0.0
                                 : minutes / widget.dailyData.length;
@@ -246,8 +245,8 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                                 meta: meta,
                               );
                             },
-                            getYValue: (TimeConsumeStatsEntity item) =>
-                                double.parse(item.totalTime.minutes),
+                            getYValue: (TimeConsumeEntity item) =>
+                                (item.totalTime.hour * 60 + item.totalTime.minute).toDouble(),
                           ),
                           CardTierListContainer(
                             titleText: "Top 3 Most Draining Time Cards",
@@ -287,7 +286,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                     RepaintBoundary(
                       child: Column(
                         children: [
-                          DeckGraphContainer<TimeConsumeStatsEntity>(
+                          DeckGraphContainer<TimeConsumeEntity>(
                             data: widget.monthlyData,
                             getTitlesWidget: (double axisX, TitleMeta meta) {
                               return getMonthlyTitleByIndexFunction(
@@ -295,8 +294,8 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                                 meta: meta,
                               );
                             },
-                            getYValue: (TimeConsumeStatsEntity item) =>
-                                double.parse(item.totalTime.minutes),
+                            getYValue: (TimeConsumeEntity item) =>
+                                (item.totalTime.hour * 60 + item.totalTime.minute).toDouble(),
                           ),
                           CardTierListContainer(
                             titleText: "Top 3 Most Draining Time Cards",

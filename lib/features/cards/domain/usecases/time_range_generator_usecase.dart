@@ -11,15 +11,7 @@ Map<String, List<T>> getMonthlyObject<T>(int currentYear) {
 }
 
 Map<String, List<T>> getWeeklyObject<T>() {
-  final List<String> dayWeekName = [
-    'Sunday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-  ];
+  final List<String> dayWeekName = ['1w', '2w', '3w', '4w'];
   final Map<String, List<T>> groupedByDay = {};
   for (var day in dayWeekName) {
     groupedByDay[day] = <T>[];
@@ -27,11 +19,17 @@ Map<String, List<T>> getWeeklyObject<T>() {
   return groupedByDay;
 }
 
-Map<int, List<T>> getDailyObject<T>() {
+Map<int, List<T>> getDailyObject<T>({int? year, int? month}) {
+  final DateTime now = DateTime.now();
+  final int targetYear = year ?? now.year;
+  final int targetMonth = month ?? now.month;
+
+  final int totalDays = DateTime(targetYear, targetMonth + 1, 0).day;
+
   final Map<int, List<T>> groupedByDay = {};
 
-  for (var i = 1; i <= 31; i++) {
-    groupedByDay[i] = [];
+  for (var i = 1; i <= totalDays; i++) {
+    groupedByDay[i] = <T>[];
   }
   return groupedByDay;
 }

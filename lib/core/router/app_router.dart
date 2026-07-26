@@ -3,17 +3,18 @@ import 'dart:io';
 import 'package:basa_app_project/core/data/initial_database/initial_database.dart';
 import 'package:basa_app_project/core/router/app_shell.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
+import 'package:basa_app_project/features/cards/data/repositories/accuracy_repo_impl/accuracy_repo_impl.dart';
 import 'package:basa_app_project/features/cards/data/repositories/flashcard_repo_impl.dart';
-import 'package:basa_app_project/features/cards/domain/entities/card_history_entity.dart';
-import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
+import 'package:basa_app_project/features/cards/data/repositories/time_consume_impl/time_consume_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/bloc/statistics/card_accuracy/card_accuracy_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/bloc/statistics/time_consume/time_consume_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/deck_statistic_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/ending_game_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flash_card_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/flashcard_summary_stats_page.dart';
-import 'package:basa_app_project/features/cards/presentation/pages/history_play_card.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/main_card_page.dart';
 import 'package:basa_app_project/features/cards/presentation/pages/quiz_game_page.dart';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
@@ -24,7 +25,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/cards/data/dao/cards_dao.dart';
+import '../../features/cards/data/dao/cards_dao/cards_dao.dart';
+import '../../features/cards/domain/entities/cards_detail_entity.dart';
+import '../../features/cards/presentation/pages/history_play_card.dart';
 
 final appRouter = GoRouter(
   initialLocation: '/',
@@ -92,46 +95,55 @@ final appRouter = GoRouter(
                       .cardsDao;
             }
             final String? statsTypeString = state.pathParameters['statsType'];
-            final FlashCardRepo flashCardRepo = FlashcardRepoImpl();
             final StatisticsPageEnum statsTypeParam = StatisticsPageEnum.values
                 .firstWhere(
                   (e) => e.name == statsTypeString,
                   orElse: () => StatisticsPageEnum.accuracy,
                 );
-            return MaterialPage(
-              child: BlocProvider(
-                create: (context) {
-                  switch (statsTypeParam) {
-                    case StatisticsPageEnum.accuracy:
-                      return FlashCardBloc(
-                        flashCardRepo: flashCardRepo,
-                        cardsDao: activeCardsDao,
-                      )..add(GettingAccuracyStats());
-                    case StatisticsPageEnum.timeConsume:
-                      return FlashCardBloc(
-                        flashCardRepo: flashCardRepo,
-                        cardsDao: activeCardsDao,
-                      )..add(GettingTimeConsumeStats());
-                  }
-                },
-                child: DeckStatisticPage(
-                  deckName: state.pathParameters['deckName']!,
-                  statsType: statsTypeParam,
-                  filePath: extras.filePath ?? File(""),
-                ),
-              ),
+
+            final accuracyRepo = AccuracyRepoImpl(
+              accuracyDao: activeCardsDao!.attachedDatabase.accuracyDao,
             );
+            final timeConsumeRepo = TimeConsumeRepoImpl(
+              timeConsumeDao: activeCardsDao.attachedDatabase.timeConsumeDao,
+            );
+
+            switch (statsTypeParam) {
+              case StatisticsPageEnum.accuracy:
+                return MaterialPage(
+                  child: BlocProvider(
+                    create: (_) => CardAccuracyBloc(
+                      accuracyCardRepo: accuracyRepo,
+                    )..add(FetchAccuracyDetail()),
+                    child: DeckStatisticPage(
+                      deckName: state.pathParameters['deckName']!,
+                      statsType: statsTypeParam,
+                      filePath: extras.filePath ?? File(""),
+                    ),
+                  ),
+                );
+              case StatisticsPageEnum.timeConsume:
+                return MaterialPage(
+                  child: BlocProvider(
+                    create: (_) => TimeConsumeBloc(
+                      timeConsumeRepo: timeConsumeRepo,
+                    )..add(FetchTimeConsumeDetail()),
+                    child: DeckStatisticPage(
+                      deckName: state.pathParameters['deckName']!,
+                      statsType: statsTypeParam,
+                      filePath: extras.filePath ?? File(""),
+                    ),
+                  ),
+                );
+            }
           },
         ),
-        // GoRoute(
-        //   path: 'history',
-        //   pageBuilder: (context, state) {
-        //     final extra = state.extra as CardHistoryEntity;
-        //     return MaterialPage(
-        //       child: HistoryPlayCard(cardHistoryEntity: extra),
-        //     );
-        //   },
-        // ),
+        GoRoute(
+          path: 'history',
+          pageBuilder: (context, state) {
+            return MaterialPage(child: HistoryPlayCard());
+          },
+        ),
         GoRoute(
           path: 'quizgame',
           pageBuilder: (context, state) {

@@ -18,12 +18,3 @@ class FetchCards extends FetchingCardsEvent {
     required this.fileName,
   });
 }
-
-class GetCardById extends FetchingCardsEvent {
-  final int cardId;
-  final CardRepo cardRepo;
-
-  GetCardById({required this.cardId, required this.cardRepo});
-}
-
-class RefreshStats extends FetchingCardsEvent {}

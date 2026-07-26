@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/widgets/animated_play_pause_button.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +17,7 @@ class VocabBottomModal extends StatefulWidget {
   }) : _audioPlayer = audioPlayer;
 
   final List<CardsDetailEntity> listCard;
-  final File filePath;
+  final String filePath;
   final AudioPlayer _audioPlayer;
   final int cardIndex;
 
@@ -44,7 +42,7 @@ class _VocabBottomModalState extends State<VocabBottomModal> {
 
   void _togglePlay() {
     final rawPath = path.join(
-      widget.filePath.parent.path,
+      widget.filePath,
       widget.listCard[widget.cardIndex].audioPath.first,
     );
     debugPrint(rawPath);
@@ -81,13 +79,11 @@ class _VocabBottomModalState extends State<VocabBottomModal> {
                       widget.listCard[index].defaultLanguage,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: TextTheme.of(context)
-                            .headlineLarge
-                            ?.fontSize,
+                        fontSize: TextTheme.of(context).headlineLarge?.fontSize,
                         color: Theme.of(context).primaryColor,
-                        fontWeight: TextTheme.of(context)
-                            .headlineLarge
-                            ?.fontWeight,
+                        fontWeight: TextTheme.of(
+                          context,
+                        ).headlineLarge?.fontWeight,
                       ),
                     ),
                   ),
@@ -95,8 +91,7 @@ class _VocabBottomModalState extends State<VocabBottomModal> {
                     padding: EdgeInsets.all(20.w),
                     child: Text(
                       widget.listCard[index].translatedLanguage,
-                      style:
-                          Theme.of(context).textTheme.bodyLarge,
+                      style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                 ],

@@ -5,13 +5,12 @@ import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/core/widgets/stats_empty_state.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
-import 'package:basa_app_project/features/cards/domain/entities/time_consume_stats_entity.dart';
-import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/bloc/statistics/card_accuracy/card_accuracy_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/bloc/statistics/time_consume/time_consume_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/layouts/accuracy_stats_layout.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/layouts/play_time_stats_layout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class DeckStatisticPage extends StatefulWidget {
   const DeckStatisticPage({
@@ -41,9 +40,6 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
 
   @override
   Widget build(BuildContext context) {
-    final DateTime _now = DateTime.now();
-    final String _monthName = DateFormat.MMMM('en_US').format(_now);
-    final int _year = _now.year;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -51,124 +47,114 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
       ),
-      body: BlocBuilder<FlashCardBloc, FlashCardState>(
-        builder: (context, state) {
-          if (state is FlashCardIsLoading) {
-            return Center(child: CircularProgressIndicator());
-          }
-          if (state is FLashCardIsError) {
-            return ErrorPage(message: state.errorMessage);
-          }
-          if (state is AccuracyStatsFinished) {
-            final stats = state.stats;
-            final bool isEmpty =
-                stats.dailyAccuracyList.isEmpty &&
-                stats.weeklyList.isEmpty &&
-                stats.monthlyList.isEmpty &&
-                stats.top3TodayMostAccurate.isEmpty &&
-                stats.top3TodayLeastAccurate.isEmpty &&
-                stats.top3WeeklyMostAccurate.isEmpty &&
-                stats.top3WeeklyLeastAccurate.isEmpty &&
-                stats.top3MonthlyMostAccurate.isEmpty &&
-                stats.top3MonthlyLeastAccurate.isEmpty;
-            if (isEmpty) {
-              return SafeArea(
-                child: StatsEmptyState(
-                  icon: Icons.bar_chart_rounded,
-                ),
-              );
-            }
-            return SafeArea(
-              child: CustomScrollView(
-                physics: BouncingScrollPhysics(),
-                slivers: [
-                  AccuracyStatsLayout(
-                    stats: state.stats,
-                    isAudioPlayed: _isAudioPlated,
-                    audioPlayer: _audioPlayer,
-                    filePath: widget.filePath,
-                  ),
-                ],
-              ),
-            );
-          }
-          if (state is TimeConsumeStatsFinished) {
-            final bool isEmpty =
-                state.dailyAverage.isEmpty &&
-                state.weeklyAverage.isEmpty &&
-                state.monthlyAverage.isEmpty &&
-                state.top3TodayCards.every((c) => c.id == 0) &&
-                state.top3WeeklyCards.every((c) => c.id == 0) &&
-                state.top3MonthlyCards.every((c) => c.id == 0) &&
-                state.top3LeastTodayCards.every((c) => c.id == 0) &&
-                state.top3LeastWeeklyCards.every((c) => c.id == 0) &&
-                state.top3LeastMonthlyCards.every((c) => c.id == 0);
-            if (isEmpty) {
-              return SafeArea(
-                child: StatsEmptyState(
-                  icon: Icons.timer_outlined,
-                ),
-              );
-            }
-            final DeckTimeConsume _thisMonth = state.thisMonth;
-            final List<TimeConsumeStatsEntity> _dailyData = [];
-            final List<TimeConsumeStatsEntity> _monthlyData = [];
-            final List<TimeConsumeStatsEntity> _weeklyData = [];
-            state.monthlyAverage.forEach((data) {
-              _monthlyData.add(
-                TimeConsumeStatsEntity.fromMillieSeconds(
-                  timeAvg: data.avgTime,
-                  totalTime: data.totalTime,
-                ),
-              );
-            });
-            state.weeklyAverage.forEach((data) {
-              _weeklyData.add(
-                TimeConsumeStatsEntity.fromMillieSeconds(
-                  timeAvg: data.avgTime,
-                  totalTime: data.totalTime,
-                ),
-              );
-            });
-            state.dailyAverage.forEach((data) {
-              _dailyData.add(
-                TimeConsumeStatsEntity.fromMillieSeconds(
-                  timeAvg: data.avgTime,
-                  totalTime: data.totalTime,
-                ),
-              );
-            });
-            final TimeConsumeStatsEntity _timeStats =
-                TimeConsumeStatsEntity.fromMillieSeconds(
-                  timeAvg: _thisMonth.avgTime,
-                  totalTime: _thisMonth.totalTime,
-                );
-            return SafeArea(
-              child: CustomScrollView(
-                physics: BouncingScrollPhysics(),
-                slivers: [
-                  PlayTimeStatsLayout(
-                    timeStats: _timeStats,
-                    monthlyData: _monthlyData,
-                    weeklyData: _weeklyData,
-                    dailyData: _dailyData,
-                    top3TodayMostDrainingCards: state.top3TodayCards,
-                    top3WeeklyMostDrainingCards: state.top3WeeklyCards,
-                    top3MonthlyMostDrainingCards: state.top3MonthlyCards,
-                    isAudioPlay: _isAudioPlated,
-                    audioPlayer: _audioPlayer,
-                    filePath: widget.filePath,
-                    top3TodayLeastDrainingCards: state.top3LeastTodayCards,
-                    top3WeeklyLeastDrainingCards: state.top3LeastWeeklyCards,
-                    top3MonthlyLeastDrainingCards: state.top3LeastMonthlyCards,
-                  ),
-                ],
-              ),
-            );
-          }
-          return ErrorPage();
-        },
-      ),
+      body: widget.statsType == StatisticsPageEnum.accuracy
+          ? BlocBuilder<CardAccuracyBloc, CardAccuracyState>(
+              builder: (context, state) {
+                if (state is CardAccuracyLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (state is CardAccuracyError) {
+                  return ErrorPage(message: state.errorMessage);
+                }
+                if (state is AccuracyDetailLoaded) {
+                  final bool isEmpty =
+                      state.dailyAccuracy.isEmpty &&
+                      state.weeklyAccuracy.isEmpty &&
+                      state.monthlyAccuracy.isEmpty &&
+                      state.top3TodayMostAccurate.isEmpty &&
+                      state.top3TodayLeastAccurate.isEmpty &&
+                      state.top3WeeklyMostAccurate.isEmpty &&
+                      state.top3WeeklyLeastAccurate.isEmpty &&
+                      state.top3MonthlyMostAccurate.isEmpty &&
+                      state.top3MonthlyLeastAccurate.isEmpty;
+                  if (isEmpty) {
+                    return SafeArea(
+                      child: StatsEmptyState(
+                        icon: Icons.bar_chart_rounded,
+                      ),
+                    );
+                  }
+                  return SafeArea(
+                    child: CustomScrollView(
+                      physics: BouncingScrollPhysics(),
+                      slivers: [
+                        AccuracyStatsLayout(
+                          stats: DeckAccuracyStats(
+                            thisMonthDeckAccuracy: state.thisMonthAccuracy,
+                            previousMonthDeckAccuracy: state.previousMonthAccuracy,
+                            weeklyList: state.weeklyAccuracy,
+                            monthlyList: state.monthlyAccuracy,
+                            dailyAccuracyList: state.dailyAccuracy,
+                            top3TodayMostAccurate: state.top3TodayMostAccurate,
+                            top3TodayLeastAccurate: state.top3TodayLeastAccurate,
+                            top3WeeklyMostAccurate: state.top3WeeklyMostAccurate,
+                            top3WeeklyLeastAccurate: state.top3WeeklyLeastAccurate,
+                            top3MonthlyMostAccurate: state.top3MonthlyMostAccurate,
+                            top3MonthlyLeastAccurate: state.top3MonthlyLeastAccurate,
+                          ),
+                          isAudioPlayed: _isAudioPlated,
+                          audioPlayer: _audioPlayer,
+                          filePath: widget.filePath,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ErrorPage();
+              },
+            )
+          : BlocBuilder<TimeConsumeBloc, TimeConsumeState>(
+              builder: (context, state) {
+                if (state is TimeConsumeLoading) {
+                  return Center(child: CircularProgressIndicator());
+                }
+                if (state is TimeConsumeError) {
+                  return ErrorPage(message: state.errorMessage);
+                }
+                if (state is TimeConsumeDetailLoaded) {
+                  final bool isEmpty =
+                      state.dailyTimeConsume.isEmpty &&
+                      state.weeklyTimeConsume.isEmpty &&
+                      state.monthlyTimeConsume.isEmpty &&
+                      state.top3TodayMostTimeConsume.every((c) => c.id == 0) &&
+                      state.top3WeeklyMostTimeConsume.every((c) => c.id == 0) &&
+                      state.top3MonthlyMostTimeConsume.every((c) => c.id == 0) &&
+                      state.top3TodayLeastTimeConsume.every((c) => c.id == 0) &&
+                      state.top3WeeklyLeastTimeConsume.every((c) => c.id == 0) &&
+                      state.top3MonthlyLeastTimeConsume.every((c) => c.id == 0);
+                  if (isEmpty) {
+                    return SafeArea(
+                      child: StatsEmptyState(
+                        icon: Icons.timer_outlined,
+                      ),
+                    );
+                  }
+                  return SafeArea(
+                    child: CustomScrollView(
+                      physics: BouncingScrollPhysics(),
+                      slivers: [
+                        PlayTimeStatsLayout(
+                          timeStats: state.thisMonthTimeConsume,
+                          monthlyData: state.monthlyTimeConsume,
+                          weeklyData: state.weeklyTimeConsume,
+                          dailyData: state.dailyTimeConsume,
+                          top3TodayMostDrainingCards: state.top3TodayMostTimeConsume,
+                          top3WeeklyMostDrainingCards: state.top3WeeklyMostTimeConsume,
+                          top3MonthlyMostDrainingCards: state.top3MonthlyMostTimeConsume,
+                          isAudioPlay: _isAudioPlated,
+                          audioPlayer: _audioPlayer,
+                          filePath: widget.filePath,
+                          top3TodayLeastDrainingCards: state.top3TodayLeastTimeConsume,
+                          top3WeeklyLeastDrainingCards: state.top3WeeklyLeastTimeConsume,
+                          top3MonthlyLeastDrainingCards: state.top3MonthlyLeastTimeConsume,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return ErrorPage();
+              },
+            ),
     );
   }
 }

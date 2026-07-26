@@ -23,7 +23,3 @@ class AnsweringFlashCard extends FlashCardEvent {
     required this.timeMs,
   });
 }
-
-class GettingAccuracyStats extends FlashCardEvent {}
-
-class GettingTimeConsumeStats extends FlashCardEvent {}

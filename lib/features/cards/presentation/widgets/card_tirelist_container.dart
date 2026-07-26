@@ -1,12 +1,14 @@
 import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/vocab_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:m3e_core/m3e_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:m3e_core/m3e_core.dart';
 
 class CardTierListContainer extends StatelessWidget {
   const CardTierListContainer({
@@ -23,6 +25,7 @@ class CardTierListContainer extends StatelessWidget {
     required this.audioPlayer,
     required this.filePath,
   });
+
   final File filePath;
   final String titleText;
   final IconData iconShape;
@@ -113,7 +116,9 @@ class CardTierListContainer extends StatelessWidget {
                   builder: (BuildContext context) {
                     return VocabBottomModal(
                       listCard: cardsData,
-                      filePath: filePath,
+                      filePath: RepositoryProvider.of<ExternalDatabaseAccessor>(
+                        context,
+                      ).filePath!,
                       audioPlayer: audioPlayer,
                       cardIndex: cardIndex,
                     );
@@ -122,12 +127,10 @@ class CardTierListContainer extends StatelessWidget {
                 audioPlayer.stop();
               },
               flexWeights: const <int>[8, 1, 1],
-              // 💡 Tambahkan ini agar jarak antar kartu tidak terlalu nempel
               itemSnapping: true,
               backgroundColor: Colors.transparent,
               children: cardsData.map((card) {
                 return ClipRRect(
-                  // 💡 Biar ujung kartunya membulat ngikutin desain M3
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                     decoration: BoxDecoration(color: carouselBackgroundColor),
@@ -152,23 +155,19 @@ class CardTierListContainer extends StatelessWidget {
                                 textAlign: TextAlign.center,
                                 maxLines: 2,
                                 overflow: TextOverflow.fade,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .displaySmall
+                                style: Theme.of(context).textTheme.displaySmall
                                     ?.copyWith(
                                       color: carouselForgroundColor,
-                                      fontSize: card.defaultLanguage.length > 30 ? 25.0 : 30.0,
+                                      fontSize: card.defaultLanguage.length > 30
+                                          ? 25.0
+                                          : 30.0,
                                     ),
                               ),
                               Text(
                                 card.translatedLanguage,
                                 overflow: TextOverflow.fade,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodyMedium
-                                    ?.copyWith(
-                                      color: carouselForgroundColor,
-                                    ),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: carouselForgroundColor),
                               ),
                             ],
                           ),

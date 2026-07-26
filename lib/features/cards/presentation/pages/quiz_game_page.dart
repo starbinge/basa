@@ -6,7 +6,7 @@ import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:basa_app_project/core/widgets/animated_play_pause_button.dart';
 import 'package:basa_app_project/features/cards/constants/enums/flashcard_answer_enum.dart';
-import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
+import 'package:basa_app_project/features/cards/data/dao/cards_dao/cards_dao.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/quiz_game_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';

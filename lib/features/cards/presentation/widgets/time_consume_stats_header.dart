@@ -30,7 +30,7 @@ class TimeConsumeStatsHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                widget.timeStats.totalTime.hours,
+                widget.timeStats.totalTime.hour.toString().padLeft(2, '0'),
                 style: displayLarge?.copyWith(
                   fontSize: 120.sp,
                   fontWeight: FontWeight.w900,
@@ -52,7 +52,7 @@ class TimeConsumeStatsHeader extends StatelessWidget {
                 ),
               ),
               Text(
-                widget.timeStats.totalTime.minutes,
+                widget.timeStats.totalTime.minute.toString().padLeft(2, '0'),
                 style: displayMedium?.copyWith(
                   fontSize: 60.sp,
                   fontWeight: FontWeight.w800,
@@ -63,7 +63,7 @@ class TimeConsumeStatsHeader extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(bottom: 6.h, left: 4.w),
                 child: Text(
-                  widget.timeStats.totalTime.seconds,
+                  widget.timeStats.totalTime.seconds.toString().padLeft(2, '0'),
                   style: headlineSmall?.copyWith(
                     fontSize: 10.sp,
                     fontWeight: FontWeight.w700,
@@ -99,7 +99,7 @@ class TimeConsumeStatsHeader extends StatelessWidget {
                 style: Theme.of(
                   context,
                 ).textTheme.bodyLarge?.copyWith(color: Colors.white),
-                "Average Per Card: ${widget.timeStats.avgTime.minutes} m ${widget.timeStats.avgTime.seconds} s ",
+                "Average Per Card: ${widget.timeStats.avgTime.minute} m ${widget.timeStats.avgTime.seconds} s ",
               ),
             ],
           ),

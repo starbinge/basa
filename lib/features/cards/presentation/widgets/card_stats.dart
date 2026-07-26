@@ -1,5 +1,5 @@
 import 'package:basa_app_project/core/widgets/stats_empty_state.dart';
-import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
+import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/accuracy_stats_header.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/weekly_streak_container.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ class CardStats extends StatelessWidget {
   final VoidCallback onTapTimeConsumeStats;
   final int thisMonthAccuracyStats;
   final int previousMonthAccuracyStats;
-  final List<DeckTimeConsume> weeklyTimeConsumeData;
+  final List<TimeConsumeEntity> weeklyTimeConsumeData;
   @override
   Widget build(BuildContext context) {
     final bool isEmpty =

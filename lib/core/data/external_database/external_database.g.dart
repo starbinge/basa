@@ -8,9 +8,7 @@ class $CardsTableTable extends CardsTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $CardsTableTable(this.attachedDatabase, [this._alias]);
-
   static const VerificationMeta _queueMeta = const VerificationMeta('queue');
   @override
   late final GeneratedColumn<int> queue = GeneratedColumn<int>(
@@ -92,7 +90,6 @@ class $CardsTableTable extends CardsTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-
   @override
   List<GeneratedColumn> get $columns => [
     queue,
@@ -105,14 +102,11 @@ class $CardsTableTable extends CardsTable
     left,
     flags,
   ];
-
   @override
   String get aliasedName => _alias ?? actualTableName;
-
   @override
   String get actualTableName => $name;
   static const String $name = 'cards';
-
   @override
   VerificationContext validateIntegrity(
     Insertable<CardsTableData> instance, {
@@ -192,7 +186,6 @@ class $CardsTableTable extends CardsTable
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
-
   @override
   CardsTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -252,7 +245,6 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
   final int odue;
   final int left;
   final int flags;
-
   const CardsTableData({
     required this.queue,
     required this.id,
@@ -264,7 +256,6 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
     required this.left,
     required this.flags,
   });
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -311,7 +302,6 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
       flags: serializer.fromJson<int>(json['flags']),
     );
   }
-
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -349,7 +339,6 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
     left: left ?? this.left,
     flags: flags ?? this.flags,
   );
-
   CardsTableData copyWithCompanion(CardsTableCompanion data) {
     return CardsTableData(
       queue: data.queue.present ? data.queue.value : this.queue,
@@ -383,7 +372,6 @@ class CardsTableData extends DataClass implements Insertable<CardsTableData> {
   @override
   int get hashCode =>
       Object.hash(queue, id, nid, reps, factor, ivl, odue, left, flags);
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -409,7 +397,6 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
   final Value<int> odue;
   final Value<int> left;
   final Value<int> flags;
-
   const CardsTableCompanion({
     this.queue = const Value.absent(),
     this.id = const Value.absent(),
@@ -421,7 +408,6 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
     this.left = const Value.absent(),
     this.flags = const Value.absent(),
   });
-
   CardsTableCompanion.insert({
     required int queue,
     this.id = const Value.absent(),
@@ -440,7 +426,6 @@ class CardsTableCompanion extends UpdateCompanion<CardsTableData> {
        odue = Value(odue),
        left = Value(left),
        flags = Value(flags);
-
   static Insertable<CardsTableData> custom({
     Expression<int>? queue,
     Expression<int>? id,
@@ -544,9 +529,7 @@ class $NotesTableTable extends NotesTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $NotesTableTable(this.attachedDatabase, [this._alias]);
-
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -583,17 +566,13 @@ class $NotesTableTable extends NotesTable
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-
   @override
   List<GeneratedColumn> get $columns => [id, flds, mid, tags];
-
   @override
   String get aliasedName => _alias ?? actualTableName;
-
   @override
   String get actualTableName => $name;
   static const String $name = 'notes';
-
   @override
   VerificationContext validateIntegrity(
     Insertable<NotesTableData> instance, {
@@ -635,7 +614,6 @@ class $NotesTableTable extends NotesTable
 
   @override
   Set<GeneratedColumn> get $primaryKey => const {};
-
   @override
   NotesTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -670,14 +648,12 @@ class NotesTableData extends DataClass implements Insertable<NotesTableData> {
   final String flds;
   final int mid;
   final String tags;
-
   const NotesTableData({
     required this.id,
     required this.flds,
     required this.mid,
     required this.tags,
   });
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -709,7 +685,6 @@ class NotesTableData extends DataClass implements Insertable<NotesTableData> {
       tags: serializer.fromJson<String>(json['tags']),
     );
   }
-
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -728,7 +703,6 @@ class NotesTableData extends DataClass implements Insertable<NotesTableData> {
         mid: mid ?? this.mid,
         tags: tags ?? this.tags,
       );
-
   NotesTableData copyWithCompanion(NotesTableCompanion data) {
     return NotesTableData(
       id: data.id.present ? data.id.value : this.id,
@@ -751,7 +725,6 @@ class NotesTableData extends DataClass implements Insertable<NotesTableData> {
 
   @override
   int get hashCode => Object.hash(id, flds, mid, tags);
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -768,7 +741,6 @@ class NotesTableCompanion extends UpdateCompanion<NotesTableData> {
   final Value<int> mid;
   final Value<String> tags;
   final Value<int> rowid;
-
   const NotesTableCompanion({
     this.id = const Value.absent(),
     this.flds = const Value.absent(),
@@ -776,7 +748,6 @@ class NotesTableCompanion extends UpdateCompanion<NotesTableData> {
     this.tags = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-
   NotesTableCompanion.insert({
     required int id,
     required String flds,
@@ -787,7 +758,6 @@ class NotesTableCompanion extends UpdateCompanion<NotesTableData> {
        flds = Value(flds),
        mid = Value(mid),
        tags = Value(tags);
-
   static Insertable<NotesTableData> custom({
     Expression<int>? id,
     Expression<String>? flds,
@@ -859,9 +829,7 @@ class $RevlogTableTable extends RevlogTable
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-
   $RevlogTableTable(this.attachedDatabase, [this._alias]);
-
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -945,7 +913,6 @@ class $RevlogTableTable extends RevlogTable
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
-
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -958,14 +925,11 @@ class $RevlogTableTable extends RevlogTable
     time,
     type,
   ];
-
   @override
   String get aliasedName => _alias ?? actualTableName;
-
   @override
   String get actualTableName => $name;
   static const String $name = 'revlog';
-
   @override
   VerificationContext validateIntegrity(
     Insertable<RevlogTableData> instance, {
@@ -1045,7 +1009,6 @@ class $RevlogTableTable extends RevlogTable
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
-
   @override
   RevlogTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -1105,7 +1068,6 @@ class RevlogTableData extends DataClass implements Insertable<RevlogTableData> {
   final int factor;
   final int time;
   final int type;
-
   const RevlogTableData({
     required this.id,
     required this.cid,
@@ -1117,7 +1079,6 @@ class RevlogTableData extends DataClass implements Insertable<RevlogTableData> {
     required this.time,
     required this.type,
   });
-
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1164,7 +1125,6 @@ class RevlogTableData extends DataClass implements Insertable<RevlogTableData> {
       type: serializer.fromJson<int>(json['type']),
     );
   }
-
   @override
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
@@ -1202,7 +1162,6 @@ class RevlogTableData extends DataClass implements Insertable<RevlogTableData> {
     time: time ?? this.time,
     type: type ?? this.type,
   );
-
   RevlogTableData copyWithCompanion(RevlogTableCompanion data) {
     return RevlogTableData(
       id: data.id.present ? data.id.value : this.id,
@@ -1236,7 +1195,6 @@ class RevlogTableData extends DataClass implements Insertable<RevlogTableData> {
   @override
   int get hashCode =>
       Object.hash(id, cid, usn, ease, ivl, lastIvl, factor, time, type);
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1250,8 +1208,6 @@ class RevlogTableData extends DataClass implements Insertable<RevlogTableData> {
           other.factor == this.factor &&
           other.time == this.time &&
           other.type == this.type);
-
-  read(amountOfTodos) {}
 }
 
 class RevlogTableCompanion extends UpdateCompanion<RevlogTableData> {
@@ -1264,7 +1220,6 @@ class RevlogTableCompanion extends UpdateCompanion<RevlogTableData> {
   final Value<int> factor;
   final Value<int> time;
   final Value<int> type;
-
   const RevlogTableCompanion({
     this.id = const Value.absent(),
     this.cid = const Value.absent(),
@@ -1276,7 +1231,6 @@ class RevlogTableCompanion extends UpdateCompanion<RevlogTableData> {
     this.time = const Value.absent(),
     this.type = const Value.absent(),
   });
-
   RevlogTableCompanion.insert({
     this.id = const Value.absent(),
     required int cid,
@@ -1295,7 +1249,6 @@ class RevlogTableCompanion extends UpdateCompanion<RevlogTableData> {
        factor = Value(factor),
        time = Value(time),
        type = Value(type);
-
   static Insertable<RevlogTableData> custom({
     Expression<int>? id,
     Expression<int>? cid,
@@ -1396,17 +1349,19 @@ class RevlogTableCompanion extends UpdateCompanion<RevlogTableData> {
 
 abstract class _$ExternalDatabase extends GeneratedDatabase {
   _$ExternalDatabase(QueryExecutor e) : super(e);
-
   $ExternalDatabaseManager get managers => $ExternalDatabaseManager(this);
   late final $CardsTableTable cardsTable = $CardsTableTable(this);
   late final $NotesTableTable notesTable = $NotesTableTable(this);
   late final $RevlogTableTable revlogTable = $RevlogTableTable(this);
   late final CardsDao cardsDao = CardsDao(this as ExternalDatabase);
-
+  late final HistoryDao historyDao = HistoryDao(this as ExternalDatabase);
+  late final TimeConsumeDao timeConsumeDao = TimeConsumeDao(
+    this as ExternalDatabase,
+  );
+  late final AccuracyDao accuracyDao = AccuracyDao(this as ExternalDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
-
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     cardsTable,
@@ -1449,7 +1404,6 @@ class $$CardsTableTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   ColumnFilters<int> get queue => $composableBuilder(
     column: $table.queue,
     builder: (column) => ColumnFilters(column),
@@ -1505,7 +1459,6 @@ class $$CardsTableTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   ColumnOrderings<int> get queue => $composableBuilder(
     column: $table.queue,
     builder: (column) => ColumnOrderings(column),
@@ -1561,7 +1514,6 @@ class $$CardsTableTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   GeneratedColumn<int> get queue =>
       $composableBuilder(column: $table.queue, builder: (column) => column);
 
@@ -1718,7 +1670,6 @@ class $$NotesTableTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -1749,7 +1700,6 @@ class $$NotesTableTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -1780,7 +1730,6 @@ class $$NotesTableTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -1914,7 +1863,6 @@ class $$RevlogTableTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnFilters(column),
@@ -1970,7 +1918,6 @@ class $$RevlogTableTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   ColumnOrderings<int> get id => $composableBuilder(
     column: $table.id,
     builder: (column) => ColumnOrderings(column),
@@ -2026,7 +1973,6 @@ class $$RevlogTableTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
@@ -2160,15 +2106,11 @@ typedef $$RevlogTableTableProcessedTableManager =
 
 class $ExternalDatabaseManager {
   final _$ExternalDatabase _db;
-
   $ExternalDatabaseManager(this._db);
-
   $$CardsTableTableTableManager get cardsTable =>
       $$CardsTableTableTableManager(_db, _db.cardsTable);
-
   $$NotesTableTableTableManager get notesTable =>
       $$NotesTableTableTableManager(_db, _db.notesTable);
-
   $$RevlogTableTableTableManager get revlogTable =>
       $$RevlogTableTableTableManager(_db, _db.revlogTable);
 }

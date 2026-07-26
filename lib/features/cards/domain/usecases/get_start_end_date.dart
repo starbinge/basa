@@ -34,3 +34,11 @@ int getStartOfTodayEpoch({required DateTime time}) {
 int getEndOfTodayEpoch({required DateTime time}) {
   return DateTime(time.year, time.month, time.day + 1).millisecondsSinceEpoch;
 }
+
+int getStartOfYearEpoch({required DateTime time}) {
+  return DateTime(time.year, 1, 1).millisecondsSinceEpoch;
+}
+
+int getEndOfYearEpoch({required DateTime time}) {
+  return DateTime(time.year + 1, 1, 1).millisecondsSinceEpoch;
+}

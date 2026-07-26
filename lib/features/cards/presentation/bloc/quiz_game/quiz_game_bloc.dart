@@ -4,7 +4,7 @@ import 'package:basa_app_project/core/data/external_database/external_database.d
 import 'package:basa_app_project/core/errors/cards_error.dart';
 import 'package:basa_app_project/features/cards/constants/enums/flashcard_answer_enum.dart';
 import 'package:basa_app_project/features/cards/constants/enums/quiz_game_enum.dart';
-import 'package:basa_app_project/features/cards/data/dao/cards_dao.dart';
+import 'package:basa_app_project/features/cards/data/dao/cards_dao/cards_dao.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/quiz_game_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';

@@ -52,7 +52,6 @@ class DeckGraphContainer<T> extends StatelessWidget {
           borderData: FlBorderData(show: false),
           barGroups: _data.asMap().entries.map((entry) {
             int dataIndex = entry.key;
-            T deck = entry.value;
             T item = entry.value;
             double yValue = getYValue(item);
             return BarChartGroupData(
