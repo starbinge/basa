@@ -2,38 +2,64 @@ import 'package:basa_app_project/features/cards/domain/usecases/track_per_card_t
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  late DateTime fakeTime;
+
+  DateTime fakeNow() => fakeTime;
+
+  TrackPerCardTimer buildTimer() {
+    return TrackPerCardTimer(now: fakeNow);
+  }
+
+  setUp(() {
+    fakeTime = DateTime(2026, 1, 1);
+  });
+
   group('TrackPerCardTimer', () {
     test('reports zero before it has started', () {
-      expect(TrackPerCardTimer().elapsedMilliseconds, 0);
+      expect(buildTimer().elapsedMilliseconds, 0);
     });
 
     test('accumulates elapsed time while running and freezes when stopped',
-        () async {
-      final timer = TrackPerCardTimer();
+        () {
+      final timer = buildTimer();
 
       timer.start();
-      await Future<void>.delayed(const Duration(milliseconds: 30));
-      final runningElapsed = timer.elapsedMilliseconds;
+      fakeTime = fakeTime.add(const Duration(milliseconds: 30));
+      expect(timer.elapsedMilliseconds, 30);
 
       timer.stop();
-      await Future<void>.delayed(const Duration(milliseconds: 30));
+      fakeTime = fakeTime.add(const Duration(milliseconds: 30));
 
-      expect(runningElapsed, greaterThan(0));
-      expect(timer.elapsedMilliseconds, runningElapsed);
+      expect(timer.elapsedMilliseconds, 30);
     });
 
-    test('restarting resets the elapsed time', () async {
-      final timer = TrackPerCardTimer();
+    test('restarting resets the elapsed time', () {
+      final timer = buildTimer();
 
       timer.start();
-      await Future<void>.delayed(const Duration(milliseconds: 30));
+      fakeTime = fakeTime.add(const Duration(milliseconds: 30));
       timer.stop();
+      expect(timer.elapsedMilliseconds, 30);
 
       timer.start();
-      await Future<void>.delayed(const Duration(milliseconds: 5));
+      fakeTime = fakeTime.add(const Duration(milliseconds: 5));
       timer.stop();
 
-      expect(timer.elapsedMilliseconds, lessThan(30));
+      expect(timer.elapsedMilliseconds, 5);
+    });
+
+    test('keeps counting after a stop that is followed by another start', () {
+      final timer = buildTimer();
+
+      timer.start();
+      fakeTime = fakeTime.add(const Duration(milliseconds: 10));
+      timer.stop();
+      fakeTime = fakeTime.add(const Duration(milliseconds: 100));
+
+      timer.start();
+      fakeTime = fakeTime.add(const Duration(milliseconds: 7));
+
+      expect(timer.elapsedMilliseconds, 7);
     });
   });
 }
