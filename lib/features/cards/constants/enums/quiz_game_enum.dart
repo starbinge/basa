@@ -1,0 +1,1 @@
+enum QuizGameEnum { translateLanguage, audio }

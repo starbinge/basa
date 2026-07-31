@@ -1,0 +1,1 @@
+enum DateRangeGranularity { daily, monthly }

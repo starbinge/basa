@@ -1,6 +1,7 @@
 import 'package:basa_app_project/core/constants/screen_size.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class CountrySelector extends StatelessWidget {
   const CountrySelector({
@@ -29,7 +30,7 @@ class CountrySelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         InkWell(
           onTap: () {
             showCountryPicker(
@@ -38,28 +39,28 @@ class CountrySelector extends StatelessWidget {
               context: context,
               onSelect: onSelect,
               countryListTheme: CountryListThemeData(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  topRight: Radius.circular(8),
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(8.r),
+                  topRight: Radius.circular(8.r),
                 ),
                 bottomSheetHeight: context.screenHeight / 2,
-                inputDecoration: InputDecoration(
+                inputDecoration: const InputDecoration(
                   hintText: "Search country...",
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: Icon(Icons.search),
                 ),
               ),
             );
           },
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(4.r),
           child: InputDecorator(
-            decoration: const InputDecoration(
-              suffixIcon: Icon(Icons.arrow_drop_down, size: 24),
+            decoration: InputDecoration(
+              suffixIcon: Icon(Icons.arrow_drop_down, size: 24.sp),
             ),
             child: Row(
               children: [
                 if (flagEmoji != null) ...[
-                  Text(flagEmoji, style: const TextStyle(fontSize: 18)),
-                  const SizedBox(width: 8),
+                  Text(flagEmoji, style: TextStyle(fontSize: 18.sp)),
+                  SizedBox(width: 8.w),
                 ],
                 Expanded(
                   child: Text(

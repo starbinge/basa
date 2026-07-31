@@ -1,0 +1,1 @@
+enum ChartCategoryEnum { Monthly, Weekly }

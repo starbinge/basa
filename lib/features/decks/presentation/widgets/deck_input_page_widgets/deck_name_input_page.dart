@@ -2,8 +2,8 @@ import 'package:basa_app_project/core/utils/custom_deck__color_mapper.dart';
 import 'package:basa_app_project/core/widgets/color_picker.dart';
 import 'package:basa_app_project/core/widgets/text_button_custom.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class DeckNameInput extends StatelessWidget {
   const DeckNameInput({
@@ -20,7 +20,7 @@ class DeckNameInput extends StatelessWidget {
   final ThemeData theme;
   final TextEditingController _deckNameController;
   final PageController _pageController;
-  final int  _selectedColor;
+  final int _selectedColor;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +52,7 @@ class DeckNameInput extends StatelessWidget {
                     ),
                   ),
                   onPressed: () async {
-                    final bool selectedColor = await colorPickerDialog(
+                    await colorPickerDialog(
                       context: context,
                       currentColor: Colors.blue.shade900,
                       onChangedColor: onSelectedColor,
@@ -62,10 +62,10 @@ class DeckNameInput extends StatelessWidget {
                 ),
               ],
             )
-            .animate(delay: Duration(milliseconds: 200))
+            .animate(delay: const Duration(milliseconds: 200))
             .fadeIn(curve: Curves.easeInOut)
             .moveY(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               delay: const Duration(milliseconds: 100),
               begin: 20,
@@ -82,14 +82,16 @@ class DeckNameInput extends StatelessWidget {
                 disabledBorder: InputBorder.none,
                 focusedErrorBorder: InputBorder.none,
                 hintText: "Give a name to your deck",
-                hintStyle: TextStyle(fontWeight: FontWeight.w200),
+                hintStyle: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w200),
               ),
               textAlign: TextAlign.center,
             )
-            .animate(delay: Duration(milliseconds: 400))
+            .animate(delay: const Duration(milliseconds: 400))
             .fadeIn(curve: Curves.easeInOut)
             .moveY(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               delay: const Duration(milliseconds: 200),
               begin: 20,

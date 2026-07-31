@@ -34,11 +34,11 @@ class _ChooseLanguagePageState extends State<ChooseLanguagePage> {
       children: [
         Expanded(child: Container()),
         LottieBuilder.asset(animationPath + "Grey_Globe.json", repeat: true),
-        Text("What language is your deck?")
-            .animate(delay: Duration(milliseconds: 200))
+        const Text("What language is your deck?")
+            .animate(delay: const Duration(milliseconds: 200))
             .fadeIn(curve: Curves.easeInOut)
             .moveY(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               delay: const Duration(milliseconds: 100),
               begin: 20,
@@ -48,10 +48,10 @@ class _ChooseLanguagePageState extends State<ChooseLanguagePage> {
               onSelect: widget._onSelect,
               selectedCountry: widget._selectedCountry,
             )
-            .animate(delay: Duration(milliseconds: 400))
+            .animate(delay: const Duration(milliseconds: 400))
             .fadeIn(curve: Curves.easeInOut)
             .moveY(
-              duration: Duration(milliseconds: 300),
+              duration: const Duration(milliseconds: 300),
               curve: Curves.easeInOut,
               delay: const Duration(milliseconds: 200),
               begin: 20,
@@ -78,7 +78,7 @@ class _ChooseLanguagePageState extends State<ChooseLanguagePage> {
                   ),
                 ),
                 onPressedButton: () => widget.pageController.previousPage(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                 ),
               ),

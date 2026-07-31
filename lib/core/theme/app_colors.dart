@@ -3,49 +3,55 @@ import 'package:flutter/material.dart';
 class AppColors {
   AppColors._();
 
-  // ── Surface ──
-  static const Color surface = Color(0xFFFCF9F8);
-  static const Color surfaceDim = Color(0xFFDCD9D9);
-  static const Color surfaceBright = Color(0xFFFCF9F8);
+  // ── Surface (Clean neutrals) ──
+  static const Color surface = Color(0xFFFAFAFA);
+  static const Color surfaceDim = Color(0xFFE0E0E0);
+  static const Color surfaceBright = Color(0xFFFFFFFF);
   static const Color surfaceContainerLowest = Color(0xFFFFFFFF);
-  static const Color surfaceContainerLow = Color(0xFFF6F3F2);
-  static const Color surfaceContainer = Color(0xFFF0EDED);
-  static const Color surfaceContainerHigh = Color(0xFFEAE7E7);
-  static const Color surfaceContainerHighest = Color(0xFFE5E2E1);
-  static const Color onSurface = Color(0xFF000000);
-  static const Color onSurfaceVariant = Color(0xFF6B7280);
-  static const Color inverseSurface = Color(0xFF313030);
-  static const Color inverseOnSurface = Color(0xFFF3F0EF);
+  static const Color surfaceContainerLow = Color(0xFFF5F5F5);
+  static const Color surfaceContainer = Color(0xFFEEEEEE);
+  static const Color surfaceContainerHigh = Color(0xFFE0E0E0);
+  static const Color surfaceContainerHighest = Color(0xFFBDBDBD);
+  static const Color onSurface = Color(0xFF1A1A1A);
+  static const Color onSurfaceVariant = Color(0xFF616161);
+  static const Color inverseSurface = Color(0xFF2C2C2C);
+  static const Color inverseOnSurface = Color(0xFFF5F5F5);
 
-  // ── Primary (Blue) ──
-  static const Color primary = Color(0xFF3C5D9E);
+  // ── Primary (Blue) — True vibrant blue ──
+  static const Color primaryLight = Color(0xFF90CAF9);
+  static const Color primary = Color(0xFF1976D2);
+  static const Color primaryDark = Color(0xFF0D47A1);
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color primaryContainer = Color(0xFF99B8FF);
-  static const Color onPrimaryContainer = Color(0xFF244787);
-  static const Color inversePrimary = Color(0xffaec6ff);
+  static const Color primaryContainer = Color(0xFFBBDEFB);
+  static const Color onPrimaryContainer = Color(0xFF0D47A1);
+  static const Color inversePrimary = Color(0xFF90CAF9);
 
-  // ── Secondary (Red) ──
-  static const Color secondary = Color(0xFFA40800);
+  // ── Secondary (Red) — True vibrant red ──
+  static const Color secondaryLight = Color(0xFFEF9A9A);
+  static const Color secondary = Color(0xFFD32F2F);
+  static const Color secondaryDark = Color(0xFFB71C1C);
   static const Color onSecondary = Color(0xFFFFFFFF);
-  static const Color secondaryContainer = Color(0xFFCC2110);
-  static const Color onSecondaryContainer = Color(0xFFFFE3DE);
+  static const Color secondaryContainer = Color(0xFFFFCDD2);
+  static const Color onSecondaryContainer = Color(0xFFB71C1C);
 
-  // ── Tertiary (Yellow) ──
-  static const Color tertiary = Color(0xFF6B4B00);
-  static const Color onTertiary = Color(0xFFFFFFFF);
-  static const Color tertiaryContainer = Color(0xFF8A6100);
-  static const Color onTertiaryContainer = Color(0xFFFFE5BE);
+  // ── Tertiary (Yellow) — True vibrant yellow ──
+  static const Color tertiaryLight = Color(0xFFFFF176);
+  static const Color tertiary = Color(0xFFF9A825);
+  static const Color tertiaryDark = Color(0xFFF57F17);
+  static const Color onTertiary = Color(0xFF1A1A1A);
+  static const Color tertiaryContainer = Color(0xFFFFF9C4);
+  static const Color onTertiaryContainer = Color(0xFF5D4037);
 
   // ── Error ──
-  static const Color error = Color(0xFFBA1A1A);
+  static const Color error = Color(0xFFD32F2F);
   static const Color onError = Color(0xFFFFFFFF);
-  static const Color errorContainer = Color(0xFFFFDAD6);
-  static const Color onErrorContainer = Color(0xFF93000A);
+  static const Color errorContainer = Color(0xFFFFCDD2);
+  static const Color onErrorContainer = Color(0xFFB71C1C);
 
   // ── Outline ──
-  static const Color outline = Color(0xFF916F69);
-  static const Color outlineVariant = Color(0xFFE6BDB6);
+  static const Color outline = Color(0xFF757575);
+  static const Color outlineVariant = Color(0xFFE0E0E0);
 
   // ── Structural ──
-  static const Color structural = Color(0xFF000000);
+  static const Color structural = Color(0xFF1A1A1A);
 }

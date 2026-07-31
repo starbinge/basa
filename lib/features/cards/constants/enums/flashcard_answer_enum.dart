@@ -1,0 +1,1 @@
+enum FlashcardAnswerEnum { correct, wrong }

@@ -1,0 +1,1 @@
+enum StatisticsPageEnum { accuracy, timeConsume }

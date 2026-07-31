@@ -1,6 +1,6 @@
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
 import 'package:drift/drift.dart';
 
+import '../../../../core/data/initial_database/initial_database.dart';
 import '../models/deck_model.dart';
 
 part 'decks_dao.g.dart';
@@ -14,6 +14,16 @@ class DecksDao extends DatabaseAccessor<AppDatabase> with _$DecksDaoMixin {
 
   Future<int> insertNewDeck(ImportedDeckCompanion entry) {
     return into(importedDeck).insert(entry);
+  }
+
+  Future<int> updatingActiveHour({
+    required int deckId,
+    required int additionalHours,
+  }) async {
+    return customUpdate(
+      'UPDATE imported_deck SET active_hour = active_hour + ? WHERE id = ?',
+      variables: [Variable(additionalHours), Variable(deckId)],
+    );
   }
 
   Future<ImportedDeckData> getDeckFilePathById({required int id}) {

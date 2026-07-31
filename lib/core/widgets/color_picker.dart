@@ -35,7 +35,7 @@ Future<bool> colorPickerDialog({
       ColorPickerType.custom: true,
       ColorPickerType.wheel: true,
     },
-    copyPasteBehavior: ColorPickerCopyPasteBehavior(
+    copyPasteBehavior: const ColorPickerCopyPasteBehavior(
       copyButton: true,
       longPressMenu: true,
       editFieldCopyButton: true,

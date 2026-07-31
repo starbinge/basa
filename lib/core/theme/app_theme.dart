@@ -1,11 +1,14 @@
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class AppTheme {
   AppTheme._();
 
-  static ThemeData get light {
+  static const _googleSans = 'GoogleSans';
+  static const _googleSansFlex = 'GoogleSansFlex';
+
+  static ThemeData light(BuildContext context) {
     const colorScheme = ColorScheme(
       brightness: Brightness.light,
       primary: AppColors.primary,
@@ -36,73 +39,108 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       brightness: Brightness.light,
+      fontFamily: _googleSans,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.surface,
 
       textTheme: TextTheme(
-        displayLarge: GoogleFonts.spaceGrotesk(
-          fontSize: 64,
+        displayLarge: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 51.sp,
           fontWeight: FontWeight.w700,
           height: 1.1,
           letterSpacing: -1.28,
           color: AppColors.onSurface,
         ),
-        headlineLarge: GoogleFonts.spaceGrotesk(
-          fontSize: 40,
+        displayMedium: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 45.sp,
+          fontWeight: FontWeight.w700,
+          height: 1.15,
+          letterSpacing: -1.0,
+          color: AppColors.onSurface,
+        ),
+        displaySmall: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 36.sp,
+          fontWeight: FontWeight.w600,
+          height: 1.2,
+          letterSpacing: -0.5,
+          color: AppColors.onSurface,
+        ),
+        headlineLarge: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 32.sp,
           fontWeight: FontWeight.w700,
           height: 1.2,
           letterSpacing: -0.4,
           color: AppColors.onSurface,
         ),
-        headlineMedium: GoogleFonts.spaceGrotesk(
-          fontSize: 24,
+        headlineMedium: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 19.sp,
           fontWeight: FontWeight.w600,
           height: 1.3,
           color: AppColors.onSurface,
         ),
-        titleLarge: GoogleFonts.spaceGrotesk(
-          fontSize: 22,
+        titleLarge: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 18.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onSurface,
         ),
-        titleMedium: GoogleFonts.spaceGrotesk(
-          fontSize: 16,
+        titleMedium: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 13.sp,
           fontWeight: FontWeight.w600,
           color: AppColors.onSurface,
         ),
-        titleSmall: GoogleFonts.spaceGrotesk(
-          fontSize: 14,
+        titleSmall: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurface,
         ),
-        bodyLarge: GoogleFonts.literata(
-          fontSize: 18,
+        bodyLarge: TextStyle(
+          fontFamily: _googleSansFlex,
+          fontSize: 14.sp,
           fontWeight: FontWeight.w400,
           height: 1.6,
           color: AppColors.onSurface,
         ),
-        bodyMedium: GoogleFonts.literata(
-          fontSize: 16,
+        bodyMedium: TextStyle(
+          fontFamily: _googleSansFlex,
+          fontSize: 13.sp,
           fontWeight: FontWeight.w400,
           height: 1.6,
           color: AppColors.onSurface,
         ),
-        labelLarge: GoogleFonts.spaceGrotesk(
-          fontSize: 14,
+        bodySmall: TextStyle(
+          fontFamily: _googleSansFlex,
+          fontSize: 11.sp,
+          fontWeight: FontWeight.w400,
+          height: 1.4,
+          color: AppColors.onSurfaceVariant,
+        ),
+        labelLarge: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w700,
           height: 1.0,
           letterSpacing: 0.7,
           color: AppColors.onSurface,
         ),
-        labelMedium: GoogleFonts.spaceGrotesk(
-          fontSize: 11,
+        labelMedium: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 9.sp,
           fontWeight: FontWeight.w500,
           height: 1.0,
           color: AppColors.onSurface,
         ),
-        labelSmall: GoogleFonts.spaceGrotesk(
-          fontSize: 10,
-          fontWeight: FontWeight.w300,
+        labelSmall: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 8.sp,
+          fontWeight: FontWeight.w400,
           height: 1.0,
           color: AppColors.onSurface,
         ),
@@ -116,12 +154,13 @@ class AppTheme {
           shadowColor: Colors.black.withAlpha(25),
           surfaceTintColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            side: BorderSide(color: AppColors.outline, width: 1),
-            borderRadius: BorderRadius.circular(4),
+            side: BorderSide(color: AppColors.outline, width: 1.w),
+            borderRadius: BorderRadius.circular(4.r),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: GoogleFonts.spaceGrotesk(
-            fontSize: 14,
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+          textStyle: const TextStyle(
+            fontFamily: _googleSans,
+            fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.7,
           ),
@@ -133,11 +172,12 @@ class AppTheme {
           foregroundColor: AppColors.onSurface,
           elevation: 0,
           shadowColor: Colors.transparent,
-          side: BorderSide(color: AppColors.outline, width: 1),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          textStyle: GoogleFonts.spaceGrotesk(
-            fontSize: 14,
+          side: BorderSide(color: AppColors.outline, width: 1.w),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+          textStyle: const TextStyle(
+            fontFamily: _googleSans,
+            fontSize: 11,
             fontWeight: FontWeight.w700,
             letterSpacing: 0.7,
           ),
@@ -146,34 +186,36 @@ class AppTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         isDense: true,
-        contentPadding: const EdgeInsets.all(8),
+        contentPadding: EdgeInsets.all(8.w),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: AppColors.outline, width: 1),
+          borderRadius: BorderRadius.circular(4.r),
+          borderSide: BorderSide(color: AppColors.outline, width: 1.w),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: AppColors.onSurface, width: 1),
+          borderRadius: BorderRadius.circular(4.r),
+          borderSide: BorderSide(color: AppColors.onSurface, width: 1.w),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: AppColors.primary, width: 1.5),
+          borderRadius: BorderRadius.circular(4.r),
+          borderSide: BorderSide(color: AppColors.primary, width: 1.5.w),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: AppColors.error, width: 1),
+          borderRadius: BorderRadius.circular(4.r),
+          borderSide: BorderSide(color: AppColors.error, width: 1.w),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide(color: AppColors.error, width: 1.5),
+          borderRadius: BorderRadius.circular(4.r),
+          borderSide: BorderSide(color: AppColors.error, width: 1.5.w),
         ),
-        labelStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 14,
+        labelStyle: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w500,
           color: AppColors.onSurfaceVariant,
         ),
-        hintStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 14,
+        hintStyle: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 11.sp,
           fontWeight: FontWeight.w400,
           color: AppColors.onSurfaceVariant.withAlpha(100),
         ),
@@ -185,12 +227,14 @@ class AppTheme {
         unselectedItemColor: AppColors.onSurfaceVariant,
         elevation: 2,
         type: BottomNavigationBarType.fixed,
-        selectedLabelStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 12,
+        selectedLabelStyle: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 10.sp,
           fontWeight: FontWeight.w500,
         ),
-        unselectedLabelStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 12,
+        unselectedLabelStyle: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 10.sp,
           fontWeight: FontWeight.w400,
         ),
       ),
@@ -200,8 +244,8 @@ class AppTheme {
         shadowColor: Colors.black.withAlpha(25),
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          side: BorderSide(color: AppColors.outlineVariant, width: 1),
-          borderRadius: BorderRadius.circular(4),
+          side: BorderSide(color: AppColors.outlineVariant, width: 1.w),
+          borderRadius: BorderRadius.circular(4.r),
         ),
         color: AppColors.surfaceContainerLow,
         margin: EdgeInsets.zero,
@@ -211,7 +255,7 @@ class AppTheme {
         elevation: 4,
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.r)),
       ),
 
       appBarTheme: AppBarTheme(
@@ -220,14 +264,15 @@ class AppTheme {
         scrolledUnderElevation: 1,
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.onSurface,
-        titleTextStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 22,
+        titleTextStyle: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 18.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onSurface,
         ),
       ),
 
-      dividerTheme: DividerThemeData(
+      dividerTheme: const DividerThemeData(
         thickness: 1,
         color: AppColors.outlineVariant,
         space: 1,
@@ -235,15 +280,16 @@ class AppTheme {
 
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.primary,
-        labelStyle: GoogleFonts.spaceGrotesk(
-          fontSize: 12,
+        labelStyle: TextStyle(
+          fontFamily: _googleSans,
+          fontSize: 10.sp,
           fontWeight: FontWeight.w700,
           color: AppColors.onPrimary,
         ),
         side: BorderSide.none,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.r)),
         elevation: 0,
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       ),
 
       progressIndicatorTheme: const ProgressIndicatorThemeData(

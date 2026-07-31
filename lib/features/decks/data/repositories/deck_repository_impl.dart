@@ -1,6 +1,4 @@
 import 'dart:io';
-
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
 import 'package:drift/drift.dart';
@@ -8,7 +6,10 @@ import 'package:flutter_archive/flutter_archive.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
+import '../../../../core/data/initial_database/initial_database.dart';
 import '../../../../core/errors/input_errors.dart';
+import '../../../../core/utils/anki_collection_resolver.dart';
+import '../../../../core/utils/reading_json_file.dart';
 
 class DeckRepositoryImpl implements DeckRepository {
   final DecksDao _dao;
@@ -25,6 +26,51 @@ class DeckRepositoryImpl implements DeckRepository {
       path.join(appDocDir.path, 'media', deckName),
     );
     return deckDirectory.exists();
+  }
+
+  @override
+  Future<int> updatingActiveHour({
+    required int deckId,
+    required int additionalHours,
+  }) =>
+      _dao.updatingActiveHour(deckId: deckId, additionalHours: additionalHours);
+
+  @override
+  Future<void> reConstructData({
+    required File mediaFile,
+    required File extractedFilePath,
+  }) async {
+    try {
+      final Map<String, dynamic> _jsonData = await readingJsonFile(
+        jsonFile: mediaFile,
+      );
+      final List<Future<void>> existingDefaultFile = [];
+
+      for (var entry in _jsonData.entries) {
+        final String codeFile = entry.key;
+        final String fileName = entry.value;
+        final File _defaultFile = File(
+          path.join(extractedFilePath.path, codeFile),
+        );
+        if (await _defaultFile.exists()) {
+          existingDefaultFile.add(
+            _defaultFile.rename(path.join(extractedFilePath.path, fileName)),
+          );
+        }
+      }
+
+      if (existingDefaultFile.isNotEmpty) {
+        await Future.wait(existingDefaultFile);
+      }
+
+      if (await mediaFile.exists()) {
+        await mediaFile.delete();
+      }
+    } on UnimplementedError {
+      throw UnimplementedError();
+    } catch (e) {
+      rethrow;
+    }
   }
 
   @override
@@ -53,6 +99,12 @@ class DeckRepositoryImpl implements DeckRepository {
     await ZipFile.extractToDirectory(
       zipFile: deckInByte,
       destinationDir: deckDirectory,
+    );
+    await cleanupLegacyCollection(deckDirectory.path);
+    final File jsonFile = File(path.join(deckDirectory.path, 'media'));
+    await reConstructData(
+      mediaFile: jsonFile,
+      extractedFilePath: File(deckDirectory.path),
     );
 
     await _dao.insertNewDeck(

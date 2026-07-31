@@ -1,20 +1,29 @@
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
 import 'package:basa_app_project/core/router/app_router.dart';
-import 'package:basa_app_project/core/services/file_picker.dart';
 import 'package:basa_app_project/core/theme/app_theme.dart';
-import 'package:basa_app_project/features/cards/data/repositories/card_repo_impl.dart';
-import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
-import 'package:basa_app_project/features/decks/data/repositories/deck_repository_impl.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/deck_import/deck_import_bloc.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'core/data/external_database/external_database_accessor.dart';
+import 'core/data/initial_database/initial_database.dart';
+import 'features/decks/data/repositories/deck_repository_impl.dart';
+import 'features/decks/domain/repositories/deck_repository.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final database = AppDatabase();
-  runApp(Provider<AppDatabase>.value(value: database, child: MyApp()));
+  final initialDb = AppDatabase();
+  final dbAccessor = ExternalDatabaseAccessor();
+  final deckRepository = DeckRepositoryImpl(decksDao: initialDb.decksDao);
+
+  runApp(
+    MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider<AppDatabase>.value(value: initialDb),
+        RepositoryProvider<ExternalDatabaseAccessor>.value(value: dbAccessor),
+        RepositoryProvider<DeckRepository>.value(value: deckRepository),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,38 +31,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<FetchingDeckBloc>(
-          create: (context) {
-            final decksDao = context.read<AppDatabase>().decksDao;
-            final repository = DeckRepositoryImpl(decksDao: decksDao);
-            return FetchingDeckBloc(repository: repository);
-          },
-        ),
-        BlocProvider<DeckImportBloc>(
-          create: (context) {
-            final decksDao = context.read<AppDatabase>().decksDao;
-            final repository = DeckRepositoryImpl(decksDao: decksDao);
-            return DeckImportBloc(
-              repository: repository,
-              filePicker: FilePickerService(),
-            );
-          },
-        ),
-        BlocProvider<FetchingCardsBloc>(
-          create: (context) {
-            final decksDao = context.read<AppDatabase>().decksDao;
-            return FetchingCardsBloc(
-              cardRepo: CardRepoImpl(decksDao: decksDao),
-            );
-          },
-        ),
-      ],
-      child: MaterialApp.router(
+    return ScreenUtilInit(
+      designSize: const Size(375, 812),
+      minTextAdapt: true,
+      builder: (context, child) => MaterialApp.router(
         debugShowCheckedModeBanner: false,
         title: 'Basa',
-        theme: AppTheme.light,
+        theme: AppTheme.light(context),
         routerConfig: appRouter,
       ),
     );

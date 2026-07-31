@@ -1,9 +1,8 @@
-import 'package:basa_app_project/core/database/initial_database/initial_database.dart';
 import 'package:basa_app_project/features/decks/domain/entities/deck_entity.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 
+import '../../../../../core/data/initial_database/initial_database.dart';
 import 'fetching_deck_event.dart';
 import 'fetching_deck_state.dart';
 
@@ -12,10 +11,17 @@ class FetchingDeckBloc extends Bloc<FetchingDeckEvent, FetchingDeckState> {
 
   FetchingDeckBloc({required DeckRepository repository})
     : _repository = repository,
-      super(FetchingDeckState(deckList: [])) {
+      super(
+        FetchingDeckState(
+          deckList: [],
+          isLoading: false,
+          isDeckExist: false,
+          errorMessage: '',
+        ),
+      ) {
     on<FetchDecksList>((event, emit) async {
-      debugPrint("Fetch");
       try {
+        emit(state.copyWith(isLoading: true));
         final List<ImportedDeckData> rawDecksData = await _repository.getAll();
         final List<DeckEntity> finalDecksData = rawDecksData.map((deck) {
           return DeckEntity(
@@ -29,8 +35,27 @@ class FetchingDeckBloc extends Bloc<FetchingDeckEvent, FetchingDeckState> {
             deckColor: deck.colorDeck,
           );
         }).toList();
-        emit(FetchingDeckState(deckList: finalDecksData));
+        emit(
+          state.copyWith(
+            deckList: finalDecksData,
+            isLoading: false,
+            isDeckExist: true,
+            errorMessage: '',
+          ),
+        );
       } catch (e) {}
+    });
+
+    on<UpdateActiveHour>((event, emit) async {
+      try {
+        await _repository.updatingActiveHour(
+          deckId: event.deckId,
+          additionalHours: event.additionalHours,
+        );
+        add(FetchDecksList());
+      } catch (e) {
+        emit(state.copyWith(errorMessage: e.toString()));
+      }
     });
   }
 }
