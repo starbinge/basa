@@ -35,7 +35,7 @@ class DeckGraphContainer<T> extends StatelessWidget {
 
     return Container(
       constraints: BoxConstraints(minHeight: 200.h, maxHeight: 280.h),
-      padding: EdgeInsetsGeometry.all(15),
+      padding: const EdgeInsetsGeometry.all(15),
       width: double.infinity,
       child: BarChart(
         BarChartData(
@@ -100,10 +100,10 @@ class DeckGraphContainer<T> extends StatelessWidget {
                 },
               ),
             ),
-            topTitles: AxisTitles(
+            topTitles: const AxisTitles(
               sideTitles: SideTitles(reservedSize: 30, showTitles: false),
             ),
-            rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitleAlignment: SideTitleAlignment.outside,
               sideTitles: SideTitles(

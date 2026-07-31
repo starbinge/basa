@@ -1,6 +1,5 @@
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../../../../../core/data/external_database/external_database.dart';
 import '../../models/fetching_cards_model.dart';
@@ -77,7 +76,6 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
     final List<TypedResult> rows = await cardsTableData.get();
 
     if (rows.isEmpty) {
-      debugPrint("Data gaaada");
       return null;
     }
 

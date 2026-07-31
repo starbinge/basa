@@ -60,7 +60,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
       backgroundColor: Colors.white,
       body: BlocBuilder<FlashCardBloc, FlashCardState>(
         builder: (context, state) {
-          if (state is FlashCardIsLoading) return CircularProgressIndicator();
+          if (state is FlashCardIsLoading) return const CircularProgressIndicator();
           if (state is FLashCardIsError)
             return ErrorPage(
               title: 'Flashcard error',
@@ -73,7 +73,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
                 children: [
                   Container(
                     width: double.infinity,
-                    child: Center(child: Text("Flash Card")),
+                    child: const Center(child: Text("Flash Card")),
                   ),
                   Expanded(
                     child: FlashCardSlider(
@@ -84,7 +84,6 @@ class _FleshCardPageState extends State<FleshCardPage> {
                         setState(() {
                           isThisBack = isBack;
                         });
-                        debugPrint(isThisBack.toString());
                       },
                       onPageChanged: (int value) {
                         activeIndex = value;
@@ -96,7 +95,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
                     ),
                   ),
                   Container(
-                    decoration: BoxDecoration(),
+                    decoration: const BoxDecoration(),
                     width: double.infinity,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -117,14 +116,14 @@ class _FleshCardPageState extends State<FleshCardPage> {
                                   ? Theme.of(context).colorScheme.error
                                   : Theme.of(context).disabledColor,
                             ),
-                            foregroundColor: WidgetStatePropertyAll(
+                            foregroundColor: const WidgetStatePropertyAll(
                               Colors.white,
                             ),
-                            fixedSize: Size(72, 72),
+                            fixedSize: const Size(72, 72),
                           ),
-                          child: Icon(Icons.close, size: 28),
+                          child: const Icon(Icons.close, size: 28),
                         ),
-                        SizedBox(width: 16),
+                        const SizedBox(width: 16),
                         M3EButton(
                           onPressed: isThisBack
                               ? () => onPressedAction(
@@ -141,12 +140,12 @@ class _FleshCardPageState extends State<FleshCardPage> {
                                   ? Theme.of(context).primaryColor
                                   : Theme.of(context).disabledColor,
                             ),
-                            foregroundColor: WidgetStatePropertyAll(
+                            foregroundColor: const WidgetStatePropertyAll(
                               Colors.white,
                             ),
-                            fixedSize: Size(72, 72),
+                            fixedSize: const Size(72, 72),
                           ),
-                          child: Icon(Icons.check, size: 28),
+                          child: const Icon(Icons.check, size: 28),
                         ),
                       ],
                     ),

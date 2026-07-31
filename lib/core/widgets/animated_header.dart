@@ -32,7 +32,7 @@ class AnimatedHeader extends StatelessWidget {
                     color: Theme.of(context).primaryColorDark,
                   )
                   .animate(onComplete: (controller) => controller.repeat())
-                  .rotate(duration: Duration(seconds: 5), curve: Curves.linear),
+                  .rotate(duration: const Duration(seconds: 5), curve: Curves.linear),
               Icon(icon, size: size! / 2, color: Colors.white),
             ],
           ),

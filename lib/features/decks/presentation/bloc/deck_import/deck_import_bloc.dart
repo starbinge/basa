@@ -2,7 +2,6 @@ import 'package:basa_app_project/core/errors/input_errors.dart';
 import 'package:basa_app_project/core/utils/file_picker.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
 import 'package:bloc/bloc.dart';
-import 'package:flutter/material.dart';
 
 import 'deck_import_event.dart';
 import 'deck_import_state.dart';
@@ -54,9 +53,7 @@ class DeckImportBloc extends Bloc<DeckImportEvent, DeckImportState> {
             isFinished: true,
           ),
         );
-      } catch (e, stacktrace) {
-        debugPrint(e.toString());
-        debugPrint(stacktrace as String?);
+      } catch (e) {
         emit(
           state.copyWith(
             isError: true,

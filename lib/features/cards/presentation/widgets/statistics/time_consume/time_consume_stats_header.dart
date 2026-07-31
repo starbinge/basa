@@ -90,11 +90,11 @@ class TimeConsumeStatsHeader extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             spacing: 10,
             children: [
-              Icon(Icons.timer_rounded, color: Colors.white),
+              const Icon(Icons.timer_rounded, color: Colors.white),
               Text(
                 style: Theme.of(
                   context,

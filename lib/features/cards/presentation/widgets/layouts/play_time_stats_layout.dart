@@ -77,7 +77,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                     headlineSmall: headlineSmall,
                     labelLarge: labelLarge,
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                 ],
               ),
             ),
@@ -121,7 +121,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                   _selectedPage = selectedIndex;
                   _pageController.animateToPage(
                     selectedIndex,
-                    duration: Duration(milliseconds: 300),
+                    duration: const Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
                   );
                 }),
@@ -129,7 +129,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
               SizedBox(
                 height: 280.h,
                 child: PageView(
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   onPageChanged: (int pageIndex) => setState(() {
                     _selectedPage = pageIndex;
                   }),

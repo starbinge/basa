@@ -25,8 +25,8 @@ class _CallendarHeatmapState extends State<CallendarHeatmap> {
     final color = widget.baseColor ?? Theme.of(context).primaryColor;
 
     return Container(
-      padding: EdgeInsets.all(10),
-      constraints: BoxConstraints(maxHeight: 300),
+      padding: const EdgeInsets.all(10),
+      constraints: const BoxConstraints(maxHeight: 300),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
@@ -34,7 +34,7 @@ class _CallendarHeatmapState extends State<CallendarHeatmap> {
           Expanded(
             child: GridView.builder(
               itemCount: widget.itemCount,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
               ),
               itemBuilder: (BuildContext context, int dateIndex) {

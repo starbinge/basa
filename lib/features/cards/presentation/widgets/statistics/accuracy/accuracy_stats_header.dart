@@ -97,11 +97,11 @@ class AccuracyStatsHeader extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             spacing: 10,
             children: [
-              Icon(Icons.calendar_today_rounded, color: Colors.white),
+              const Icon(Icons.calendar_today_rounded, color: Colors.white),
               Text(
                 "Last Check ${DateFormat.yMMMMd('en_US').format(DateTime.now())}",
                 style: Theme.of(

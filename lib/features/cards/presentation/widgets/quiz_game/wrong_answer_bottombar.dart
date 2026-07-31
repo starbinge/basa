@@ -82,7 +82,7 @@ class _WrongAnswerBottombarState extends State<WrongAnswerBottombar> {
             ).textTheme.titleLarge?.copyWith(color: AppColors.error),
           ),
           if (widget.selectedCard == null)
-            AnimatedHeader(
+            const AnimatedHeader(
               icon: Icons.hourglass_empty_rounded,
               title: "Cards Not Found",
               subtitle: "Something is wrong with the card.",
@@ -122,8 +122,8 @@ class _WrongAnswerBottombarState extends State<WrongAnswerBottombar> {
           ),
           TextButton(
             onPressed: widget.textButtonPressed,
-            child: Text("Yes, I understood!"),
-            style: ButtonStyle(
+            child: const Text("Yes, I understood!"),
+            style: const ButtonStyle(
               backgroundColor: WidgetStatePropertyAll(AppColors.error),
               foregroundColor: WidgetStatePropertyAll(AppColors.errorContainer),
             ),

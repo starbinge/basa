@@ -33,7 +33,6 @@ class _AnswerOptionSectionState extends State<AnswerOptionSection> {
   Stopwatch _stopwatch = Stopwatch();
   int selectedIndex = -1;
   bool _showWrongBottomBar = false;
-  CardsDetailEntity? _wrongCard;
 
   @override
   void initState() {

@@ -61,7 +61,7 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
           child: BlocBuilder<FetchingDeckBloc, FetchingDeckState>(
             builder: (context, state) {
               if (state.isLoading) {
-                return Center(child: CircularProgressIndicator());
+                return const Center(child: CircularProgressIndicator());
               }
               final List<DeckEntity> deckList = state.deckList;
               return GridView.builder(
@@ -92,7 +92,7 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                           iconColor: deckList[index].deckColor,
                         ).animate().scale(
                           delay: (Duration(milliseconds: index * 200)),
-                          duration: Duration(milliseconds: 600),
+                          duration: const Duration(milliseconds: 600),
                           curve: Curves.fastEaseInToSlowEaseOut,
                         ),
                   );
@@ -169,7 +169,7 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                             AnkiDeckForm(
                               onPressed: () => Navigator.pop(sheetContext),
                             ),
-                            StatusOverlay(
+                            const StatusOverlay(
                               animation: animationPath + "loading_state.json",
                               hintText: "Importing Deck",
                               isFinished: false,

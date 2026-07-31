@@ -12,7 +12,7 @@ class HistoryPlayCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Histories"), centerTitle: true),
+      appBar: AppBar(title: const Text("Histories"), centerTitle: true),
       body: BlocProvider(
         create: (context) => HistoryBloc(
           historyCardRepo: HistoryRepoImpl(
@@ -23,14 +23,14 @@ class HistoryPlayCard extends StatelessWidget {
         )..add(getHistory()),
         child: BlocBuilder<HistoryBloc, HistoryState>(
           builder: (context, state) {
-            if (state is HistoryIsLoading) return CircularProgressIndicator();
+            if (state is HistoryIsLoading) return const CircularProgressIndicator();
             if (state is HistoryIsError)
               return ErrorPage(message: state.errorMessage);
             if (state is HistoryIsFinished)
               return CustomScrollView(
                 slivers: [
                   SliverPadding(
-                    padding: EdgeInsetsGeometry.all(10),
+                    padding: const EdgeInsetsGeometry.all(10),
                     sliver: SliverMainAxisGroup(
                       slivers: [
                         SliverToBoxAdapter(
@@ -56,7 +56,7 @@ class HistoryPlayCard extends StatelessWidget {
                   ),
                 ],
               );
-            return ErrorPage(message: "Unkown Error");
+            return const ErrorPage(message: "Unkown Error");
           },
         ),
       ),

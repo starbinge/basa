@@ -31,7 +31,7 @@ class CardStats extends StatelessWidget {
         color: Theme.of(context).canvasColor,
         padding: const EdgeInsets.all(20.0),
         child: isEmpty
-            ? AnimatedHeader(
+            ? const AnimatedHeader(
                 icon: Icons.insights_rounded,
                 subtitle: "Complete a study session to see your stats here.",
               )
@@ -58,7 +58,7 @@ class CardStats extends StatelessWidget {
                     "Keep tracking the progress will help you to boost your language skills",
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
-                  SizedBox(height: 24),
+                  const SizedBox(height: 24),
                 ],
               ),
       ),

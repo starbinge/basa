@@ -43,7 +43,7 @@ class _VocabCardState extends State<VocabCard> {
 
     return Card(
       clipBehavior: Clip.antiAlias,
-      margin: EdgeInsets.symmetric(vertical: 2),
+      margin: const EdgeInsets.symmetric(vertical: 2),
       color: Theme.of(context).canvasColor,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadiusGeometry.circular(5),

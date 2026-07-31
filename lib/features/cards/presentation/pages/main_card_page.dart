@@ -86,7 +86,7 @@ class _MainCardPageState extends State<MainCardPage> {
         body: BlocBuilder<FetchingCardsBloc, FetchingCardsState>(
           builder: (context, state) {
             if (state is FetchingCardIsLoading) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
             if (state is FetchingCardIsError) {
               return ErrorPage(
@@ -98,7 +98,7 @@ class _MainCardPageState extends State<MainCardPage> {
               final List<CardsDetailEntity> listCard =
                   state.cardsEntity.listCard;
               if (listCard.isEmpty) {
-                return ErrorPage(
+                return const ErrorPage(
                   title: 'No Cards Here',
                   message: 'This deck doesn\'t have any cards yet.',
                 );
@@ -244,7 +244,7 @@ class _MainCardPageState extends State<MainCardPage> {
                             },
                           ),
                           SliverPadding(
-                            padding: EdgeInsetsGeometry.all(10),
+                            padding: const EdgeInsetsGeometry.all(10),
                             sliver: SliverToBoxAdapter(
                               child: VocabularyListContainer(
                                 searchValue: (String value) {

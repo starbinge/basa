@@ -54,7 +54,7 @@ class _QuestionSectionState extends State<QuestionSection> {
     double cookieSize = (screenWidth * 0.65).clamp(200.0, 260.0);
 
     return Padding(
-          key: ValueKey<int>(widget.activeQuestion ?? 0),
+          key: ValueKey<int>(widget.activeQuestion),
           padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
           child: SizedBox(
             width: cookieSize,

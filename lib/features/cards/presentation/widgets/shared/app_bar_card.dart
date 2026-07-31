@@ -23,7 +23,7 @@ class CardAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(24.0),
           bottomRight: Radius.circular(24.0),
@@ -41,8 +41,8 @@ class CardAppBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(child: Text("Cards", textAlign: TextAlign.center)),
-              IconButton(onPressed: historyButton, icon: Icon(Icons.history)),
+              const Expanded(child: Text("Cards", textAlign: TextAlign.center)),
+              IconButton(onPressed: historyButton, icon: const Icon(Icons.history)),
             ],
           ),
         ),
@@ -88,7 +88,7 @@ class CardAppBar extends StatelessWidget {
                             size: TextTheme.of(context).headlineLarge?.fontSize,
                           ),
                     Container(
-                      padding: EdgeInsetsGeometry.symmetric(
+                      padding: const EdgeInsetsGeometry.symmetric(
                         horizontal: 10,
                         vertical: 5,
                       ),
@@ -120,13 +120,13 @@ class CardAppBar extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     Row(
                       spacing: 20,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         M3EButton.icon(
-                          decoration: M3EButtonDecoration(
+                          decoration: const M3EButtonDecoration(
                             foregroundColor: WidgetStatePropertyAll(
                               AppColors.primaryDark,
                             ),
@@ -135,7 +135,7 @@ class CardAppBar extends StatelessWidget {
                             ),
                           ),
                           onPressed: flashCardButton,
-                          icon: Icon(Icons.shuffle_on_rounded),
+                          icon: const Icon(Icons.shuffle_on_rounded),
                           label: Text(
                             "Flash  Card",
                             style: Theme.of(context).textTheme.labelLarge
@@ -144,7 +144,7 @@ class CardAppBar extends StatelessWidget {
                         ),
 
                         M3EButton.icon(
-                          decoration: M3EButtonDecoration(
+                          decoration: const M3EButtonDecoration(
                             foregroundColor: WidgetStatePropertyAll(
                               AppColors.tertiaryDark,
                             ),
@@ -153,7 +153,7 @@ class CardAppBar extends StatelessWidget {
                             ),
                           ),
                           onPressed: quizButton,
-                          icon: Icon(Icons.quiz_rounded),
+                          icon: const Icon(Icons.quiz_rounded),
                           label: Text(
                             "Play Quiz",
                             style: Theme.of(context).textTheme.labelLarge

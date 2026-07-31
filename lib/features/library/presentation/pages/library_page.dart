@@ -5,6 +5,6 @@ class LibraryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(child: Text("Library"));
+    return const Center(child: Text("Library"));
   }
 }

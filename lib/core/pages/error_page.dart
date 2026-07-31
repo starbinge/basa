@@ -58,7 +58,7 @@ class _ErrorPageState extends State<ErrorPage>
                 child: M3EShape.gem(
                   width: 120.w,
                   height: 120.w,
-                  gradient: LinearGradient(
+                  gradient: const LinearGradient(
                     colors: [
                       AppColors.error,
                       AppColors.errorContainer,

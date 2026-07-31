@@ -16,7 +16,7 @@ class StatsNumberContainer extends StatelessWidget {
     return Container(
       width: context.screenWidth * 0.2,
       height: context.screenWidth * 0.2,
-      padding: EdgeInsetsGeometry.all(10),
+      padding: const EdgeInsetsGeometry.all(10),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.withValues(alpha: 0.3), width: 1),

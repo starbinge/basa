@@ -58,7 +58,7 @@ class _FlashcardSummaryStatsPageState extends State<FlashcardSummaryStatsPage> {
                   padding: const EdgeInsets.all(10.0),
                   child: GridView.builder(
                     shrinkWrap: true,
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: const NeverScrollableScrollPhysics(),
                     itemCount: totalQuestion,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,

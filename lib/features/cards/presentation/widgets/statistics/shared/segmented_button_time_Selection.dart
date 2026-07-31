@@ -29,7 +29,7 @@ class _SegmentedButtonTimeSelectionState
           M3EToggleButtonGroupAction(
             icon: const Icon(Icons.calendar_month_rounded),
             label: null,
-            checkedLabel: Text(
+            checkedLabel: const Text(
               "Daily",
               style: TextStyle(fontWeight: FontWeight.w900),
             ),
@@ -45,7 +45,7 @@ class _SegmentedButtonTimeSelectionState
           M3EToggleButtonGroupAction(
             icon: const Icon(Icons.calendar_view_month),
             label: null,
-            checkedLabel: Text(
+            checkedLabel: const Text(
               "Monthly",
               style: TextStyle(fontWeight: FontWeight.w900),
             ),

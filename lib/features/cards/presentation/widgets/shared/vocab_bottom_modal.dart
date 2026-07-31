@@ -45,8 +45,6 @@ class _VocabBottomModalState extends State<VocabBottomModal> {
       widget.filePath,
       widget.listCard[widget.cardIndex].audioPath.first,
     );
-    debugPrint(rawPath);
-
     if (_isPlaying) {
       widget._audioPlayer.pause();
     } else {

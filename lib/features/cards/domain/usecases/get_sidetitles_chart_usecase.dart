@@ -7,31 +7,31 @@ Text getMonthlyTitleByIndexFunction({
 }) {
   switch (axisX.toInt()) {
     case 1:
-      return Text("J");
+      return const Text("J");
     case 2:
-      return Text("F");
+      return const Text("F");
     case 3:
-      return Text("M");
+      return const Text("M");
     case 4:
-      return Text("A");
+      return const Text("A");
     case 5:
-      return Text("M");
+      return const Text("M");
     case 6:
-      return Text("J");
+      return const Text("J");
     case 7:
-      return Text("J");
+      return const Text("J");
     case 8:
-      return Text("A");
+      return const Text("A");
     case 9:
-      return Text("S");
+      return const Text("S");
     case 10:
-      return Text("O");
+      return const Text("O");
     case 11:
-      return Text("N");
+      return const Text("N");
     case 12:
-      return Text("D");
+      return const Text("D");
     default:
-      return Text("");
+      return const Text("");
   }
 }
 
@@ -41,21 +41,21 @@ Text getWeeklyTitleByIndexFunction({
 }) {
   switch (axisX.toInt()) {
     case 1:
-      return Text("S");
+      return const Text("S");
     case 2:
-      return Text("M");
+      return const Text("M");
     case 3:
-      return Text("T");
+      return const Text("T");
     case 4:
-      return Text("W");
+      return const Text("W");
     case 5:
-      return Text("T");
+      return const Text("T");
     case 6:
-      return Text("F");
+      return const Text("F");
     case 7:
-      return Text("S");
+      return const Text("S");
 
     default:
-      return Text("");
+      return const Text("");
   }
 }

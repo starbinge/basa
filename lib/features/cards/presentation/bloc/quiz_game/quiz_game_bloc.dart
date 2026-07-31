@@ -98,7 +98,6 @@ class QuizGameBloc extends Bloc<QuizGameEvent, QuizGameState> {
 
         emit(QuizGameIsFinish(cards: cards));
       } catch (e) {
-        debugPrint(e.toString());
         emit(QuizGameIsError(errorMessage: e.toString()));
       }
     });
@@ -140,8 +139,6 @@ class QuizGameBloc extends Bloc<QuizGameEvent, QuizGameState> {
           vR: _vR,
           vT: _vT,
         );
-        debugPrint("Generating Queue Done");
-        debugPrint('Nilai vQ: $_vQ');
         // Updating Cards
         await _cardsDao.updateCards(
           updatedCardValue: CardsTableCompanion(
@@ -161,16 +158,16 @@ class QuizGameBloc extends Bloc<QuizGameEvent, QuizGameState> {
           RevlogTableCompanion(
             id: Value(DateTime.now().millisecondsSinceEpoch),
             cid: Value(_selectedCard.id),
-            usn: Value(-1),
+            usn: const Value(-1),
 
             ease: Value(_answer == FlashcardAnswerEnum.correct ? 3 : 1),
-            ivl: Value(0),
+            ivl: const Value(0),
 
-            lastIvl: Value(0),
+            lastIvl: const Value(0),
 
             factor: Value(_newVf),
             time: Value(_vT),
-            type: Value(0),
+            type: const Value(0),
           ),
         );
         final currentState = state as QuizGameIsFinish;
@@ -186,7 +183,6 @@ class QuizGameBloc extends Bloc<QuizGameEvent, QuizGameState> {
       } on CardDaoNotExist {
         emit(QuizGameIsError(errorMessage: "Card Dao Does Not Exist"));
       } catch (e) {
-        debugPrint('AnsweringFlashCard error: $e');
         emit(QuizGameIsError(errorMessage: e.toString()));
       }
     });

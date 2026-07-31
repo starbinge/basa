@@ -58,13 +58,13 @@ class _QuizGamePageState extends State<QuizGamePage> {
     );
     _audioPlayer.setAudioContext(
       AudioContext(
-        android: AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
+        android: const AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
       ),
     );
 
     _sfxPlayer.setAudioContext(
       AudioContext(
-        android: AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
+        android: const AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
       ),
     );
     _initAndPlayBgm();
@@ -114,7 +114,7 @@ class _QuizGamePageState extends State<QuizGamePage> {
                       totalAnswered: answeredQuestion,
                     ),
                   ),
-                  ProgressBarIndicator(),
+                  const ProgressBarIndicator(),
                 ],
               ),
             ),
@@ -171,7 +171,7 @@ class _QuizGamePageState extends State<QuizGamePage> {
   Future<void> _initAndPlayBgm() async {
     await _bgmPlayer.setAudioContext(
       AudioContext(
-        android: AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
+        android: const AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
       ),
     );
     await _bgmPlayer.setReleaseMode(ReleaseMode.loop);

@@ -30,9 +30,9 @@ class _HistoryContainerState extends State<HistoryContainer> {
         children: [
           Text(widget.timeLabel, style: Theme.of(context).textTheme.titleLarge),
           widget.listCard.isEmpty
-              ? AnimatedHeader(icon: Icons.hourglass_empty)
+              ? const AnimatedHeader(icon: Icons.hourglass_empty)
               : Container(
-                  constraints: BoxConstraints(maxHeight: 400),
+                  constraints: const BoxConstraints(maxHeight: 400),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(

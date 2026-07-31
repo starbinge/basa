@@ -76,7 +76,7 @@ class _OptionButtonState extends State<OptionButton> {
                     "sfx/shidenbeatsmusic-sound-effect-twinklesparkle-115095.mp3",
                   ),
                 );
-                Future.delayed(Duration(seconds: 1), () {
+                Future.delayed(const Duration(seconds: 1), () {
                   context.read<QuizGameBloc>()..add(
                     AnsweringQuestion(
                       answer: FlashcardAnswerEnum.correct,

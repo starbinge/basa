@@ -39,7 +39,7 @@ class _SelectDeckFilePageState extends State<SelectDeckFilePage> {
           repeat: true,
           reverse: true,
         ),
-        Text("Select your anki deck file path!"),
+        const Text("Select your anki deck file path!"),
         AnkiFilePickerButton(
           ankiFilePath: widget._ankiFilePath.split("/").last,
           onTap: widget._onTapFilePicker,
@@ -63,7 +63,7 @@ class _SelectDeckFilePageState extends State<SelectDeckFilePage> {
                   ),
                 ),
                 onPressedButton: () => widget._pageController.previousPage(
-                  duration: Duration(milliseconds: 300),
+                  duration: const Duration(milliseconds: 300),
                   curve: Curves.easeInOut,
                 ),
               ),

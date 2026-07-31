@@ -87,16 +87,16 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
           RevlogTableCompanion(
             id: Value(DateTime.now().millisecondsSinceEpoch),
             cid: Value(_selectedCard.id),
-            usn: Value(-1),
+            usn: const Value(-1),
 
             ease: Value(_answer == FlashcardAnswerEnum.correct ? 3 : 1),
-            ivl: Value(0),
+            ivl: const Value(0),
 
-            lastIvl: Value(0),
+            lastIvl: const Value(0),
 
             factor: Value(_newVf),
             time: Value(_vT),
-            type: Value(0),
+            type: const Value(0),
           ),
         );
       } on CardDaoNotExist {

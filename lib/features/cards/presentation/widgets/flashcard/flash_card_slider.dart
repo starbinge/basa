@@ -38,7 +38,7 @@ class _FlashCardSliderState extends State<FlashCardSlider> {
       onPageChanged: widget.onPageChanged,
       controller: widget._pageController,
       itemCount: widget.itemCount,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemBuilder: (BuildContext context, int cardIndex) {
         final card = widget.flashCards[cardIndex];
 

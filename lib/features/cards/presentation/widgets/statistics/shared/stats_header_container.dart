@@ -33,7 +33,7 @@ class StatsHeaderContainer extends StatelessWidget {
           Positioned(
             child:
                 M3EContainer.c9SidedCookie(
-                      child: Text(""),
+                      child: const Text(""),
                       width: 200,
                       height: 200,
                       gradient: LinearGradient(
@@ -47,7 +47,7 @@ class StatsHeaderContainer extends StatelessWidget {
                     )
                     .animate(onPlay: (controller) => controller.repeat())
                     .rotate(
-                      duration: Duration(seconds: 5),
+                      duration: const Duration(seconds: 5),
                       curve: Curves.linear,
                     ),
           ),
@@ -56,7 +56,7 @@ class StatsHeaderContainer extends StatelessWidget {
             right: 100,
             child:
                 M3EContainer.c9SidedCookie(
-                      child: Text(""),
+                      child: const Text(""),
                       width: 100,
                       height: 100,
                       gradient: LinearGradient(
@@ -72,8 +72,8 @@ class StatsHeaderContainer extends StatelessWidget {
                     .rotate(
                       begin: 1,
                       end: 0,
-                      delay: Duration(microseconds: 300),
-                      duration: Duration(seconds: 5),
+                      delay: const Duration(microseconds: 300),
+                      duration: const Duration(seconds: 5),
                       curve: Curves.linear,
                     ),
           ),

@@ -141,7 +141,7 @@ final appRouter = GoRouter(
         GoRoute(
           path: 'history',
           pageBuilder: (context, state) {
-            return MaterialPage(child: HistoryPlayCard());
+            return const MaterialPage(child: HistoryPlayCard());
           },
         ),
         GoRoute(

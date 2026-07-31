@@ -62,7 +62,7 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
         SliverToBoxAdapter(
           child: RepaintBoundary(
             child: Padding(
-              padding: EdgeInsets.all(20),
+              padding: const EdgeInsets.all(20),
               child: AccuracyStatsHeader(
                 thisMonthStats: _thisMonthStats.accuracyNumber,
                 previousMonthStats: _previousMonthStats.accuracyNumber,
@@ -70,7 +70,7 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
             ),
           ),
         ),
-        SliverToBoxAdapter(child: SizedBox(height: 20)),
+        const SliverToBoxAdapter(child: SizedBox(height: 20)),
         SliverToBoxAdapter(
           child: Container(
             child: Column(
@@ -100,7 +100,7 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
                       _selectedPage = selectedIndex;
                       _pageController.animateToPage(
                         selectedIndex,
-                        duration: Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         curve: Curves.easeInOut,
                       );
                     });
@@ -109,7 +109,7 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
                 SizedBox(
                   height: 280.h,
                   child: PageView(
-                    physics: BouncingScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     onPageChanged: (int pageIndex) => setState(() {
                       _selectedPage = pageIndex;
                     }),

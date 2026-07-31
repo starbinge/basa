@@ -25,7 +25,7 @@ class WeeklyStreakContainer extends StatelessWidget {
       child: Column(
         children: [
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             width: double.infinity,
             decoration: const BoxDecoration(
               border: Border(
@@ -38,7 +38,7 @@ class WeeklyStreakContainer extends StatelessWidget {
                 Text("Streaks", style: Theme.of(context).textTheme.titleLarge),
                 IconButton(
                   onPressed: onTapTimeConsumeStats,
-                  icon: Icon(Icons.arrow_right_alt_rounded),
+                  icon: const Icon(Icons.arrow_right_alt_rounded),
                 ),
               ],
             ),
@@ -67,7 +67,7 @@ class WeeklyStreakContainer extends StatelessWidget {
                               )
                               .rotate(
                                 curve: Curves.linear,
-                                duration: Duration(seconds: 5),
+                                duration: const Duration(seconds: 5),
                               ),
                         if (data.avgTime.seconds == 0)
                           M3EShape.c9SidedCookie(

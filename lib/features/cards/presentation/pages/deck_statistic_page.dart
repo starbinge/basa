@@ -43,7 +43,7 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Statistics"),
+        title: const Text("Statistics"),
         surfaceTintColor: Colors.transparent,
         backgroundColor: Colors.transparent,
       ),
@@ -51,7 +51,7 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
           ? BlocBuilder<CardAccuracyBloc, CardAccuracyState>(
               builder: (context, state) {
                 if (state is CardAccuracyLoading) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (state is CardAccuracyError) {
                   return ErrorPage(message: state.errorMessage);
@@ -62,13 +62,13 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                       state.monthlyAccuracy.isEmpty;
 
                   if (isEmpty) {
-                    return SafeArea(
+                    return const SafeArea(
                       child: AnimatedHeader(icon: Icons.bar_chart_rounded),
                     );
                   }
                   return SafeArea(
                     child: CustomScrollView(
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         AccuracyStatsLayout(
                           stats: DeckAccuracyStats(
@@ -87,13 +87,13 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                     ),
                   );
                 }
-                return ErrorPage();
+                return const ErrorPage();
               },
             )
           : BlocBuilder<TimeConsumeBloc, TimeConsumeState>(
               builder: (context, state) {
                 if (state is TimeConsumeLoading) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (state is TimeConsumeError) {
                   return ErrorPage(message: state.errorMessage);
@@ -104,13 +104,13 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                       state.monthlyTimeConsume.isEmpty;
 
                   if (isEmpty) {
-                    return SafeArea(
+                    return const SafeArea(
                       child: AnimatedHeader(icon: Icons.timer_outlined),
                     );
                   }
                   return SafeArea(
                     child: CustomScrollView(
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       slivers: [
                         PlayTimeStatsLayout(
                           timeStats: state.thisMonthTimeConsume,
@@ -126,7 +126,7 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                     ),
                   );
                 }
-                return ErrorPage();
+                return const ErrorPage();
               },
             ),
     );

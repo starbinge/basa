@@ -272,7 +272,7 @@ class AppTheme {
         ),
       ),
 
-      dividerTheme: DividerThemeData(
+      dividerTheme: const DividerThemeData(
         thickness: 1,
         color: AppColors.outlineVariant,
         space: 1,

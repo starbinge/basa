@@ -52,14 +52,14 @@ class _EndingGamePageState extends State<EndingGamePage> {
                       width: context.screenWidth * 0.3,
                       height: context.screenWidth * 0.3,
                       color: AppColors.tertiaryContainer,
-                      border: BorderSide(width: 2, color: AppColors.tertiary),
+                      border: const BorderSide(width: 2, color: AppColors.tertiary),
                     )
                     .animate(onPlay: (controller) => controller.repeat())
                     .rotate(
-                      duration: Duration(seconds: 5),
+                      duration: const Duration(seconds: 5),
                       curve: Curves.linear,
                     ),
-                Icon(
+                const Icon(
                   Icons.emoji_events_rounded,
                   size: 50,
                   color: AppColors.tertiaryDark,
@@ -68,7 +68,7 @@ class _EndingGamePageState extends State<EndingGamePage> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             width: double.infinity / 2,
             child: Text(
               textAlign: TextAlign.center,
@@ -77,7 +77,7 @@ class _EndingGamePageState extends State<EndingGamePage> {
             ),
           ),
           Container(
-            padding: EdgeInsets.all(20),
+            padding: const EdgeInsets.all(20),
             width: double.infinity / 2,
             child: Text(
               textAlign: TextAlign.center,
@@ -114,10 +114,10 @@ class _EndingGamePageState extends State<EndingGamePage> {
                     .scale(
                       curve: Curves.bounceOut,
                       delay: (Duration(milliseconds: indexItem * 200)),
-                      duration: Duration(milliseconds: 800),
+                      duration: const Duration(milliseconds: 800),
                     )
                     .shimmer(
-                      duration: Duration(milliseconds: 300),
+                      duration: const Duration(milliseconds: 300),
                       color: AppColors.onTertiary,
                     );
               },
@@ -137,7 +137,7 @@ class _EndingGamePageState extends State<EndingGamePage> {
                 ).textTheme.titleLarge?.copyWith(color: Colors.white),
               ),
               size: M3EButtonSize.custom(width: double.infinity),
-              decoration: M3EButtonDecoration(
+              decoration: const M3EButtonDecoration(
                 backgroundColor: WidgetStatePropertyAll(AppColors.primaryDark),
               ),
             ),

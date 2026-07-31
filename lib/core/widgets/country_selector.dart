@@ -44,9 +44,9 @@ class CountrySelector extends StatelessWidget {
                   topRight: Radius.circular(8.r),
                 ),
                 bottomSheetHeight: context.screenHeight / 2,
-                inputDecoration: InputDecoration(
+                inputDecoration: const InputDecoration(
                   hintText: "Search country...",
-                  prefixIcon: const Icon(Icons.search),
+                  prefixIcon: Icon(Icons.search),
                 ),
               ),
             );
