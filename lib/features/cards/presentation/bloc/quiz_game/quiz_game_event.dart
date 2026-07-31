@@ -17,9 +17,12 @@ class AnsweringQuestion extends QuizGameEvent {
 
   final int timeMs;
 
+  final bool isCorrect;
+
   AnsweringQuestion({
     required FlashcardAnswerEnum this.answer,
     required CardsDetailEntity this.selectedCard,
     required this.timeMs,
+    required this.isCorrect,
   });
 }

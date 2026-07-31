@@ -1,8 +1,9 @@
 import 'package:basa_app_project/core/theme/app_colors.dart';
-import 'package:basa_app_project/core/widgets/stats_empty_state.dart';
+import 'package:basa_app_project/core/widgets/animated_header.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/vocab_cards.dart';
 import 'package:flutter/material.dart';
+
+import '../shared/vocab_cards.dart';
 
 class HistoryContainer extends StatefulWidget {
   const HistoryContainer({
@@ -29,7 +30,7 @@ class _HistoryContainerState extends State<HistoryContainer> {
         children: [
           Text(widget.timeLabel, style: Theme.of(context).textTheme.titleLarge),
           widget.listCard.isEmpty
-              ? StatsEmptyState(icon: Icons.hourglass_empty)
+              ? AnimatedHeader(icon: Icons.hourglass_empty)
               : Container(
                   constraints: BoxConstraints(maxHeight: 400),
                   decoration: BoxDecoration(

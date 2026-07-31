@@ -10,7 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:m3e_core/m3e_core.dart';
 
 import '../../constants/enums/flashcard_answer_enum.dart';
-import '../widgets/flash_card_slider.dart';
+import '../widgets/flashcard/flash_card_slider.dart';
 
 class FleshCardPage extends StatefulWidget {
   const FleshCardPage({
@@ -50,7 +50,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
 
   @override
   void dispose() {
-    _sessionStopWatch.start();
+    _sessionStopWatch.stop();
     super.dispose();
   }
 
@@ -190,7 +190,7 @@ class _FleshCardPageState extends State<FleshCardPage> {
 
         final String _timeSpent = _sessionStopWatch.elapsed.inSeconds
             .toString();
-        GoRouter.of(context).pushReplacement(
+        context.push(
           '/stats/${widget.deckId}/$correctAnswer/$wrongAnswer/$_timeSpent',
         );
       });

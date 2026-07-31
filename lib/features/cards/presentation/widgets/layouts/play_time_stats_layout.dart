@@ -3,16 +3,21 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/constants/screen_size.dart';
 import 'package:basa_app_project/core/widgets/callendar_heatmap.dart';
-import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_sidetitles_chart_usecase.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/card_tirelist_container.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/deck_graph_container.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/time_consume_stats_header.dart';
+import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
+import 'package:basa_app_project/features/cards/presentation/bloc/statistics/time_consume/time_consume_bloc.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/statistics/shared/deck_graph_container.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/statistics/shared/segmented_button_time_Selection.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/statistics/time_consume/time_consume_stats_header.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:m3e_core/m3e_core.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
+
+import '../statistics/shared/bottom_sheet_stats.dart';
+import '../../../constants/enums/date_range_granularity_enum.dart';
 
 class PlayTimeStatsLayout extends StatefulWidget {
   const PlayTimeStatsLayout({
@@ -20,32 +25,23 @@ class PlayTimeStatsLayout extends StatefulWidget {
 
     required this.timeStats,
     required this.monthlyData,
-    required this.weeklyData,
+
     required this.dailyData,
-    required this.top3TodayMostDrainingCards,
-    required this.top3WeeklyMostDrainingCards,
-    required this.top3MonthlyMostDrainingCards,
+
     required this.isAudioPlay,
     required this.audioPlayer,
     required this.filePath,
-    required this.top3TodayLeastDrainingCards,
-    required this.top3WeeklyLeastDrainingCards,
-    required this.top3MonthlyLeastDrainingCards,
   });
 
   final TimeConsumeEntity timeStats;
   final List<TimeConsumeEntity> monthlyData;
-  final List<TimeConsumeEntity> weeklyData;
+
   final List<TimeConsumeEntity> dailyData;
-  final List<CardsDetailEntity> top3TodayMostDrainingCards;
-  final List<CardsDetailEntity> top3WeeklyMostDrainingCards;
-  final List<CardsDetailEntity> top3MonthlyMostDrainingCards;
+
   final bool isAudioPlay;
   final AudioPlayer audioPlayer;
   final File filePath;
-  final List<CardsDetailEntity> top3TodayLeastDrainingCards;
-  final List<CardsDetailEntity> top3WeeklyLeastDrainingCards;
-  final List<CardsDetailEntity> top3MonthlyLeastDrainingCards;
+
   @override
   State<PlayTimeStatsLayout> createState() => _PlayTimeStatsLayoutState();
 }
@@ -119,69 +115,19 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                 ),
               ),
 
-              Center(
-                child: M3EToggleButtonGroup(
-                  onSelectedIndexChanged: (selectedIndex) => setState(() {
-                    _selectedPage = selectedIndex!;
-                    _pageController.animateToPage(
-                      selectedIndex,
-                      duration: Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  }),
-                  selectedIndex: _selectedPage,
-                  type: M3EButtonGroupType.connected,
-                  actions: [
-                    M3EToggleButtonGroupAction(
-                      icon: const Icon(Icons.calendar_month_rounded),
-                      label: null,
-                      checkedLabel: Text(
-                        "Daily",
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      decoration: M3EToggleButtonDecoration(
-                        backgroundColor: WidgetStatePropertyAll(
-                          _selectedPage == 0
-                              ? Theme.of(context).primaryColorDark
-                              : Colors.grey.withValues(alpha: 0.2),
-                        ),
-                      ),
-                    ),
-                    M3EToggleButtonGroupAction(
-                      decoration: M3EToggleButtonDecoration(
-                        backgroundColor: WidgetStatePropertyAll(
-                          _selectedPage == 1
-                              ? Theme.of(context).primaryColorDark
-                              : Colors.grey.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      icon: const Icon(Icons.calendar_view_week_rounded),
-                      label: null,
-                      checkedLabel: Text(
-                        "Weekly",
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                    ),
-                    M3EToggleButtonGroupAction(
-                      icon: const Icon(Icons.calendar_view_month),
-                      label: null,
-                      checkedLabel: Text(
-                        "Monthly",
-                        style: TextStyle(fontWeight: FontWeight.w900),
-                      ),
-                      decoration: M3EToggleButtonDecoration(
-                        backgroundColor: WidgetStatePropertyAll(
-                          _selectedPage == 2
-                              ? Theme.of(context).primaryColorDark
-                              : Colors.grey.withValues(alpha: 0.2),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              SegmentedButtonTimeSelection(
+                selectedPage: _selectedPage,
+                onSelectedIndexChanged: (int selectedIndex) => setState(() {
+                  _selectedPage = selectedIndex;
+                  _pageController.animateToPage(
+                    selectedIndex,
+                    duration: Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                }),
               ),
               SizedBox(
-                height: 1120.h,
+                height: 280.h,
                 child: PageView(
                   physics: BouncingScrollPhysics(),
                   onPageChanged: (int pageIndex) => setState(() {
@@ -194,94 +140,19 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                         CallendarHeatmap(
                           itemCount: widget.dailyData.length,
                           getValue: (i) {
-                            final minutes =
-                                widget.dailyData[i].totalTime.hour * 60 +
-                                widget.dailyData[i].totalTime.minute;
-                            return minutes == 0
-                                ? 0.0
-                                : minutes / widget.dailyData.length;
+                            final seconds =
+                                widget.dailyData[i].totalTime.seconds;
+                            return seconds == 0 ? 0.0 : seconds / 100;
+                          },
+                          onDateTap: (DateTime date) {
+                            onDateTap(
+                              date: date,
+                              monthName: DateFormat.MMMM('en_US').format(date),
+                              granularity: DateRangeGranularity.daily,
+                            );
                           },
                         ),
-                        CardTierListContainer(
-                          titleText: "Top 3 Most Draining Time Cards",
-                          iconShape: Icons.av_timer_rounded,
-                          backgroundColor: Theme.of(context).primaryColorDark,
-                          strokeColor: Colors.blue.shade900,
-                          iconColor: Colors.white,
-                          cardsData: widget.top3TodayMostDrainingCards,
-                          carouselBackgroundColor: Theme.of(
-                            context,
-                          ).primaryColorDark,
-                          carouselForgroundColor: Colors.white,
-                          isAudioPlay: widget.isAudioPlay,
-                          audioPlayer: widget.audioPlayer,
-                          filePath: widget.filePath,
-                        ),
-                        CardTierListContainer(
-                          titleText: "Top 3 Least Draining Time Cards",
-                          iconShape: Icons.av_timer_rounded,
-                          backgroundColor: Theme.of(context).colorScheme.error,
-                          strokeColor: Colors.red.shade900,
-                          iconColor: Colors.white,
-                          cardsData: widget.top3TodayLeastDrainingCards,
-                          carouselBackgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.error,
-                          carouselForgroundColor: Colors.white,
-                          isAudioPlay: widget.isAudioPlay,
-                          audioPlayer: widget.audioPlayer,
-                          filePath: widget.filePath,
-                        ),
                       ],
-                    ),
-                    RepaintBoundary(
-                      child: Column(
-                        children: [
-                          DeckGraphContainer(
-                            data: widget.weeklyData,
-                            getTitlesWidget: (double axisX, TitleMeta meta) {
-                              return getWeeklyTitleByIndexFunction(
-                                axisX: axisX,
-                                meta: meta,
-                              );
-                            },
-                            getYValue: (TimeConsumeEntity item) =>
-                                (item.totalTime.hour * 60 + item.totalTime.minute).toDouble(),
-                          ),
-                          CardTierListContainer(
-                            titleText: "Top 3 Most Draining Time Cards",
-                            iconShape: Icons.av_timer_rounded,
-                            backgroundColor: Theme.of(context).primaryColor,
-                            strokeColor: Colors.blue.shade900,
-                            iconColor: Colors.white,
-                            cardsData: widget.top3WeeklyMostDrainingCards,
-                            carouselBackgroundColor: Theme.of(
-                              context,
-                            ).primaryColorDark,
-                            carouselForgroundColor: Colors.white,
-                            isAudioPlay: widget.isAudioPlay,
-                            audioPlayer: widget.audioPlayer,
-                            filePath: widget.filePath,
-                          ),
-                          CardTierListContainer(
-                            titleText: "Top 3 Least Draining Time Cards",
-                            iconShape: Icons.av_timer_rounded,
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                            strokeColor: Colors.red.shade900,
-                            iconColor: Colors.white,
-                            cardsData: widget.top3WeeklyLeastDrainingCards,
-                            carouselBackgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                            carouselForgroundColor: Colors.white,
-                            isAudioPlay: widget.isAudioPlay,
-                            audioPlayer: widget.audioPlayer,
-                            filePath: widget.filePath,
-                          ),
-                        ],
-                      ),
                     ),
                     RepaintBoundary(
                       child: Column(
@@ -295,39 +166,24 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                               );
                             },
                             getYValue: (TimeConsumeEntity item) =>
-                                (item.totalTime.hour * 60 + item.totalTime.minute).toDouble(),
-                          ),
-                          CardTierListContainer(
-                            titleText: "Top 3 Most Draining Time Cards",
-                            iconShape: Icons.av_timer_rounded,
-                            backgroundColor: Theme.of(context).primaryColorDark,
-                            strokeColor: Colors.blue.shade900,
-                            iconColor: Colors.white,
-                            cardsData: widget.top3MonthlyMostDrainingCards,
-                            carouselBackgroundColor: Theme.of(
-                              context,
-                            ).primaryColorDark,
-                            carouselForgroundColor: Colors.white,
-                            isAudioPlay: widget.isAudioPlay,
-                            audioPlayer: widget.audioPlayer,
-                            filePath: widget.filePath,
-                          ),
-                          CardTierListContainer(
-                            titleText: "Top 3 Least Draining Time Cards",
-                            iconShape: Icons.av_timer_rounded,
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                            strokeColor: Colors.red.shade900,
-                            iconColor: Colors.white,
-                            cardsData: widget.top3MonthlyLeastDrainingCards,
-                            carouselBackgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.error,
-                            carouselForgroundColor: Colors.white,
-                            isAudioPlay: widget.isAudioPlay,
-                            audioPlayer: widget.audioPlayer,
-                            filePath: widget.filePath,
+                                item.totalTime.minute.roundToDouble(),
+                            maxY: widget.monthlyData.isEmpty
+                                ? 100
+                                : widget.monthlyData
+                                      .map(
+                                        (item) =>
+                                            (item.totalTime.minute).toDouble(),
+                                      )
+                                      .reduce((a, b) => a > b ? a : b),
+                            onBarTap: (int barIndex) {
+                              if (barIndex <= 0) return;
+                              final int year = DateTime.now().year;
+                              final DateTime date = DateTime(year, barIndex);
+                              final String monthName = DateFormat.MMMM(
+                                'en_US',
+                              ).format(date);
+                              onDateTap(date: date, monthName: monthName, granularity: DateRangeGranularity.monthly);
+                            },
                           ),
                         ],
                       ),
@@ -339,6 +195,75 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
           ),
         ),
       ],
+    );
+  }
+
+  void onDateTap({required DateTime date, required String monthName, required DateRangeGranularity granularity}) {
+    final bloc = context.read<TimeConsumeBloc>();
+    final int begin;
+    final int end;
+    if (granularity == DateRangeGranularity.monthly) {
+      begin = getStartOfMonthEpoch(time: date);
+      end = getStartOfNextMonthEpoch(time: date);
+    } else {
+      begin = getStartOfTodayEpoch(time: date);
+      end = getEndOfTodayEpoch(time: date);
+    }
+    showModalBottomSheet(
+      clipBehavior: Clip.antiAlias,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      context: context,
+      builder: (_) {
+        return BlocProvider.value(
+          value: bloc
+            ..add(
+              GetTopCards(
+                begin: begin,
+                end: end,
+              ),
+            ),
+          child: BlocBuilder<TimeConsumeBloc, TimeConsumeState>(
+            builder: (context, state) {
+              bool isLoading =
+                  state is! TimeConsumeDetailLoaded ||
+                  state.mostTimeConsumingCards == null;
+              bool isEmpty =
+                  state is TimeConsumeDetailLoaded &&
+                  state.mostTimeConsumingCards != null &&
+                  state.mostTimeConsumingCards!.isEmpty;
+              bool isFutureDate = date.isAfter(DateTime.now());
+
+              return BottomSheetStats(
+                isLoading: isLoading,
+                isEmpty: isEmpty,
+                isFutureDate: isFutureDate,
+                date: date.day,
+                monthName: monthName,
+                title: "The Most Inaccurate Cards",
+                listCards:
+                    state is TimeConsumeDetailLoaded &&
+                        state.mostTimeConsumingCards != null
+                    ? state.mostTimeConsumingCards!
+                          .map((data) => data.card)
+                          .toList()
+                    : [],
+                avgStatValue: state is TimeConsumeDetailLoaded
+                    ? (state.avgTime ?? const TimeUnit(hour: 0, minute: 0, seconds: 0)).formatted
+                    : const TimeUnit(hour: 0, minute: 0, seconds: 0).formatted,
+                avgStatLabel: 'Avg',
+                totalCards: state is TimeConsumeDetailLoaded
+                    ? (state.totalCard ?? 0)
+                    : 0,
+                totalTime: state is TimeConsumeDetailLoaded
+                    ? (state.totalTime ?? const TimeUnit(hour: 0, minute: 0, seconds: 0))
+                    : const TimeUnit(hour: 0, minute: 0, seconds: 0),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }

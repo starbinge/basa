@@ -1,21 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:m3e_core/m3e_core.dart';
 
-class CallendarHeatmap extends StatelessWidget {
+class CallendarHeatmap extends StatefulWidget {
   const CallendarHeatmap({
     super.key,
     required this.itemCount,
     required this.getValue,
     this.baseColor,
+    required this.onDateTap,
   });
 
   final int itemCount;
   final double Function(int index) getValue;
+  final void Function(DateTime date) onDateTap;
   final Color? baseColor;
 
   @override
+  State<CallendarHeatmap> createState() => _CallendarHeatmapState();
+}
+
+class _CallendarHeatmapState extends State<CallendarHeatmap> {
+  @override
   Widget build(BuildContext context) {
-    final color = baseColor ?? Theme.of(context).primaryColor;
+    final color = widget.baseColor ?? Theme.of(context).primaryColor;
 
     return Container(
       padding: EdgeInsets.all(10),
@@ -26,24 +33,31 @@ class CallendarHeatmap extends StatelessWidget {
         children: [
           Expanded(
             child: GridView.builder(
-              itemCount: itemCount,
+              itemCount: widget.itemCount,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 7,
               ),
               itemBuilder: (BuildContext context, int dateIndex) {
-                final value = getValue(dateIndex);
-                return Stack(
-                  alignment: AlignmentGeometry.center,
-                  children: [
-                    M3EShape.flower(
-                      color: value == 0.0
-                          ? Colors.grey.withValues(alpha: 0.1)
-                          : color.withValues(alpha: value.clamp(0.0, 1.0)),
-                      width: 40,
-                      height: 40,
-                    ),
-                    Text((dateIndex + 1).toString()),
-                  ],
+                final value = widget.getValue(dateIndex);
+                return GestureDetector(
+                  onTap: () {
+                    final int day = dateIndex + 1;
+                    final DateTime clickedDate = DateTime(2026, 7, day);
+                    widget.onDateTap(clickedDate);
+                  },
+                  child: Stack(
+                    alignment: AlignmentGeometry.center,
+                    children: [
+                      M3EShape.flower(
+                        color: value == 0.0
+                            ? Colors.grey.withValues(alpha: 0.1)
+                            : color.withValues(alpha: value.clamp(0.0, 1.0)),
+                        width: 40,
+                        height: 40,
+                      ),
+                      Text((dateIndex + 1).toString()),
+                    ],
+                  ),
                 );
               },
             ),

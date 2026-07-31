@@ -1,4 +1,5 @@
 import 'package:basa_app_project/features/cards/data/models/fetching_cards_model.dart';
+import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_entity.dart';
 
 abstract class CardRepo {
@@ -9,4 +10,6 @@ abstract class CardRepo {
   });
 
   Future<CardsModel?> getCardById({required int cardId});
+
+  Stream<List<CardsDetailEntity>> searchCard({required String searchParams});
 }

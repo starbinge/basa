@@ -5,7 +5,6 @@ import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:go_router/go_router.dart';
 
 class FlashcardSummaryStatsPage extends StatefulWidget {
   const FlashcardSummaryStatsPage({
@@ -128,7 +127,10 @@ class _FlashcardSummaryStatsPageState extends State<FlashcardSummaryStatsPage> {
                       Theme.of(context).colorScheme.secondary,
                     ),
                   ),
-                  onPressed: () => context.pop(),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
                   child: const Text(
                     "Go Back",
                     style: TextStyle(color: Colors.white),

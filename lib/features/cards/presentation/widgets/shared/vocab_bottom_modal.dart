@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:path/path.dart' as path;
 
-import '../../domain/entities/cards_detail_entity.dart';
+import '../../../domain/entities/cards_detail_entity.dart';
 
 class VocabBottomModal extends StatefulWidget {
   const VocabBottomModal({

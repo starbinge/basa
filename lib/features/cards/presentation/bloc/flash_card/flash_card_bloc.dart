@@ -3,14 +3,12 @@ import 'package:basa_app_project/features/cards/data/dao/cards_dao/cards_dao.dar
 import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:bloc/bloc.dart';
 import 'package:drift/drift.dart';
-import 'package:flutter/cupertino.dart';
 
 import '../../../../../core/errors/cards_error.dart';
 import '../../../constants/enums/flashcard_answer_enum.dart';
 import '../../../domain/entities/cards_detail_entity.dart';
 
 part 'flash_card_event.dart';
-
 part 'flash_card_state.dart';
 
 class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
@@ -18,12 +16,10 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
   final CardsDao? _cardsDao;
   List<CardsDetailEntity> _allSortedCards = [];
 
-  FlashCardBloc({
-    required FlashCardRepo flashCardRepo,
-    CardsDao? cardsDao,
-  }) : _cardsDao = cardsDao,
-       _flashCardRepo = flashCardRepo,
-       super(FlashCardInitial()) {
+  FlashCardBloc({required FlashCardRepo flashCardRepo, CardsDao? cardsDao})
+    : _cardsDao = cardsDao,
+      _flashCardRepo = flashCardRepo,
+      super(FlashCardInitial()) {
     on<GenerateFlashCard>((data, emit) {
       emit(FlashCardIsLoading());
       try {
@@ -72,9 +68,7 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
           vR: _vR,
           vT: _vT,
         );
-        debugPrint("Generating Queue Done");
         if (_cardsDao == null) throw CardDaoNotExist();
-        debugPrint('Nilai vQ: $_vQ');
         await _cardsDao.updateCards(
           updatedCardValue: CardsTableCompanion(
             id: Value(_selectedCard.id),
@@ -108,7 +102,6 @@ class FlashCardBloc extends Bloc<FlashCardEvent, FlashCardState> {
       } on CardDaoNotExist {
         emit(FLashCardIsError(errorMessage: "Card Dao Does Not Exist"));
       } catch (e) {
-        debugPrint('AnsweringFlashCard error: $e');
         emit(FLashCardIsError(errorMessage: e.toString()));
       }
     });

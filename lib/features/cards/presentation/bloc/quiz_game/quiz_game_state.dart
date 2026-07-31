@@ -14,5 +14,30 @@ final class QuizGameIsError extends QuizGameState {
 
 final class QuizGameIsFinish extends QuizGameState {
   final List<QuizGameEntity> cards;
-  QuizGameIsFinish({required this.cards});
+  final int? totalQuestion;
+
+  final int? activeQuestion;
+  final int? answeredQuestion;
+
+  QuizGameIsFinish({
+    required this.cards,
+    this.totalQuestion,
+    this.activeQuestion,
+    this.answeredQuestion,
+  });
+
+  QuizGameIsFinish copyWith({
+    List<QuizGameEntity>? cards,
+    int? totalQuestion,
+
+    int? activeQuestion,
+    int? answeredQuestion,
+  }) {
+    return QuizGameIsFinish(
+      cards: cards ?? this.cards,
+      totalQuestion: totalQuestion ?? this.totalQuestion,
+      activeQuestion: activeQuestion ?? this.activeQuestion,
+      answeredQuestion: answeredQuestion ?? this.answeredQuestion,
+    );
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
+import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants/enums/group_by_enum.dart';
@@ -16,9 +18,7 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
     : _accuracyDao = accuracyDao;
 
   @override
-  Future<DeckAccuracy> getSingleAccuracy({
-    required GroupedTimeEnum timeRange,
-  }) async {
+  Stream<DeckAccuracy> getSingleAccuracy({required GroupedTimeEnum timeRange}) {
     final DateTime now = DateTime.now();
     final String timeLabel;
 
@@ -26,20 +26,24 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
       case GroupedTimeEnum.thisMonth:
         timeLabel = DateFormat.MMMM('en_US').format(now);
       case GroupedTimeEnum.previousMonth:
-        final DateTime lastMonth = DateTime(now.year, now.month - 1);
-        timeLabel = DateFormat.MMMM('en_US').format(lastMonth);
+        final int lastMonth = getStartOfPreviousMonthEpoch(time: now);
+        timeLabel = DateFormat.MMMM(
+          'en_US',
+        ).format(DateTime.fromMillisecondsSinceEpoch(lastMonth));
       default:
         timeLabel = DateFormat.MMMM('en_US').format(now);
     }
 
     final rawStream = _accuracyDao.getAccuracyData(timeRange: timeRange);
-    final models = await rawStream.first;
 
-    final total = models.length;
-    final correct = models.where((m) => m.ease == 3).length;
-    final accuracy = total > 0 ? (correct * 100 / total).round() : 0;
-
-    return DeckAccuracy(timeName: timeLabel, accuracyNumber: accuracy);
+    return rawStream.map((data) {
+      final int totalCards = data.length;
+      final int correctAnswer = data.where((card) => card.ease == 3).length;
+      final int accuracyNumber = totalCards > 0
+          ? (correctAnswer * 100 / totalCards).round()
+          : 0;
+      return DeckAccuracy(timeName: timeLabel, accuracyNumber: accuracyNumber);
+    });
   }
 
   @override
@@ -53,8 +57,6 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
       switch (timeRange) {
         case GroupedTimeEnum.daily:
           return _groupDaily(models, now);
-        case GroupedTimeEnum.weekly:
-          return _groupWeekly(models, now);
         case GroupedTimeEnum.monthly:
           return _groupMonthly(models, now);
         default:
@@ -63,10 +65,7 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
     });
   }
 
-  List<DeckAccuracy> _groupDaily(
-    List<AccuracyModel> models,
-    DateTime now,
-  ) {
+  List<DeckAccuracy> _groupDaily(List<AccuracyModel> models, DateTime now) {
     final buckets = getDailyObject<AccuracyModel>(
       year: now.year,
       month: now.month,
@@ -84,48 +83,18 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
       final correct = entry.value.where((m) => m.ease == 3).length;
       final accuracy = total > 0 ? (correct * 100 / total).round() : 0;
 
-      return DeckAccuracy(
-        timeName: '${entry.key}',
-        accuracyNumber: accuracy,
-      );
+      return DeckAccuracy(timeName: '${entry.key}', accuracyNumber: accuracy);
     }).toList();
   }
 
-  List<DeckAccuracy> _groupWeekly(
-    List<AccuracyModel> models,
-    DateTime now,
-  ) {
-    final buckets = getWeeklyObject<AccuracyModel>();
-    final weekKeys = ['1w', '2w', '3w', '4w'];
-
-    for (final model in models) {
-      final day = DateTime.fromMillisecondsSinceEpoch(model.timeCode).day;
-      final weekIndex = ((day - 1) ~/ 7).clamp(0, 3);
-      buckets[weekKeys[weekIndex]]!.add(model);
-    }
-
-    return buckets.entries.map((entry) {
-      final total = entry.value.length;
-      final correct = entry.value.where((m) => m.ease == 3).length;
-      final accuracy = total > 0 ? (correct * 100 / total).round() : 0;
-
-      return DeckAccuracy(
-        timeName: entry.key,
-        accuracyNumber: accuracy,
-      );
-    }).toList();
-  }
-
-  List<DeckAccuracy> _groupMonthly(
-    List<AccuracyModel> models,
-    DateTime now,
-  ) {
+  List<DeckAccuracy> _groupMonthly(List<AccuracyModel> models, DateTime now) {
     final buckets = getMonthlyObject<AccuracyModel>(now.year);
 
     for (final model in models) {
-      final month =
-          DateTime.fromMillisecondsSinceEpoch(model.timeCode).month;
-      final monthName = DateFormat.MMMM('en_US').format(DateTime(now.year, month));
+      final month = DateTime.fromMillisecondsSinceEpoch(model.timeCode).month;
+      final monthName = DateFormat.MMMM(
+        'en_US',
+      ).format(DateTime(now.year, month));
       if (buckets.containsKey(monthName)) {
         buckets[monthName]!.add(model);
       }
@@ -136,10 +105,7 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
       final correct = entry.value.where((m) => m.ease == 3).length;
       final accuracy = total > 0 ? (correct * 100 / total).round() : 0;
 
-      return DeckAccuracy(
-        timeName: entry.key,
-        accuracyNumber: accuracy,
-      );
+      return DeckAccuracy(timeName: entry.key, accuracyNumber: accuracy);
     }).toList();
   }
 
@@ -149,10 +115,32 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
     required int end,
     required OrderEnums orderBy,
   }) async {
-    return _accuracyDao.getAccuracyTopCards(
+    return await _accuracyDao.getMostInaccurateCards(
       begin: begin,
       end: end,
       orderBy: orderBy,
+      limit: 3,
     );
+  }
+
+  @override
+  Future<int> getAvgAccuracyByTimeRange({
+    required begin,
+    required end,
+  }) async {
+    return await _accuracyDao.getAverageNumber(
+      begin: begin,
+      end: end,
+    );
+  }
+
+  @override
+  Future<int> getTotalCardsByTimeRange({required begin, required end}) async {
+    return await _accuracyDao.getReviewedCardsCount(begin: begin, end: end);
+  }
+
+  @override
+  Future<TimeUnit> getTotalTimeByTimeRange({required begin, required end}) async {
+    return await _accuracyDao.getTotalTimeByTimeRange(begin: begin, end: end);
   }
 }

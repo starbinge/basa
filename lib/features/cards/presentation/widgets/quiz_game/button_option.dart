@@ -1,7 +1,17 @@
+import 'package:audioplayers/audioplayers.dart';
+import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
 import 'package:basa_app_project/core/theme/app_colors.dart';
+import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/quiz_game/wrong_answer_bottombar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:path/path.dart' as path;
 
-class OptionButton extends StatelessWidget {
+import '../../../constants/enums/flashcard_answer_enum.dart';
+import '../../bloc/quiz_game/quiz_game_bloc.dart';
+
+class OptionButton extends StatefulWidget {
   const OptionButton({
     super.key,
     required this.option,
@@ -10,6 +20,9 @@ class OptionButton extends StatelessWidget {
     required this.indexOption,
     required this.indexCorrectOption,
     required this.selectedIndex,
+    required this.timeSpentPerQuestion,
+    required this.selectedCard,
+    required this.audioPlayer,
   });
 
   final String option;
@@ -18,26 +31,34 @@ class OptionButton extends StatelessWidget {
   final int indexOption;
   final int indexCorrectOption;
   final int selectedIndex;
+  final int timeSpentPerQuestion;
+  final CardsDetailEntity selectedCard;
+  final AudioPlayer audioPlayer;
 
   @override
+  State<OptionButton> createState() => _OptionButtonState();
+}
+
+class _OptionButtonState extends State<OptionButton> {
+  @override
   Widget build(BuildContext context) {
-    final bool hasAnswered = selectedIndex != -1;
+    final bool hasAnswered = widget.selectedIndex != -1;
 
     Color backgroundColor = AppColors.inversePrimary;
     Color textColor = AppColors.primaryDark;
     double padding = 10;
 
     if (hasAnswered) {
-      if (indexOption == indexCorrectOption) {
+      if (widget.indexOption == widget.indexCorrectOption) {
         backgroundColor = Colors.green.shade100;
         textColor = Colors.green.shade800;
 
-        if (indexOption == selectedIndex) {
+        if (widget.indexOption == widget.selectedIndex) {
           padding = 20;
         } else {
           padding = 10;
         }
-      } else if (indexOption == selectedIndex) {
+      } else if (widget.indexOption == widget.selectedIndex) {
         backgroundColor = AppColors.errorContainer;
         textColor = AppColors.error;
         padding = 20;
@@ -45,7 +66,35 @@ class OptionButton extends StatelessWidget {
     }
 
     return GestureDetector(
-      onTap: hasAnswered ? null : onTap,
+      onTap: hasAnswered
+          ? null
+          : () {
+              widget.onTap();
+              if (widget.indexOption == widget.indexCorrectOption) {
+                widget.audioPlayer.play(
+                  AssetSource(
+                    "sfx/shidenbeatsmusic-sound-effect-twinklesparkle-115095.mp3",
+                  ),
+                );
+                Future.delayed(Duration(seconds: 1), () {
+                  context.read<QuizGameBloc>()..add(
+                    AnsweringQuestion(
+                      answer: FlashcardAnswerEnum.correct,
+                      selectedCard: widget.selectedCard,
+                      timeMs: widget.timeSpentPerQuestion,
+                      isCorrect: true,
+                    ),
+                  );
+                });
+              } else {
+                final bloc = context.read<QuizGameBloc>();
+                widget.audioPlayer.play(
+                  AssetSource("sfx/freesound_community-wrong-47985.mp3"),
+                );
+
+                showBottomBar(audioPlayer: widget.audioPlayer, bloc: bloc);
+              }
+            },
       child: AnimatedContainer(
         padding: EdgeInsets.symmetric(horizontal: 12, vertical: padding),
         margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -58,7 +107,7 @@ class OptionButton extends StatelessWidget {
         duration: const Duration(milliseconds: 500),
         child: Center(
           child: Text(
-            option,
+            widget.option,
             textAlign: TextAlign.center,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
               color: textColor,
@@ -67,6 +116,69 @@ class OptionButton extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void showBottomBar({
+    required AudioPlayer audioPlayer,
+    required QuizGameBloc bloc,
+  }) async {
+    showModalBottomSheet(
+      isDismissible: false,
+      context: context,
+      builder: (context) {
+        return WrongAnswerBottombar(
+          selectedCard: widget.selectedCard,
+          audioPlayer: audioPlayer,
+          playButtonPressed: () {
+            final audioPath = widget.selectedCard.audioPath.isNotEmpty
+                ? widget.selectedCard.audioPath.first
+                : null;
+            if (audioPath != null) {
+              audioPlayer.play(
+                DeviceFileSource(
+                  path
+                      .join(
+                        RepositoryProvider.of<ExternalDatabaseAccessor>(
+                          context,
+                        ).filePath!,
+                        audioPath,
+                      )
+                      .replaceAll('\\', '/'),
+                ),
+              );
+            }
+          },
+          pauseButtonPressed: () {
+            audioPlayer.pause();
+          },
+          textButtonPressed: () {
+            bloc..add(
+              AnsweringQuestion(
+                answer: FlashcardAnswerEnum.wrong,
+                selectedCard: widget.selectedCard,
+                timeMs: widget.timeSpentPerQuestion,
+                isCorrect: false,
+              ),
+            );
+            Navigator.pop(context);
+            final blocState = bloc.state;
+            if (blocState is QuizGameIsFinish) {
+              final isDone =
+                  (blocState.activeQuestion ?? 0) >= blocState.cards.length;
+              if (isDone) {
+                context.push(
+                  '/stats-quiz-game',
+                  extra: (
+                    totalAnswered: blocState.answeredQuestion,
+                    isLate: false,
+                  ),
+                );
+              }
+            }
+          },
+        );
+      },
     );
   }
 }

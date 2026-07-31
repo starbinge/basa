@@ -9,11 +9,13 @@ final class TimeConsumeLoading extends TimeConsumeState {}
 
 final class TimeConsumeError extends TimeConsumeState {
   final String errorMessage;
+
   TimeConsumeError({required this.errorMessage});
 }
 
 final class StreakDataLoaded extends TimeConsumeState {
   final List<TimeConsumeEntity> streakData;
+
   StreakDataLoaded({required this.streakData});
 }
 
@@ -21,26 +23,44 @@ final class TimeConsumeDetailLoaded extends TimeConsumeState {
   final TimeConsumeEntity thisMonthTimeConsume;
   final TimeConsumeEntity previousMonthTimeConsume;
   final List<TimeConsumeEntity> monthlyTimeConsume;
-  final List<TimeConsumeEntity> weeklyTimeConsume;
   final List<TimeConsumeEntity> dailyTimeConsume;
-  final List<CardsDetailEntity> top3MonthlyMostTimeConsume;
-  final List<CardsDetailEntity> top3WeeklyMostTimeConsume;
-  final List<CardsDetailEntity> top3TodayMostTimeConsume;
-  final List<CardsDetailEntity> top3MonthlyLeastTimeConsume;
-  final List<CardsDetailEntity> top3WeeklyLeastTimeConsume;
-  final List<CardsDetailEntity> top3TodayLeastTimeConsume;
+  final List<TopCardsTimeConsumeEntity>? mostTimeConsumingCards;
+  final int? totalCard;
+  final TimeUnit? avgTime;
+  final TimeUnit? totalTime;
 
   TimeConsumeDetailLoaded({
     required this.thisMonthTimeConsume,
     required this.previousMonthTimeConsume,
     required this.monthlyTimeConsume,
-    required this.weeklyTimeConsume,
     required this.dailyTimeConsume,
-    required this.top3MonthlyMostTimeConsume,
-    required this.top3WeeklyMostTimeConsume,
-    required this.top3TodayMostTimeConsume,
-    required this.top3MonthlyLeastTimeConsume,
-    required this.top3WeeklyLeastTimeConsume,
-    required this.top3TodayLeastTimeConsume,
+    this.mostTimeConsumingCards,
+    this.totalCard,
+    this.avgTime,
+    this.totalTime,
   });
+
+  TimeConsumeDetailLoaded copyWith({
+    TimeConsumeEntity? thisMonthTimeConsume,
+    TimeConsumeEntity? previousMonthTimeConsume,
+    List<TimeConsumeEntity>? monthlyTimeConsume,
+    List<TimeConsumeEntity>? dailyTimeConsume,
+    List<TopCardsTimeConsumeEntity>? mostTimeConsumingCards,
+    int? totalCard,
+    TimeUnit? avgTime,
+    TimeUnit? totalTime,
+  }) {
+    return TimeConsumeDetailLoaded(
+      thisMonthTimeConsume: thisMonthTimeConsume ?? this.thisMonthTimeConsume,
+      previousMonthTimeConsume:
+          previousMonthTimeConsume ?? this.previousMonthTimeConsume,
+      monthlyTimeConsume: monthlyTimeConsume ?? this.monthlyTimeConsume,
+      dailyTimeConsume: dailyTimeConsume ?? this.dailyTimeConsume,
+      totalCard: totalCard ?? this.totalCard,
+      mostTimeConsumingCards:
+          mostTimeConsumingCards ?? this.mostTimeConsumingCards,
+      avgTime: avgTime ?? this.avgTime,
+      totalTime: totalTime ?? this.totalTime,
+    );
+  }
 }

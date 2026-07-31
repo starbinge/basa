@@ -1,7 +1,7 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/theme/app_colors.dart';
+import 'package:basa_app_project/core/widgets/animated_header.dart';
 import 'package:basa_app_project/core/widgets/animated_play_pause_button.dart';
-import 'package:basa_app_project/core/widgets/stats_empty_state.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +14,7 @@ class WrongAnswerBottombar extends StatefulWidget {
     required this.pauseButtonPressed,
     required this.textButtonPressed,
   });
+
   final CardsDetailEntity? selectedCard;
   final AudioPlayer audioPlayer;
   final VoidCallback playButtonPressed;
@@ -81,7 +82,7 @@ class _WrongAnswerBottombarState extends State<WrongAnswerBottombar> {
             ).textTheme.titleLarge?.copyWith(color: AppColors.error),
           ),
           if (widget.selectedCard == null)
-            StatsEmptyState(
+            AnimatedHeader(
               icon: Icons.hourglass_empty_rounded,
               title: "Cards Not Found",
               subtitle: "Something is wrong with the card.",
@@ -112,7 +113,12 @@ class _WrongAnswerBottombarState extends State<WrongAnswerBottombar> {
             onPressed: _togglePlay,
             size: 60,
             color: AppColors.error,
-            backgroundColor: const Color.fromARGB(255, 223, 57, 57).withValues(alpha: 0.2),
+            backgroundColor: const Color.fromARGB(
+              255,
+              223,
+              57,
+              57,
+            ).withValues(alpha: 0.2),
           ),
           TextButton(
             onPressed: widget.textButtonPressed,

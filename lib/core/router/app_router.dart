@@ -112,9 +112,9 @@ final appRouter = GoRouter(
               case StatisticsPageEnum.accuracy:
                 return MaterialPage(
                   child: BlocProvider(
-                    create: (_) => CardAccuracyBloc(
-                      accuracyCardRepo: accuracyRepo,
-                    )..add(FetchAccuracyDetail()),
+                    create: (_) =>
+                        CardAccuracyBloc(accuracyCardRepo: accuracyRepo)
+                          ..add(FetchAccuracyDetail()),
                     child: DeckStatisticPage(
                       deckName: state.pathParameters['deckName']!,
                       statsType: statsTypeParam,
@@ -125,9 +125,9 @@ final appRouter = GoRouter(
               case StatisticsPageEnum.timeConsume:
                 return MaterialPage(
                   child: BlocProvider(
-                    create: (_) => TimeConsumeBloc(
-                      timeConsumeRepo: timeConsumeRepo,
-                    )..add(FetchTimeConsumeDetail()),
+                    create: (_) =>
+                        TimeConsumeBloc(timeConsumeRepo: timeConsumeRepo)
+                          ..add(FetchTimeConsumeDetail()),
                     child: DeckStatisticPage(
                       deckName: state.pathParameters['deckName']!,
                       statsType: statsTypeParam,

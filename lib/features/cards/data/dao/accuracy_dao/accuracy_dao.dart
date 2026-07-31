@@ -2,6 +2,7 @@ import 'package:basa_app_project/features/cards/constants/enums/group_by_enum.da
 import 'package:basa_app_project/features/cards/constants/enums/order_enums.dart';
 import 'package:basa_app_project/features/cards/data/models/accuracy_model/accuracy_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
+import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
 import 'package:drift/drift.dart';
 
@@ -41,9 +42,9 @@ class AccuracyDao extends DatabaseAccessor<ExternalDatabase>
         end = getStartOfNextMonthEpoch(time: now);
     }
 
-    final query = (select(revlogTable)
-      ..where((row) => row.id.isBetweenValues(start, end)))
-        .watch();
+    final query = (select(
+      revlogTable,
+    )..where((row) => row.id.isBetweenValues(start, end))).watch();
 
     return query.map((row) {
       return row.map((data) {
@@ -52,28 +53,35 @@ class AccuracyDao extends DatabaseAccessor<ExternalDatabase>
     });
   }
 
-  Future<List<CardsDetailEntity>> getAccuracyTopCards({
+  Future<List<CardsDetailEntity>> getMostInaccurateCards({
     required int begin,
     required int end,
     required OrderEnums orderBy,
+    int? limit,
   }) async {
     final correctCount = revlogTable.ease.equals(3).cast<int>().sum();
-    final query =
+    final totalTime = revlogTable.time.sum();
+    final rawQuery =
         select(revlogTable).join([
             innerJoin(cardsTable, revlogTable.cid.equalsExp(cardsTable.id)),
             innerJoin(notesTable, cardsTable.nid.equalsExp(notesTable.id)),
           ])
-          ..addColumns([correctCount])
-          ..where(revlogTable.id.isBetweenValues(begin, end))
+          ..addColumns([correctCount, totalTime])
+          ..where(
+            revlogTable.id.isBetweenValues(begin, end) &
+                revlogTable.ease.equals(1),
+          )
           ..groupBy([revlogTable.cid])
           ..orderBy([
             orderBy == OrderEnums.asc
                 ? OrderingTerm.asc(correctCount)
                 : OrderingTerm.desc(correctCount),
-          ])
-          ..limit(3);
+          ]);
+    if (limit != null) {
+      rawQuery.limit(limit);
+    }
 
-    final List<TypedResult> results = await query.get();
+    final List<TypedResult> results = await rawQuery.get();
 
     if (results.isEmpty) return [];
 
@@ -97,5 +105,53 @@ class AccuracyDao extends DatabaseAccessor<ExternalDatabase>
 
       return model.toEntity();
     }).toList();
+  }
+
+  Future<int> getReviewedCardsCount({
+    required int begin,
+    required int end,
+  }) async {
+    final countExp = revlogTable.cid.count(distinct: true);
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([countExp])
+      ..where(revlogTable.id.isBetweenValues(begin, end));
+
+    final result = await query.getSingle();
+    return result.read(countExp) ?? 0;
+  }
+
+  Future<TimeUnit> getTotalTimeByTimeRange({
+    required int begin,
+    required int end,
+  }) async {
+    final totalTime = revlogTable.time.sum();
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([totalTime])
+      ..where(revlogTable.id.isBetweenValues(begin, end));
+
+    final result = await query.getSingle();
+    return TimeUnit.fromMilliSeconds(result.read(totalTime) ?? 0);
+  }
+
+  Future<int> getAverageNumber({required int begin, required int end}) async {
+    final correctCount = revlogTable.ease.equals(3).cast<int>().sum();
+    final totalCard = revlogTable.id.count();
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([correctCount, totalCard])
+      ..where(revlogTable.id.isBetweenValues(begin, end));
+
+    final result = await query.getSingle();
+
+    final int correct = result.read(correctCount) ?? 0;
+    final int total = result.read(totalCard) ?? 0;
+
+    if (total == 0) return 0;
+
+    final double average = (correct / total) * 100;
+
+    return average.round();
   }
 }

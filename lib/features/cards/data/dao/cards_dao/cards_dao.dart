@@ -1,3 +1,4 @@
+import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -35,6 +36,37 @@ class CardsDao extends DatabaseAccessor<ExternalDatabase> with _$CardsDaoMixin {
         'flags': card.flags,
       });
     }).toList();
+  }
+
+  Stream<List<CardsDetailEntity>> searchCard({required String searchParams}) {
+    final query = select(cardsTable).join([
+      innerJoin(notesTable, notesTable.id.equalsExp(cardsTable.nid)),
+    ])..limit(1);
+
+    query.where(notesTable.flds.like('%$searchParams%'));
+
+    return query.watch().map((List<TypedResult> rows) {
+      return rows.map((row) {
+        final cardRow = row.readTable(cardsTable);
+        final noteRow = row.readTable(notesTable);
+
+        final model = CardsModel.fromMap({
+          'card_id': cardRow.id,
+          'nid': noteRow.id,
+          'queue': cardRow.queue,
+          'flds': noteRow.flds,
+          'tags': noteRow.tags,
+          'ivl': cardRow.ivl,
+          'odue': cardRow.odue,
+          'factor': cardRow.factor,
+          'left': cardRow.left,
+          'reps': cardRow.reps,
+          'flags': cardRow.flags,
+        });
+
+        return model.toEntity();
+      }).toList();
+    });
   }
 
   Future<CardsModel?> getCardById({required int cardId}) async {

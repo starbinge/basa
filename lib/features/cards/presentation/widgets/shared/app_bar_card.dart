@@ -2,7 +2,7 @@ import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:m3e_core/m3e_core.dart';
 
-import '../pages/main_card_page.dart';
+import '../../pages/main_card_page.dart';
 
 class CardAppBar extends StatelessWidget {
   const CardAppBar({

@@ -18,15 +18,13 @@ part 'quiz_game_state.dart';
 class QuizGameBloc extends Bloc<QuizGameEvent, QuizGameState> {
   final CardsDao _cardsDao;
   final FlashCardRepo _flashCardRepo;
+
   QuizGameBloc({
     required CardsDao cardsDao,
     required FlashCardRepo flashCardRepo,
   }) : _flashCardRepo = flashCardRepo,
        _cardsDao = cardsDao,
        super(QuizGameInitial()) {
-    on<QuizGameEvent>((event, emit) {
-      // TODO: implement event handler
-    });
     on<GeneratingQuizGameQuestions>((data, emit) {
       final List<CardsDetailEntity> sortedCard = List.from(data.listCards);
       sortedCard.sort((a, b) {
@@ -173,6 +171,16 @@ class QuizGameBloc extends Bloc<QuizGameEvent, QuizGameState> {
             factor: Value(_newVf),
             time: Value(_vT),
             type: Value(0),
+          ),
+        );
+        final currentState = state as QuizGameIsFinish;
+        emit(
+          currentState.copyWith(
+            totalQuestion: currentState.cards.length,
+            activeQuestion: (currentState.activeQuestion ?? 0) + 1,
+            answeredQuestion: data.isCorrect
+                ? (currentState.answeredQuestion ?? 0) + 1
+                : (currentState.answeredQuestion ?? 0),
           ),
         );
       } on CardDaoNotExist {

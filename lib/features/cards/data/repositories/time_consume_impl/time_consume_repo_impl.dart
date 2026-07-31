@@ -2,7 +2,6 @@ import 'package:intl/intl.dart';
 
 import '../../../constants/enums/group_by_enum.dart';
 import '../../../constants/enums/order_enums.dart';
-import '../../../domain/entities/cards_detail_entity.dart';
 import '../../../domain/entities/time_consume_entity/time_consume_entity.dart';
 import '../../../domain/repositories/time_consume/time_consume_repo.dart';
 import '../../../domain/usecases/time_range_generator_usecase.dart';
@@ -44,7 +43,9 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
   }) async {
     final now = DateTime.now();
     final String timeLabel;
-    final rawStream = _timeConsumeDao.getGroupedTimeConsume(timeRange: timeRange);
+    final rawStream = _timeConsumeDao.getGroupedTimeConsume(
+      timeRange: timeRange,
+    );
     final models = await rawStream.first;
 
     switch (timeRange) {
@@ -74,7 +75,7 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
   }
 
   @override
-  Future<List<CardsDetailEntity>> getTimeConsumeTopCards({
+  Future<List<TopCardsTimeConsumeEntity>> getTimeConsumeTopCards({
     required int begin,
     required int end,
     required OrderEnums orderBy,
@@ -85,6 +86,21 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
       orderBy: orderBy,
       limit: 3,
     );
+  }
+
+  @override
+  Future<int> getTotalCardsByTimeRange({required int begin, required int end}) {
+    return _timeConsumeDao.getReviewedCardsCount(begin: begin, end: end);
+  }
+
+  @override
+  Future<TimeUnit> getAvgTimeByTimeRange({required int begin, required int end}) {
+    return _timeConsumeDao.getAverageTimeByTimeRange(begin: begin, end: end);
+  }
+
+  @override
+  Future<TimeUnit> getTotalTimeByTimeRange({required int begin, required int end}) {
+    return _timeConsumeDao.getTotalTimeByTimeRange(begin: begin, end: end);
   }
 
   List<TimeConsumeEntity> _groupDaily(
@@ -155,9 +171,10 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
     final buckets = getMonthlyObject<TimeConsumeModel>(now.year);
 
     for (final model in models) {
-      final month =
-          DateTime.fromMillisecondsSinceEpoch(model.timeCode).month;
-      final monthName = DateFormat.MMMM('en_US').format(DateTime(now.year, month));
+      final month = DateTime.fromMillisecondsSinceEpoch(model.timeCode).month;
+      final monthName = DateFormat.MMMM(
+        'en_US',
+      ).format(DateTime(now.year, month));
       if (buckets.containsKey(monthName)) {
         buckets[monthName]!.add(model);
       }

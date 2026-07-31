@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
-import 'package:basa_app_project/core/widgets/stats_empty_state.dart';
+import 'package:basa_app_project/core/widgets/animated_header.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/statistics/card_accuracy/card_accuracy_bloc.dart';
@@ -59,19 +59,11 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                 if (state is AccuracyDetailLoaded) {
                   final bool isEmpty =
                       state.dailyAccuracy.isEmpty &&
-                      state.weeklyAccuracy.isEmpty &&
-                      state.monthlyAccuracy.isEmpty &&
-                      state.top3TodayMostAccurate.isEmpty &&
-                      state.top3TodayLeastAccurate.isEmpty &&
-                      state.top3WeeklyMostAccurate.isEmpty &&
-                      state.top3WeeklyLeastAccurate.isEmpty &&
-                      state.top3MonthlyMostAccurate.isEmpty &&
-                      state.top3MonthlyLeastAccurate.isEmpty;
+                      state.monthlyAccuracy.isEmpty;
+
                   if (isEmpty) {
                     return SafeArea(
-                      child: StatsEmptyState(
-                        icon: Icons.bar_chart_rounded,
-                      ),
+                      child: AnimatedHeader(icon: Icons.bar_chart_rounded),
                     );
                   }
                   return SafeArea(
@@ -81,16 +73,11 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                         AccuracyStatsLayout(
                           stats: DeckAccuracyStats(
                             thisMonthDeckAccuracy: state.thisMonthAccuracy,
-                            previousMonthDeckAccuracy: state.previousMonthAccuracy,
-                            weeklyList: state.weeklyAccuracy,
+                            previousMonthDeckAccuracy:
+                                state.previousMonthAccuracy,
+
                             monthlyList: state.monthlyAccuracy,
                             dailyAccuracyList: state.dailyAccuracy,
-                            top3TodayMostAccurate: state.top3TodayMostAccurate,
-                            top3TodayLeastAccurate: state.top3TodayLeastAccurate,
-                            top3WeeklyMostAccurate: state.top3WeeklyMostAccurate,
-                            top3WeeklyLeastAccurate: state.top3WeeklyLeastAccurate,
-                            top3MonthlyMostAccurate: state.top3MonthlyMostAccurate,
-                            top3MonthlyLeastAccurate: state.top3MonthlyLeastAccurate,
                           ),
                           isAudioPlayed: _isAudioPlated,
                           audioPlayer: _audioPlayer,
@@ -114,19 +101,11 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                 if (state is TimeConsumeDetailLoaded) {
                   final bool isEmpty =
                       state.dailyTimeConsume.isEmpty &&
-                      state.weeklyTimeConsume.isEmpty &&
-                      state.monthlyTimeConsume.isEmpty &&
-                      state.top3TodayMostTimeConsume.every((c) => c.id == 0) &&
-                      state.top3WeeklyMostTimeConsume.every((c) => c.id == 0) &&
-                      state.top3MonthlyMostTimeConsume.every((c) => c.id == 0) &&
-                      state.top3TodayLeastTimeConsume.every((c) => c.id == 0) &&
-                      state.top3WeeklyLeastTimeConsume.every((c) => c.id == 0) &&
-                      state.top3MonthlyLeastTimeConsume.every((c) => c.id == 0);
+                      state.monthlyTimeConsume.isEmpty;
+
                   if (isEmpty) {
                     return SafeArea(
-                      child: StatsEmptyState(
-                        icon: Icons.timer_outlined,
-                      ),
+                      child: AnimatedHeader(icon: Icons.timer_outlined),
                     );
                   }
                   return SafeArea(
@@ -136,17 +115,12 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                         PlayTimeStatsLayout(
                           timeStats: state.thisMonthTimeConsume,
                           monthlyData: state.monthlyTimeConsume,
-                          weeklyData: state.weeklyTimeConsume,
+
                           dailyData: state.dailyTimeConsume,
-                          top3TodayMostDrainingCards: state.top3TodayMostTimeConsume,
-                          top3WeeklyMostDrainingCards: state.top3WeeklyMostTimeConsume,
-                          top3MonthlyMostDrainingCards: state.top3MonthlyMostTimeConsume,
+
                           isAudioPlay: _isAudioPlated,
                           audioPlayer: _audioPlayer,
                           filePath: widget.filePath,
-                          top3TodayLeastDrainingCards: state.top3TodayLeastTimeConsume,
-                          top3WeeklyLeastDrainingCards: state.top3WeeklyLeastTimeConsume,
-                          top3MonthlyLeastDrainingCards: state.top3MonthlyLeastTimeConsume,
                         ),
                       ],
                     ),

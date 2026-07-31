@@ -39,5 +39,10 @@ class CardRepoImpl implements CardRepo {
     return _cardById = await _cardsDao.getCardById(cardId: cardId);
   }
 
+  @override
+  Stream<List<CardsDetailEntity>> searchCard({required String searchParams}) {
+    return _cardsDao.searchCard(searchParams: searchParams);
+  }
+
   CardsModel? get oneCardById => _cardById;
 }

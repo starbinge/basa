@@ -9,6 +9,7 @@ final class CardAccuracyLoading extends CardAccuracyState {}
 
 final class CardAccuracyError extends CardAccuracyState {
   final String errorMessage;
+
   CardAccuracyError({required this.errorMessage});
 }
 
@@ -26,26 +27,60 @@ final class AccuracyDetailLoaded extends CardAccuracyState {
   final DeckAccuracy thisMonthAccuracy;
   final DeckAccuracy previousMonthAccuracy;
   final List<DeckAccuracy> monthlyAccuracy;
-  final List<DeckAccuracy> weeklyAccuracy;
+
   final List<DeckAccuracy> dailyAccuracy;
-  final List<CardsDetailEntity> top3MonthlyMostAccurate;
-  final List<CardsDetailEntity> top3WeeklyMostAccurate;
-  final List<CardsDetailEntity> top3TodayMostAccurate;
-  final List<CardsDetailEntity> top3MonthlyLeastAccurate;
-  final List<CardsDetailEntity> top3WeeklyLeastAccurate;
-  final List<CardsDetailEntity> top3TodayLeastAccurate;
+  final int? totalCard;
+  final int? avgAccuracy;
+  final TimeUnit? totalTime;
+  final List<CardsDetailEntity>? top3LeastAccurate;
 
   AccuracyDetailLoaded({
     required this.thisMonthAccuracy,
     required this.previousMonthAccuracy,
     required this.monthlyAccuracy,
-    required this.weeklyAccuracy,
+
     required this.dailyAccuracy,
-    required this.top3MonthlyMostAccurate,
-    required this.top3WeeklyMostAccurate,
-    required this.top3TodayMostAccurate,
-    required this.top3MonthlyLeastAccurate,
-    required this.top3WeeklyLeastAccurate,
-    required this.top3TodayLeastAccurate,
+    this.totalCard,
+    this.avgAccuracy,
+    this.totalTime,
+    this.top3LeastAccurate,
+  });
+
+  AccuracyDetailLoaded copyWith({
+    final DeckAccuracy? thisMonthAccuracy,
+    final DeckAccuracy? previousMonthAccuracy,
+    final List<DeckAccuracy>? monthlyAccuracy,
+
+    final List<DeckAccuracy>? dailyAccuracy,
+    final int? totalCard,
+    final int? avgAccuracy,
+    final TimeUnit? totalTime,
+    final List<CardsDetailEntity>? top3LeastAccurate,
+  }) {
+    return AccuracyDetailLoaded(
+      thisMonthAccuracy: thisMonthAccuracy ?? this.thisMonthAccuracy,
+      previousMonthAccuracy:
+          previousMonthAccuracy ?? this.previousMonthAccuracy,
+      monthlyAccuracy: monthlyAccuracy ?? this.monthlyAccuracy,
+      dailyAccuracy: dailyAccuracy ?? this.dailyAccuracy,
+      top3LeastAccurate: top3LeastAccurate ?? this.top3LeastAccurate,
+      totalCard: totalCard ?? this.totalCard,
+      avgAccuracy: avgAccuracy ?? this.avgAccuracy,
+      totalTime: totalTime ?? this.totalTime,
+    );
+  }
+}
+
+final class AccuracyTopCardsLoaded extends CardAccuracyState {
+  final int totalCard;
+  final int avgAccuracy;
+  final TimeUnit totalTime;
+  final List<CardsDetailEntity> top3LeastAccurate;
+
+  AccuracyTopCardsLoaded({
+    required this.top3LeastAccurate,
+    required this.totalCard,
+    required this.avgAccuracy,
+    required this.totalTime,
   });
 }

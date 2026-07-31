@@ -1,6 +1,5 @@
 part of 'flash_card_bloc.dart';
 
-@immutable
 sealed class FlashCardState {}
 
 final class FlashCardInitial extends FlashCardState {}

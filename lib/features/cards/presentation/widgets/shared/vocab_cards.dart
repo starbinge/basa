@@ -1,12 +1,12 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
 import 'package:basa_app_project/core/widgets/animated_play_pause_button.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/vocab_bottom_modal.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/shared/vocab_bottom_modal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path/path.dart' as path;
 
-import '../../domain/entities/cards_detail_entity.dart';
+import '../../../domain/entities/cards_detail_entity.dart';
 
 class VocabCard extends StatefulWidget {
   const VocabCard({super.key, required this.listCard, required this.index});

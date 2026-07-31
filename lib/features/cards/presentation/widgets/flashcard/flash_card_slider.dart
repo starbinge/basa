@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../domain/entities/cards_detail_entity.dart';
+import '../../../domain/entities/cards_detail_entity.dart';
 
 class FlashCardSlider extends StatefulWidget {
   const FlashCardSlider({

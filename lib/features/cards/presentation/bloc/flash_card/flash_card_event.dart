@@ -1,6 +1,5 @@
 part of 'flash_card_bloc.dart';
 
-@immutable
 sealed class FlashCardEvent {}
 
 class GenerateFlashCard extends FlashCardEvent {

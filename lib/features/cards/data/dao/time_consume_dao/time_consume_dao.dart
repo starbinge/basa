@@ -1,7 +1,6 @@
 import 'package:basa_app_project/features/cards/constants/enums/group_by_enum.dart';
 import 'package:basa_app_project/features/cards/constants/enums/order_enums.dart';
 import 'package:basa_app_project/features/cards/data/models/time_consume_model/time_consume_model.dart';
-import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
 import 'package:drift/drift.dart';
@@ -25,7 +24,6 @@ class TimeConsumeDao extends DatabaseAccessor<ExternalDatabase>
     int? end;
     switch (timeRange) {
       case GroupedTimeEnum.daily:
-      case GroupedTimeEnum.weekly:
         start = getStartOfMonthEpoch(time: now);
         end = getStartOfNextMonthEpoch(time: now);
 
@@ -97,7 +95,7 @@ class TimeConsumeDao extends DatabaseAccessor<ExternalDatabase>
     }).toList();
   }
 
-  Future<List<CardsDetailEntity>> getTimeConsumeTopCards({
+  Future<List<TopCardsTimeConsumeEntity>> getTimeConsumeTopCards({
     required int begin,
     required int end,
     required OrderEnums orderBy,
@@ -126,8 +124,9 @@ class TimeConsumeDao extends DatabaseAccessor<ExternalDatabase>
     return results.map((result) {
       final CardsTableData cardTable = result.readTable(cardsTable);
       final NotesTableData noteTable = result.readTable(notesTable);
+      final RevlogTableData revlogsTable = result.readTable(revlogTable);
 
-      final model = CardsModel.fromMap({
+      final cardEntity = CardsModel.fromMap({
         'card_id': cardTable.id,
         'nid': noteTable.id,
         'queue': cardTable.queue,
@@ -139,9 +138,61 @@ class TimeConsumeDao extends DatabaseAccessor<ExternalDatabase>
         'left': cardTable.left,
         'reps': cardTable.reps,
         'flags': cardTable.flags,
-      });
+      }).toEntity();
 
-      return model.toEntity();
+      return TopCardsTimeConsumeModel(
+        timeCode: revlogsTable.id,
+        card: cardEntity,
+        timeSpent: revlogsTable.time,
+      ).toEntity();
     }).toList();
+  }
+
+  Future<int> getReviewedCardsCount({
+    required int begin,
+    required int end,
+  }) async {
+    final countExp = revlogTable.cid.count(distinct: true);
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([countExp])
+      ..where(revlogTable.id.isBetweenValues(begin, end));
+
+    final result = await query.getSingle();
+    return result.read(countExp) ?? 0;
+  }
+
+  Future<TimeUnit> getAverageTimeByTimeRange({
+    required int begin,
+    required int end,
+  }) async {
+    final totalTime = revlogTable.time.sum();
+    final totalReview = revlogTable.id.count();
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([totalTime, totalReview])
+      ..where(revlogTable.id.isBetweenValues(begin, end));
+
+    final result = await query.getSingle();
+
+    final int time = result.read(totalTime) ?? 0;
+    final int count = result.read(totalReview) ?? 0;
+
+    if (count == 0) return TimeUnit.fromMilliSeconds(0);
+    return TimeUnit.fromMilliSeconds(time ~/ count);
+  }
+
+  Future<TimeUnit> getTotalTimeByTimeRange({
+    required int begin,
+    required int end,
+  }) async {
+    final totalTime = revlogTable.time.sum();
+
+    final query = selectOnly(revlogTable)
+      ..addColumns([totalTime])
+      ..where(revlogTable.id.isBetweenValues(begin, end));
+
+    final result = await query.getSingle();
+    return TimeUnit.fromMilliSeconds(result.read(totalTime) ?? 0);
   }
 }

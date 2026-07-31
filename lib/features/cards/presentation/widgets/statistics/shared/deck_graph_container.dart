@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/constants/screen_size.dart';
+import '../../../../../../core/constants/screen_size.dart';
 
 class DeckGraphContainer<T> extends StatelessWidget {
   const DeckGraphContainer({
@@ -10,12 +10,16 @@ class DeckGraphContainer<T> extends StatelessWidget {
     required List<T> data,
     required GetTitleWidgetFunction getTitlesWidget,
     required this.getYValue,
+    this.maxY,
+    required this.onBarTap,
   }) : _getTitlesWidget = getTitlesWidget,
        _data = data;
 
   final List<T> _data;
   final GetTitleWidgetFunction _getTitlesWidget;
   final double Function(T item) getYValue;
+  final double? maxY;
+  final void Function(int barIndex) onBarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -30,13 +34,28 @@ class DeckGraphContainer<T> extends StatelessWidget {
     }
 
     return Container(
-      constraints: BoxConstraints(minHeight: 200.h, maxHeight: 300.h),
+      constraints: BoxConstraints(minHeight: 200.h, maxHeight: 280.h),
       padding: EdgeInsetsGeometry.all(15),
       width: double.infinity,
       child: BarChart(
         BarChartData(
+          barTouchData: BarTouchData(
+            touchCallback:
+                (FlTouchEvent event, BarTouchResponse? touchResponse) {
+                  if (event is! FlTapUpEvent ||
+                      touchResponse == null ||
+                      touchResponse.spot == null) {
+                    return;
+                  }
+                  onBarTap(touchResponse.spot!.touchedBarGroupIndex + 1);
+                },
+          ),
           minY: 0,
-          maxY: 100,
+          maxY:
+              maxY ??
+              (_data.isEmpty
+                  ? 100.0
+                  : (_data.map(getYValue).reduce((a, b) => a > b ? a : b)) + 2),
           alignment: BarChartAlignment.spaceAround,
           gridData: FlGridData(
             show: true,

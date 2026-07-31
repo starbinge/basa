@@ -18,3 +18,9 @@ class FetchCards extends FetchingCardsEvent {
     required this.fileName,
   });
 }
+
+class SearchCard extends FetchingCardsEvent {
+  final String searchParams;
+
+  SearchCard({required this.searchParams});
+}

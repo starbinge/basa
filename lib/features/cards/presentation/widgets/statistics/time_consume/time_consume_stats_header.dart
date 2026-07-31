@@ -1,6 +1,6 @@
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/layouts/play_time_stats_layout.dart';
-import 'package:basa_app_project/features/cards/presentation/widgets/stats_header_container.dart';
+import 'package:basa_app_project/features/cards/presentation/widgets/statistics/shared/stats_header_container.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 

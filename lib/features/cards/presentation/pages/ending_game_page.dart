@@ -1,17 +1,40 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/constants/screen_size.dart';
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:m3e_core/m3e_core.dart';
 
-class EndingGamePage extends StatelessWidget {
+class EndingGamePage extends StatefulWidget {
   const EndingGamePage({
     super.key,
     required this.totalAnswered,
     required this.isLate,
   });
+
   final int totalAnswered;
   final bool isLate;
+
+  @override
+  State<EndingGamePage> createState() => _EndingGamePageState();
+}
+
+class _EndingGamePageState extends State<EndingGamePage> {
+  AudioPlayer _audioPlayer = AudioPlayer();
+
+  @override
+  void initState() {
+    super.initState();
+    _audioPlayer.play(
+      AssetSource('sfx/freesound_community-winfantasia-6912.mp3'),
+    );
+  }
+
+  @override
+  void dispose() {
+    _audioPlayer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +73,7 @@ class EndingGamePage extends StatelessWidget {
             child: Text(
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.displayMedium,
-              isLate ? "You’re Doing Great!" : "Good Job!",
+              widget.isLate ? "You’re Doing Great!" : "Good Job!",
             ),
           ),
           Container(
@@ -61,7 +84,7 @@ class EndingGamePage extends StatelessWidget {
               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                 color: AppColors.onSurfaceVariant,
               ),
-              isLate
+              widget.isLate
                   ? "Even tho you are late, it is good rather than not doing anything."
                   : "Every small step means everything for your journey. Keep trying!",
             ),
@@ -78,19 +101,25 @@ class EndingGamePage extends StatelessWidget {
               ),
               itemBuilder: (BuildContext context, int indexItem) {
                 return Center(
-                  child: M3EShape.c9SidedCookie(
-                    width: context.screenWidth * 0.1,
-                    height: context.screenWidth * 0.1,
+                      child: M3EShape.c9SidedCookie(
+                        width: context.screenWidth * 0.1,
+                        height: context.screenWidth * 0.1,
 
-                    color: indexItem < totalAnswered
-                        ? AppColors.tertiary
-                        : AppColors.surfaceContainerHighest,
-                  ),
-                ).animate().scale(
-                  curve: Curves.bounceOut,
-                  delay: (Duration(milliseconds: indexItem * 200)),
-                  duration: Duration(milliseconds: 800),
-                );
+                        color: indexItem < widget.totalAnswered
+                            ? AppColors.tertiary
+                            : AppColors.surfaceContainerHighest,
+                      ),
+                    )
+                    .animate()
+                    .scale(
+                      curve: Curves.bounceOut,
+                      delay: (Duration(milliseconds: indexItem * 200)),
+                      duration: Duration(milliseconds: 800),
+                    )
+                    .shimmer(
+                      duration: Duration(milliseconds: 300),
+                      color: AppColors.onTertiary,
+                    );
               },
             ),
           ),
