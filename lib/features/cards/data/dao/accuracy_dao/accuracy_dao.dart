@@ -59,14 +59,13 @@ class AccuracyDao extends DatabaseAccessor<ExternalDatabase>
     required OrderEnums orderBy,
     int? limit,
   }) async {
-    final correctCount = revlogTable.ease.equals(3).cast<int>().sum();
-    final totalTime = revlogTable.time.sum();
+    final wrongCount = revlogTable.ease.equals(1).cast<int>().sum();
     final rawQuery =
         select(revlogTable).join([
             innerJoin(cardsTable, revlogTable.cid.equalsExp(cardsTable.id)),
             innerJoin(notesTable, cardsTable.nid.equalsExp(notesTable.id)),
           ])
-          ..addColumns([correctCount, totalTime])
+          ..addColumns([wrongCount])
           ..where(
             revlogTable.id.isBetweenValues(begin, end) &
                 revlogTable.ease.equals(1),
@@ -74,8 +73,8 @@ class AccuracyDao extends DatabaseAccessor<ExternalDatabase>
           ..groupBy([revlogTable.cid])
           ..orderBy([
             orderBy == OrderEnums.asc
-                ? OrderingTerm.asc(correctCount)
-                : OrderingTerm.desc(correctCount),
+                ? OrderingTerm.asc(wrongCount)
+                : OrderingTerm.desc(wrongCount),
           ]);
     if (limit != null) {
       rawQuery.limit(limit);

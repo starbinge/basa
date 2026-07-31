@@ -6,6 +6,10 @@ import 'package:basa_app_project/features/cards/domain/repositories/flash_card_r
 import 'package:basa_app_project/features/cards/domain/usecases/calculate_delta_time.dart';
 
 class FlashcardRepoImpl implements FlashCardRepo {
+  FlashcardRepoImpl({DateTime Function()? now}) : _now = now ?? DateTime.now;
+
+  final DateTime Function() _now;
+
   @override
   int generateNewDueValue({
     required FlashcardAnswerEnum answer,
@@ -14,8 +18,8 @@ class FlashcardRepoImpl implements FlashCardRepo {
   }) {
     int _vD;
     final DateTime _cD = getDateConstanta;
-    final DateTime _now = DateTime.now();
-    final int _deltaTime = calculateDeltaTime(startDate: _cD, endDate: _now);
+    final DateTime _nowDt = _now();
+    final int _deltaTime = calculateDeltaTime(startDate: _cD, endDate: _nowDt);
 
     final int _newVf = generateNewFactorValue(answer: answer, vF: vF, vT: vT);
 
@@ -78,7 +82,7 @@ class FlashcardRepoImpl implements FlashCardRepo {
     int _vD = generateNewDueValue(answer: answer, vF: vF, vT: vT);
     int _deltaTime = calculateDeltaTime(
       startDate: _cD,
-      endDate: DateTime.now(),
+      endDate: _now(),
     );
 
     double rawVq = (_vD - _deltaTime) * _ratio * pow(10, 2);

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:basa_app_project/core/data/external_database/external_database.dart';
 import 'package:basa_app_project/core/errors/cards_error.dart';
 import 'package:basa_app_project/features/cards/constants/enums/flashcard_answer_enum.dart';
@@ -69,22 +67,19 @@ class QuizGameBloc extends Bloc<QuizGameEvent, QuizGameState> {
             correctAnswer = data.translatedLanguage;
           }
 
-          Set<String> wrongOptions = {};
+          final List<String> wrongOptions = limitCard
+              .map((randomCard) {
+                return (correctAnswer == data.defaultLanguage)
+                    ? randomCard.defaultLanguage
+                    : randomCard.translatedLanguage;
+              })
+              .where((option) => option.isNotEmpty && option != correctAnswer)
+              .toSet()
+              .toList()
+            ..shuffle();
 
-          while (wrongOptions.length < 3) {
-            final randomCard = limitCard[Random().nextInt(limitCard.length)];
-
-            String randomOption = (correctAnswer == data.defaultLanguage)
-                ? randomCard.defaultLanguage
-                : randomCard.translatedLanguage;
-
-            if (randomOption != correctAnswer) {
-              wrongOptions.add(randomOption);
-            }
-          }
-
-          List<String> answerOptions = wrongOptions.toList();
-          answerOptions.add(correctAnswer);
+          final List<String> answerOptions =
+              wrongOptions.take(3).toList()..add(correctAnswer);
           answerOptions.shuffle();
 
           return QuizGameEntity(

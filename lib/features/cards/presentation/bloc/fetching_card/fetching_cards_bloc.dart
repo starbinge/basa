@@ -58,7 +58,14 @@ class FetchingCardsBloc extends Bloc<FetchingCardsEvent, FetchingCardsState> {
       if (currentState is! FetchingCardIsFinished) return;
 
       if (event.searchParams.isEmpty) {
-        emit(currentState.copyWith(searchResults: null));
+        emit(
+          FetchingCardIsFinished(
+            cardsEntity: currentState.cardsEntity,
+            cardsDao: currentState.cardsDao,
+            filePath: currentState.filePath,
+            searchResults: null,
+          ),
+        );
         return;
       }
 
