@@ -4,7 +4,7 @@ class FilePickerService {
   Future<String> getFilePath() async {
     final FilePickerResult? rawFile = await FilePicker.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ["apkg", "pdf", "ePub"],
+      allowedExtensions: ["euy"],
     );
     if (rawFile != null && rawFile.files.isNotEmpty) {
       return rawFile.files.single.path ?? "";

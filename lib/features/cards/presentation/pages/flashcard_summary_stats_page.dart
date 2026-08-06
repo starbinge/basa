@@ -1,7 +1,7 @@
 import 'package:basa_app_project/core/constants/screen_size.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/format_time_usecase.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_bloc.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_event.dart';
+import 'package:basa_app_project/features/decks/presentation/bloc/deck/deck_bloc.dart';
+import 'package:basa_app_project/features/decks/presentation/bloc/deck/deck_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -28,7 +28,7 @@ class FlashcardSummaryStatsPage extends StatefulWidget {
 class _FlashcardSummaryStatsPageState extends State<FlashcardSummaryStatsPage> {
   @override
   void initState() {
-    context.read<FetchingDeckBloc>().add(
+    context.read<DeckBloc>().add(
       UpdateActiveHour(
         deckId: int.parse(widget.deckId),
         additionalHours: int.parse(widget.timeSpent),

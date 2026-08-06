@@ -1,3 +1,4 @@
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:intl/intl.dart';
 
 import '../../../constants/enums/group_by_enum.dart';
@@ -5,21 +6,20 @@ import '../../../constants/enums/order_enums.dart';
 import '../../../domain/entities/time_consume_entity/time_consume_entity.dart';
 import '../../../domain/repositories/time_consume/time_consume_repo.dart';
 import '../../../domain/usecases/time_range_generator_usecase.dart';
-import '../../dao/time_consume_dao/time_consume_dao.dart';
 import '../../models/time_consume_model/time_consume_model.dart';
 
 class TimeConsumeRepoImpl implements TimeConsumeRepo {
-  final TimeConsumeDao _timeConsumeDao;
+  final GeneratedDeckDao _generatedDeckDao;
 
-  TimeConsumeRepoImpl({required TimeConsumeDao timeConsumeDao})
-    : _timeConsumeDao = timeConsumeDao;
+  TimeConsumeRepoImpl({required GeneratedDeckDao generatedDeckDao})
+    : _generatedDeckDao = generatedDeckDao;
 
   @override
   Stream<List<TimeConsumeEntity>> getGroupedTimeConsume({
     required GroupedTimeEnum timeRange,
   }) {
     final DateTime now = DateTime.now();
-    final rawStream = _timeConsumeDao.getGroupedTimeConsume(
+    final rawStream = _generatedDeckDao.getGroupedTimeConsume(
       timeRange: timeRange,
     );
 
@@ -43,7 +43,7 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
   }) async {
     final now = DateTime.now();
     final String timeLabel;
-    final rawStream = _timeConsumeDao.getGroupedTimeConsume(
+    final rawStream = _generatedDeckDao.getGroupedTimeConsume(
       timeRange: timeRange,
     );
     final models = await rawStream.first;
@@ -71,7 +71,7 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
 
   @override
   Future<List<TimeConsumeEntity>> getThisWeekStreakData() {
-    return _timeConsumeDao.getThisWeekStreakData();
+    return _generatedDeckDao.getThisWeekStreakData();
   }
 
   @override
@@ -80,7 +80,7 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
     required int end,
     required OrderEnums orderBy,
   }) {
-    return _timeConsumeDao.getTimeConsumeTopCards(
+    return _generatedDeckDao.getTimeConsumeTopCards(
       begin: begin,
       end: end,
       orderBy: orderBy,
@@ -90,17 +90,17 @@ class TimeConsumeRepoImpl implements TimeConsumeRepo {
 
   @override
   Future<int> getTotalCardsByTimeRange({required int begin, required int end}) {
-    return _timeConsumeDao.getReviewedCardsCount(begin: begin, end: end);
+    return _generatedDeckDao.getReviewedCardsCount(begin: begin, end: end);
   }
 
   @override
   Future<TimeUnit> getAvgTimeByTimeRange({required int begin, required int end}) {
-    return _timeConsumeDao.getAverageTimeByTimeRange(begin: begin, end: end);
+    return _generatedDeckDao.getAverageTimeByTimeRange(begin: begin, end: end);
   }
 
   @override
   Future<TimeUnit> getTotalTimeByTimeRange({required int begin, required int end}) {
-    return _timeConsumeDao.getTotalTimeByTimeRange(begin: begin, end: end);
+    return _generatedDeckDao.getTotalTimeByTimeRange(begin: begin, end: end);
   }
 
   List<TimeConsumeEntity> _groupDaily(

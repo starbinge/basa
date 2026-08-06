@@ -15,27 +15,23 @@ final class FetchingCardIsError extends FetchingCardsState {
 
 final class FetchingCardIsFinished extends FetchingCardsState {
   final CardsEntity cardsEntity;
-  final CardsDao cardsDao;
-  final File filePath;
+  final GeneratedDeckDao generatedDeckDao;
   final List<CardsDetailEntity>? searchResults;
 
   FetchingCardIsFinished({
     required this.cardsEntity,
-    required this.cardsDao,
-    required this.filePath,
+    required this.generatedDeckDao,
     this.searchResults,
   });
 
   FetchingCardIsFinished copyWith({
     CardsEntity? cardsEntity,
-    CardsDao? cardsDao,
-    File? filePath,
+    GeneratedDeckDao? generatedDeckDao,
     List<CardsDetailEntity>? searchResults,
   }) {
     return FetchingCardIsFinished(
       cardsEntity: cardsEntity ?? this.cardsEntity,
-      cardsDao: cardsDao ?? this.cardsDao,
-      filePath: filePath ?? this.filePath,
+      generatedDeckDao: generatedDeckDao ?? this.generatedDeckDao,
       searchResults: searchResults ?? this.searchResults,
     );
   }

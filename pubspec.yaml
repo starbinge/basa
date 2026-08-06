@@ -59,6 +59,7 @@ dependencies:
   fl_chart: ^1.2.0
   logger: ^2.7.0
   rxdart: ^0.28.0
+  dio: ^5.11.0
 
 dev_dependencies:
   flutter_test:

@@ -81,7 +81,6 @@ class AccuracyStatsHeader extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 12.h),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
             decoration: BoxDecoration(

@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/constants/screen_size.dart';
 import 'package:basa_app_project/core/widgets/callendar_heatmap.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
@@ -27,20 +24,12 @@ class PlayTimeStatsLayout extends StatefulWidget {
     required this.monthlyData,
 
     required this.dailyData,
-
-    required this.isAudioPlay,
-    required this.audioPlayer,
-    required this.filePath,
   });
 
   final TimeConsumeEntity timeStats;
   final List<TimeConsumeEntity> monthlyData;
 
   final List<TimeConsumeEntity> dailyData;
-
-  final bool isAudioPlay;
-  final AudioPlayer audioPlayer;
-  final File filePath;
 
   @override
   State<PlayTimeStatsLayout> createState() => _PlayTimeStatsLayoutState();
@@ -139,6 +128,8 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                       children: [
                         CallendarHeatmap(
                           itemCount: widget.dailyData.length,
+                          year: _now.year,
+                          month: _now.month,
                           getValue: (i) {
                             final seconds =
                                 widget.dailyData[i].totalTime.seconds;
@@ -241,7 +232,7 @@ class _PlayTimeStatsLayoutState extends State<PlayTimeStatsLayout> {
                 isFutureDate: isFutureDate,
                 date: date.day,
                 monthName: monthName,
-                title: "The Most Inaccurate Cards",
+                title: "The Most Time Consuming Cards",
                 listCards:
                     state is TimeConsumeDetailLoaded &&
                         state.mostTimeConsumingCards != null

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import '../../../../core/data/initial_database/initial_database.dart';
 
 abstract class DeckRepository {
@@ -10,8 +8,9 @@ abstract class DeckRepository {
   Future<void> importDeck({
     required String deckName,
     required String deckFilePath,
-    required String deckLanguage,
     required int deckColor,
+    required String deckLanguage,
+    String explanationRolePlay = '',
   });
 
   Future<int> updatingActiveHour({
@@ -19,8 +18,10 @@ abstract class DeckRepository {
     required int additionalHours,
   });
 
-  Future<void> reConstructData({
-    required File mediaFile,
-    required File extractedFilePath,
+  Future<void> generateDeck({
+    required Map<String, dynamic> jsonData,
+    required String deckName,
+    required int colorDeck,
+    required String countryDeck,
   });
 }

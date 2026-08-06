@@ -1,4 +1,4 @@
-import 'package:basa_app_project/core/constants/screen_size.dart';
+import 'package:basa_app_project/core/widgets/country_selection_overlay.dart';
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -33,21 +33,15 @@ class CountrySelector extends StatelessWidget {
         SizedBox(height: 8.h),
         InkWell(
           onTap: () {
-            showCountryPicker(
-              showPhoneCode: false,
-              showSearch: true,
+            showModalBottomSheet(
               context: context,
-              onSelect: onSelect,
-              countryListTheme: CountryListThemeData(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(8.r),
-                  topRight: Radius.circular(8.r),
-                ),
-                bottomSheetHeight: context.screenHeight / 2,
-                inputDecoration: const InputDecoration(
-                  hintText: "Search country...",
-                  prefixIcon: Icon(Icons.search),
-                ),
+              isScrollControlled: true,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(8.r)),
+              ),
+              builder: (context) => CountrySelectionOverlay(
+                countries: CountryService().getAll(),
+                onSelect: onSelect,
               ),
             );
           },

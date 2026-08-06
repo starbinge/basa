@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/widgets/callendar_heatmap.dart';
 import 'package:basa_app_project/features/cards/data/models/flashcard_statistic_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
@@ -23,15 +20,9 @@ class AccuracyStatsLayout extends StatefulWidget {
   const AccuracyStatsLayout({
     super.key,
     required this.stats,
-    required this.isAudioPlayed,
-    required this.audioPlayer,
-    required this.filePath,
   });
 
   final DeckAccuracyStats stats;
-  final bool isAudioPlayed;
-  final AudioPlayer audioPlayer;
-  final File filePath;
 
   @override
   State<AccuracyStatsLayout> createState() => _AccuracyStatsLayoutState();
@@ -118,6 +109,8 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
                       RepaintBoundary(
                         child: CallendarHeatmap(
                           itemCount: widget.stats.dailyAccuracyList.length,
+                          year: _now.year,
+                          month: _now.month,
                           getValue: (i) =>
                               widget.stats.dailyAccuracyList[i].accuracyNumber /
                               100,
@@ -197,10 +190,16 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
               bool isLoading =
                   state is! AccuracyDetailLoaded ||
                   state.top3LeastAccurate == null;
+              bool isAllCorrectDay =
+                  state is AccuracyDetailLoaded &&
+                  state.top3LeastAccurate != null &&
+                  state.top3LeastAccurate!.isEmpty &&
+                  (state.totalCard ?? 0) > 0;
               bool isEmpty =
                   state is AccuracyDetailLoaded &&
                   state.top3LeastAccurate != null &&
-                  state.top3LeastAccurate!.isEmpty;
+                  state.top3LeastAccurate!.isEmpty &&
+                  !isAllCorrectDay;
               bool isFutureDate = date.isAfter(DateTime.now());
               return BottomSheetStats(
                 isLoading: isLoading,
@@ -209,6 +208,15 @@ class _AccuracyStatsLayoutState extends State<AccuracyStatsLayout> {
                 date: date.day,
                 monthName: monthName,
                 title: "The Most Inaccurate Cards",
+                emptyTitle: isAllCorrectDay
+                    ? "All cards answered correctly"
+                    : "Be patient, kid.",
+                emptySubtitle: isAllCorrectDay
+                    ? "You got them all right on this day"
+                    : "Today is still not the day",
+                emptyIcon: isAllCorrectDay
+                    ? Icons.check_circle
+                    : Icons.warning,
                 listCards: state is AccuracyDetailLoaded
                     ? state.top3LeastAccurate ?? []
                     : [],

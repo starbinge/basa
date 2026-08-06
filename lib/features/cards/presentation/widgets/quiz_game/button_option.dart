@@ -1,12 +1,9 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
 import 'package:basa_app_project/core/theme/app_colors.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/quiz_game/wrong_answer_bottombar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path/path.dart' as path;
 
 import '../../../constants/enums/flashcard_answer_enum.dart';
 import '../../bloc/quiz_game/quiz_game_bloc.dart';
@@ -22,7 +19,6 @@ class OptionButton extends StatefulWidget {
     required this.selectedIndex,
     required this.timeSpentPerQuestion,
     required this.selectedCard,
-    required this.audioPlayer,
   });
 
   final String option;
@@ -33,7 +29,6 @@ class OptionButton extends StatefulWidget {
   final int selectedIndex;
   final int timeSpentPerQuestion;
   final CardsDetailEntity selectedCard;
-  final AudioPlayer audioPlayer;
 
   @override
   State<OptionButton> createState() => _OptionButtonState();
@@ -71,11 +66,6 @@ class _OptionButtonState extends State<OptionButton> {
           : () {
               widget.onTap();
               if (widget.indexOption == widget.indexCorrectOption) {
-                widget.audioPlayer.play(
-                  AssetSource(
-                    "sfx/shidenbeatsmusic-sound-effect-twinklesparkle-115095.mp3",
-                  ),
-                );
                 Future.delayed(const Duration(seconds: 1), () {
                   context.read<QuizGameBloc>()..add(
                     AnsweringQuestion(
@@ -88,11 +78,8 @@ class _OptionButtonState extends State<OptionButton> {
                 });
               } else {
                 final bloc = context.read<QuizGameBloc>();
-                widget.audioPlayer.play(
-                  AssetSource("sfx/freesound_community-wrong-47985.mp3"),
-                );
 
-                showBottomBar(audioPlayer: widget.audioPlayer, bloc: bloc);
+                showBottomBar(bloc: bloc);
               }
             },
       child: AnimatedContainer(
@@ -119,39 +106,13 @@ class _OptionButtonState extends State<OptionButton> {
     );
   }
 
-  void showBottomBar({
-    required AudioPlayer audioPlayer,
-    required QuizGameBloc bloc,
-  }) async {
+  void showBottomBar({required QuizGameBloc bloc}) async {
     showModalBottomSheet(
       isDismissible: false,
       context: context,
       builder: (context) {
         return WrongAnswerBottombar(
           selectedCard: widget.selectedCard,
-          audioPlayer: audioPlayer,
-          playButtonPressed: () {
-            final audioPath = widget.selectedCard.audioPath.isNotEmpty
-                ? widget.selectedCard.audioPath.first
-                : null;
-            if (audioPath != null) {
-              audioPlayer.play(
-                DeviceFileSource(
-                  path
-                      .join(
-                        RepositoryProvider.of<ExternalDatabaseAccessor>(
-                          context,
-                        ).filePath!,
-                        audioPath,
-                      )
-                      .replaceAll('\\', '/'),
-                ),
-              );
-            }
-          },
-          pauseButtonPressed: () {
-            audioPlayer.pause();
-          },
           textButtonPressed: () {
             bloc..add(
               AnsweringQuestion(

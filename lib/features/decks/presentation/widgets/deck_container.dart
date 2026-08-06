@@ -32,23 +32,23 @@ class DeckContainer extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SvgPicture.asset(
-              height: 60,
-              imagePath + "folder_icon(1).svg",
+              height: 100,
+              imagePath + "folder.svg",
               colorMapper: CustomDeckColorMapper(selectedColor: iconColor),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: 8),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(
                 deckName,
                 textAlign: TextAlign.center,
-                style: theme.textTheme.labelMedium,
+                style: theme.textTheme.titleMedium,
               ),
             ),
             Text(
               deckLanguage,
               textAlign: TextAlign.center,
-              style: theme.textTheme.labelSmall,
+              style: theme.textTheme.labelMedium,
             ),
           ],
         ),

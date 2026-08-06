@@ -7,15 +7,13 @@ class FetchCards extends FetchingCardsEvent {
   final int deckId;
   final String deckName;
   final String deckCountry;
-  final File filePath;
-  final String fileName;
+  final String dbPath;
 
   FetchCards({
     required this.deckId,
     required this.deckName,
     required this.deckCountry,
-    required this.filePath,
-    required this.fileName,
+    required this.dbPath,
   });
 }
 

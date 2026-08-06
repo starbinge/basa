@@ -36,7 +36,7 @@ class DeckNameInput extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: SvgPicture.asset(
-                    'assets/images/folder_icon(1).svg',
+                    'assets/images/folder.svg',
                     height: 64,
                     colorMapper: CustomDeckColorMapper(
                       selectedColor: _selectedColor,

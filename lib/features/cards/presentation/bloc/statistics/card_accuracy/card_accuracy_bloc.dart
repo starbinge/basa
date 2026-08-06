@@ -88,7 +88,7 @@ class CardAccuracyBloc extends Bloc<CardAccuracyEvent, CardAccuracyState> {
           _accuracyCardRepo.getAccuracyTopCards(
             begin: event.begin,
             end: event.end,
-            orderBy: OrderEnums.asc,
+            orderBy: OrderEnums.desc,
           ),
           _accuracyCardRepo.getAvgAccuracyByTimeRange(
             begin: event.begin,

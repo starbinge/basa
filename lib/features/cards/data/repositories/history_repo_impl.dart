@@ -1,14 +1,14 @@
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:basa_app_project/features/cards/constants/enums/group_by_enum.dart';
-import 'package:basa_app_project/features/cards/data/dao/history_dao/history_dao.dart';
-import 'package:basa_app_project/features/cards/data/models/history_model/history_model.dart';
 import 'package:basa_app_project/features/cards/domain/entities/history_entity/history_entity.dart';
 import 'package:basa_app_project/features/cards/domain/repositories/history_card_repo.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
 
 class HistoryRepoImpl implements HistoryCardRepo {
-  final HistoryDao _historyDao;
+  final GeneratedDeckDao _generatedDeckDao;
 
-  HistoryRepoImpl({required HistoryDao historyDao}) : _historyDao = historyDao;
+  HistoryRepoImpl({required GeneratedDeckDao generatedDeckDao})
+    : _generatedDeckDao = generatedDeckDao;
 
   @override
   Future<HistoryEntity> getHistoryByTimeRange({
@@ -42,10 +42,7 @@ class HistoryRepoImpl implements HistoryCardRepo {
         start = getStartOfPreviousMonthEpoch(time: now);
         end = getStartOfMonthEpoch(time: now);
     }
-    final List<HistoryModel> rawData = await _historyDao.getHistory(
-      start: start,
-      end: end,
-    );
+    final rawData = await _generatedDeckDao.getHistory(start: start, end: end);
 
     return HistoryEntity(
       labelTime: timeLabel,

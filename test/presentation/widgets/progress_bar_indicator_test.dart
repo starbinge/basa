@@ -1,70 +1,42 @@
-import 'package:basa_app_project/core/data/external_database/external_database.dart';
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:basa_app_project/features/cards/constants/enums/flashcard_answer_enum.dart';
-import 'package:basa_app_project/features/cards/data/dao/cards_dao/cards_dao.dart';
-import 'package:basa_app_project/features/cards/data/repositories/flashcard_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/quiz_game/quiz_game_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/quiz_game/progress_bar_indicator.dart';
-import 'package:drift/drift.dart' show Value;
+import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
-class MockCardsDao extends Mock implements CardsDao {}
 
 CardsDetailEntity buildCard({
   required int id,
-  int queue = 100,
   String? def,
   String? trans,
 }) {
   return CardsDetailEntity(
     id: id,
-    noteId: id,
-    queue: queue,
-    reps: 0,
-    odue: 0,
-    ivl: 0,
-    left: 10,
     defaultLanguage: def ?? 'word$id',
     translatedLanguage: trans ?? 'translation$id',
-    descriptions: const [],
-    audioPath: const [],
-    factor: 250,
-    flags: 0,
+    additionalContext: '',
+    pronunciation: '',
   );
-}
-
-void registerFallbacks() {
-  registerFallbackValue(const CardsTableCompanion(id: Value(0)));
-  registerFallbackValue(const RevlogTableCompanion(id: Value(0)));
 }
 
 Future<QuizGameBloc> blocInFinishState(
-  CardsDao cardsDao,
+  GeneratedDeckDao dao,
   List<CardsDetailEntity> cards,
 ) async {
-  final bloc = QuizGameBloc(
-    cardsDao: cardsDao,
-    flashCardRepo: FlashcardRepoImpl(),
-  );
+  final bloc = QuizGameBloc(generatedDeckDao: dao);
   bloc.add(GeneratingQuizGameQuestions(listCards: cards));
   await bloc.stream.firstWhere((s) => s is QuizGameIsFinish);
   return bloc;
 }
 
 void main() {
-  setUp(() {
-    registerFallbacks();
-  });
-
   testWidgets('shows zero progress on the initial state', (tester) async {
-    final cardsDao = MockCardsDao();
-    final bloc = QuizGameBloc(
-      cardsDao: cardsDao,
-      flashCardRepo: FlashcardRepoImpl(),
-    );
+    final db = GeneratedDeckDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
+    final bloc = QuizGameBloc(generatedDeckDao: db.generatedDeckDao);
 
     await tester.pumpWidget(
       MaterialApp(
@@ -91,19 +63,14 @@ void main() {
 
   testWidgets('grows the colored bar as questions are answered',
       (tester) async {
-    final cardsDao = MockCardsDao();
-    when(
-      () => cardsDao.updateCards(
-        updatedCardValue: any(named: 'updatedCardValue'),
-      ),
-    ).thenAnswer((_) async => 1);
-    when(() => cardsDao.insertRevlog(any())).thenAnswer((_) async => 0);
+    final db = GeneratedDeckDatabase(NativeDatabase.memory());
+    addTearDown(db.close);
 
     final cards = List.generate(
       10,
-      (i) => buildCard(id: i + 1, queue: i + 1),
+      (i) => buildCard(id: i + 1),
     );
-    final bloc = await blocInFinishState(cardsDao, cards);
+    final bloc = await blocInFinishState(db.generatedDeckDao, cards);
 
     final selectedCard = cards.first;
     for (var i = 0; i < 4; i++) {

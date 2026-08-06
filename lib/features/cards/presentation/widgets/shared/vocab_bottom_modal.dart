@@ -1,63 +1,23 @@
-import 'package:audioplayers/audioplayers.dart';
-import 'package:basa_app_project/core/widgets/animated_play_pause_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:path/path.dart' as path;
 
 import '../../../domain/entities/cards_detail_entity.dart';
 
-class VocabBottomModal extends StatefulWidget {
+class VocabBottomModal extends StatelessWidget {
   const VocabBottomModal({
     super.key,
     required this.listCard,
-
-    required AudioPlayer audioPlayer,
     required this.cardIndex,
-    required this.filePath,
-  }) : _audioPlayer = audioPlayer;
+  });
 
   final List<CardsDetailEntity> listCard;
-  final String filePath;
-  final AudioPlayer _audioPlayer;
   final int cardIndex;
 
   @override
-  State<VocabBottomModal> createState() => _VocabBottomModalState();
-}
-
-class _VocabBottomModalState extends State<VocabBottomModal> {
-  bool _isPlaying = false;
-
-  @override
-  void initState() {
-    super.initState();
-    widget._audioPlayer.onPlayerComplete.listen((_) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = false;
-        });
-      }
-    });
-  }
-
-  void _togglePlay() {
-    final rawPath = path.join(
-      widget.filePath,
-      widget.listCard[widget.cardIndex].audioPath.first,
-    );
-    if (_isPlaying) {
-      widget._audioPlayer.pause();
-    } else {
-      widget._audioPlayer.play(DeviceFileSource(rawPath.replaceAll('\\', '/')));
-    }
-    setState(() {
-      _isPlaying = !_isPlaying;
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final int index = widget.cardIndex;
+    final int index = cardIndex;
+    final String additionalContext = listCard[index].additionalContext;
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Container(
@@ -74,7 +34,7 @@ class _VocabBottomModalState extends State<VocabBottomModal> {
                   Padding(
                     padding: EdgeInsets.all(20.w),
                     child: Text(
-                      widget.listCard[index].defaultLanguage,
+                      listCard[index].defaultLanguage,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: TextTheme.of(context).headlineLarge?.fontSize,
@@ -88,14 +48,14 @@ class _VocabBottomModalState extends State<VocabBottomModal> {
                   Padding(
                     padding: EdgeInsets.all(20.w),
                     child: Text(
-                      widget.listCard[index].translatedLanguage,
+                      listCard[index].translatedLanguage,
                       style: Theme.of(context).textTheme.bodyLarge,
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 20.h),
-              if (widget.listCard[index].descriptions.isNotEmpty)
+              if (additionalContext.isNotEmpty)
                 Card(
                   shadowColor: Theme.of(
                     context,
@@ -141,54 +101,22 @@ class _VocabBottomModalState extends State<VocabBottomModal> {
                       ),
                       Padding(
                         padding: EdgeInsets.all(16.w),
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: widget.listCard[index].descriptions.length,
-                          itemBuilder: (context, descIndex) {
-                            final description =
-                                widget.listCard[index].descriptions[descIndex];
-                            return Padding(
-                              padding: EdgeInsets.only(bottom: 10.h),
-                              child: ListTile(
-                                leading: Text(
-                                  "•",
-                                  style: TextStyle(
-                                    fontSize: 18.sp,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                        child: Text(
+                          additionalContext,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Theme.of(
+                                  context,
+                                ).textTheme.bodyMedium?.color?.withValues(
+                                  alpha: 0.85,
                                 ),
-                                horizontalTitleGap: 8.w,
-                                contentPadding: EdgeInsets.zero,
-                                title: Text(
-                                  description,
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(
-                                        color: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium
-                                            ?.color
-                                            ?.withValues(alpha: 0.85),
-                                        height: 1.3,
-                                      ),
-                                ),
+                                height: 1.3,
                               ),
-                            );
-                          },
                         ),
                       ),
                     ],
                   ),
                 ),
-              SizedBox(height: 50.h),
-              AnimatedPlayPauseButton(
-                isPlaying: _isPlaying,
-                onPressed: _togglePlay,
-                size: 48,
-                color: Colors.white,
-                backgroundColor: Theme.of(context).primaryColor,
-                padding: EdgeInsets.all(16.w),
-              ),
             ],
           ),
         ),

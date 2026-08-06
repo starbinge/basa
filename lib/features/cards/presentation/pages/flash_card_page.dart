@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/track_per_card_timer.dart';
@@ -18,15 +16,11 @@ class FleshCardPage extends StatefulWidget {
     required this.deckId,
     required this.deckName,
     required this.deckCountry,
-    required this.fileName,
-    required this.filePath,
   });
 
   final int deckId;
   final String deckName;
   final String deckCountry;
-  final String fileName;
-  final File filePath;
 
   @override
   State<FleshCardPage> createState() => _FleshCardPageState();

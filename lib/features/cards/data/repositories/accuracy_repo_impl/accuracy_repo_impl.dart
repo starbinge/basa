@@ -1,3 +1,4 @@
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
 import 'package:basa_app_project/features/cards/domain/usecases/get_start_end_date.dart';
 import 'package:intl/intl.dart';
@@ -8,14 +9,13 @@ import '../../../data/models/flashcard_statistic_model.dart';
 import '../../../domain/entities/cards_detail_entity.dart';
 import '../../../domain/repositories/accuracy_card_repo.dart';
 import '../../../domain/usecases/time_range_generator_usecase.dart';
-import '../../dao/accuracy_dao/accuracy_dao.dart';
 import '../../models/accuracy_model/accuracy_model.dart';
 
 class AccuracyRepoImpl implements AccuracyCardRepo {
-  final AccuracyDao _accuracyDao;
+  final GeneratedDeckDao _generatedDeckDao;
 
-  AccuracyRepoImpl({required AccuracyDao accuracyDao})
-    : _accuracyDao = accuracyDao;
+  AccuracyRepoImpl({required GeneratedDeckDao generatedDeckDao})
+    : _generatedDeckDao = generatedDeckDao;
 
   @override
   Stream<DeckAccuracy> getSingleAccuracy({required GroupedTimeEnum timeRange}) {
@@ -34,7 +34,7 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
         timeLabel = DateFormat.MMMM('en_US').format(now);
     }
 
-    final rawStream = _accuracyDao.getAccuracyData(timeRange: timeRange);
+    final rawStream = _generatedDeckDao.getAccuracyData(timeRange: timeRange);
 
     return rawStream.map((data) {
       final int totalCards = data.length;
@@ -51,7 +51,7 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
     required GroupedTimeEnum timeRange,
   }) {
     final DateTime now = DateTime.now();
-    final rawStream = _accuracyDao.getAccuracyData(timeRange: timeRange);
+    final rawStream = _generatedDeckDao.getAccuracyData(timeRange: timeRange);
 
     return rawStream.map((models) {
       switch (timeRange) {
@@ -115,7 +115,7 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
     required int end,
     required OrderEnums orderBy,
   }) async {
-    return await _accuracyDao.getMostInaccurateCards(
+    return await _generatedDeckDao.getMostInaccurateCards(
       begin: begin,
       end: end,
       orderBy: orderBy,
@@ -128,7 +128,7 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
     required begin,
     required end,
   }) async {
-    return await _accuracyDao.getAverageNumber(
+    return await _generatedDeckDao.getAverageNumber(
       begin: begin,
       end: end,
     );
@@ -136,11 +136,17 @@ class AccuracyRepoImpl implements AccuracyCardRepo {
 
   @override
   Future<int> getTotalCardsByTimeRange({required begin, required end}) async {
-    return await _accuracyDao.getReviewedCardsCount(begin: begin, end: end);
+    return await _generatedDeckDao.getReviewedCardsCount(
+      begin: begin,
+      end: end,
+    );
   }
 
   @override
   Future<TimeUnit> getTotalTimeByTimeRange({required begin, required end}) async {
-    return await _accuracyDao.getTotalTimeByTimeRange(begin: begin, end: end);
+    return await _generatedDeckDao.getTotalTimeByTimeRange(
+      begin: begin,
+      end: end,
+    );
   }
 }

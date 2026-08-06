@@ -4,22 +4,24 @@ import 'package:basa_app_project/core/utils/file_picker.dart';
 import 'package:basa_app_project/core/widgets/flying_action_button.dart';
 import 'package:basa_app_project/core/widgets/status_overlay.dart';
 import 'package:basa_app_project/features/decks/data/repositories/deck_repository_impl.dart';
+import 'package:basa_app_project/features/decks/data/repositories/generate_deck_repository_impl.dart';
 import 'package:basa_app_project/features/decks/domain/entities/deck_entity.dart';
+import 'package:basa_app_project/features/decks/presentation/bloc/deck/deck_bloc.dart';
+import 'package:basa_app_project/features/decks/presentation/bloc/deck/deck_event.dart';
+import 'package:basa_app_project/features/decks/presentation/bloc/deck/deck_state.dart';
 import 'package:basa_app_project/features/decks/presentation/bloc/deck_import/deck_import_bloc.dart';
 import 'package:basa_app_project/features/decks/presentation/bloc/deck_import/deck_import_state.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_bloc.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_event.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_state.dart';
+import 'package:basa_app_project/features/decks/presentation/bloc/generate_deck/generate_deck_bloc.dart';
 import 'package:basa_app_project/features/decks/presentation/widgets/deck_container.dart';
-import 'package:basa_app_project/features/decks/presentation/widgets/deck_input_page_widgets/import_deck_form.dart';
+import 'package:basa_app_project/features/decks/presentation/widgets/deck_input_page_widgets/deck_create_menu_page.dart';
+import 'package:basa_app_project/features/decks/presentation/widgets/deck_input_page_widgets/generate_deck_form.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:path/path.dart' as path;
 
 import '../../../../core/data/initial_database/initial_database.dart';
-import '../../../../core/utils/anki_collection_resolver.dart';
 import '../../domain/repositories/deck_repository.dart';
 
 class DeckCollectionPage extends StatefulWidget {
@@ -30,35 +32,33 @@ class DeckCollectionPage extends StatefulWidget {
 }
 
 class _DeckCollectionPageState extends State<DeckCollectionPage> {
-  late final FetchingDeckBloc _fetchingDeckBloc;
+  late final DeckBloc _deckBloc;
 
   @override
   void initState() {
     super.initState();
-    // 1. Grab the fully prepared repository instantly from the global context
     final repository = RepositoryProvider.of<DeckRepository>(context);
 
-    _fetchingDeckBloc = FetchingDeckBloc(repository: repository);
+    _deckBloc = DeckBloc(repository: repository);
 
-    // 2. Safely trigger your event after the frame completes its first draw
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _fetchingDeckBloc.add(FetchDecksList());
+      _deckBloc.add(FetchDecksList());
     });
   }
 
   @override
   void dispose() {
-    _fetchingDeckBloc.close();
+    _deckBloc.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
-      value: _fetchingDeckBloc,
+      value: _deckBloc,
       child: Scaffold(
         body: SafeArea(
-          child: BlocBuilder<FetchingDeckBloc, FetchingDeckState>(
+          child: BlocBuilder<DeckBloc, DeckState>(
             builder: (context, state) {
               if (state.isLoading) {
                 return const Center(child: CircularProgressIndicator());
@@ -69,19 +69,15 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                 itemCount: deckList.length,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   childAspectRatio: 1,
-                  crossAxisCount: 3,
+                  crossAxisCount: 2,
                 ),
                 itemBuilder: (context, index) {
                   return GestureDetector(
                     onTap: () {
-                      final collectionFile = resolveAnkiCollectionFile(
-                        deckList[index].extractedPath,
-                      );
-                      if (collectionFile == null) return;
-                      final fileName = path.basename(collectionFile.path);
+                      if (deckList[index].dbPath.isEmpty) return;
                       GoRouter.of(context).push(
-                        '/cards/${deckList[index].id}/$fileName/${deckList[index].deckName}/${deckList[index].deckLanguage}/${deckList[index].activeHour}',
-                        extra: collectionFile,
+                        '/cards/${deckList[index].id}/${deckList[index].deckName}/${deckList[index].deckLanguage}/${deckList[index].activeHour}',
+                        extra: deckList[index].dbPath,
                       );
                     },
                     child:
@@ -110,19 +106,61 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
               isScrollControlled: true,
               builder: (sheetContext) {
                 return BlocProvider.value(
-                  value: _fetchingDeckBloc,
-                  child: BlocProvider<DeckImportBloc>(
-                    create: (context) {
-                      final decksDao = RepositoryProvider.of<AppDatabase>(
-                        context,
-                      ).decksDao;
-                      final repository = DeckRepositoryImpl(decksDao: decksDao);
-                      return DeckImportBloc(
-                        repository: repository,
-                        filePicker: FilePickerService(),
-                      );
-                    },
-                    child: BlocListener<DeckImportBloc, DeckImportState>(
+                  value: _deckBloc,
+                  child: MultiBlocProvider(
+                    providers: [
+                      BlocProvider<DeckImportBloc>(
+                        create: (context) {
+                          final decksDao = RepositoryProvider.of<AppDatabase>(
+                            context,
+                          ).decksDao;
+                          final repository = DeckRepositoryImpl(
+                            decksDao: decksDao,
+                          );
+                          return DeckImportBloc(
+                            repository: repository,
+                            filePicker: FilePickerService(),
+                          );
+                        },
+                      ),
+                      BlocProvider<GenerateDeckBloc>(
+                        create: (context) {
+                          final decksDao = RepositoryProvider.of<AppDatabase>(
+                            context,
+                          ).decksDao;
+                          return GenerateDeckBloc(
+                            generateDeckRepo: GenerateDeckRepositoryImpl(
+                              dio: RepositoryProvider.of<Dio>(context),
+                            ),
+                            deckRepository: DeckRepositoryImpl(
+                              decksDao: decksDao,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                    child: BlocListener<GenerateDeckBloc, GenerateDeckState>(
+                      listener: (context, generateState) {
+                        int? page;
+                        if (generateState is GenerateDeckLoading) {
+                          page = 6;
+                        } else if (generateState is GenerateDeckIsExist) {
+                          page = 3;
+                        } else if (generateState is GenerateDeckIsError) {
+                          page = 7;
+                        } else if (generateState is GenerateDeckIsFinished) {
+                          page = 8;
+                          context.read<DeckBloc>().add(FetchDecksList());
+                        }
+                        if (page != null) {
+                          sheetPageController.animateToPage(
+                            page,
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
+                      },
+                      child: BlocListener<DeckImportBloc, DeckImportState>(
                       listener: (context, importState) {
                         int? page;
                         if (importState.isLoading) {
@@ -149,7 +187,7 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                         } else if (importState.isFinished &&
                             !importState.isError) {
                           page = 4;
-                          context.read<FetchingDeckBloc>().add(
+                          context.read<DeckBloc>().add(
                             FetchDecksList(),
                           );
                         }
@@ -166,8 +204,15 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                           physics: const NeverScrollableScrollPhysics(),
                           controller: sheetPageController,
                           children: [
-                            AnkiDeckForm(
-                              onPressed: () => Navigator.pop(sheetContext),
+                            DeckCreateMenuPage(
+                              theme: Theme.of(context),
+                              onGenerateTap: () {
+                                sheetPageController.animateToPage(
+                                  5,
+                                  duration: const Duration(milliseconds: 300),
+                                  curve: Curves.easeInOut,
+                                );
+                              },
                             ),
                             const StatusOverlay(
                               animation: animationPath + "loading_state.json",
@@ -195,14 +240,46 @@ class _DeckCollectionPageState extends State<DeckCollectionPage> {
                               isFinishedButtonPressed: () =>
                                   Navigator.pop(sheetContext),
                             ),
+                            GenerateDeckForm(
+                              onPressed: () => Navigator.pop(sheetContext),
+                            ),
+                            const StatusOverlay(
+                              animation: animationPath + "loading_state.json",
+                              hintText: "Generating Deck",
+                              isFinished: false,
+                            ),
+                            BlocBuilder<GenerateDeckBloc, GenerateDeckState>(
+                              builder: (context, generateState) {
+                                final String message = generateState
+                                        is GenerateDeckIsError
+                                    ? generateState.errorMessage
+                                    : "Something Went Wrong";
+                                return StatusOverlay(
+                                  animation:
+                                      animationPath + "error_state.json",
+                                  hintText: message,
+                                  isFinished: true,
+                                  isFinishedButtonPressed: () =>
+                                      Navigator.pop(sheetContext),
+                                );
+                              },
+                            ),
+                            StatusOverlay(
+                              animation: animationPath + "success.json",
+                              hintText: "Deck Generated",
+                              isFinished: true,
+                              isFinishedButtonPressed: () =>
+                                  Navigator.pop(sheetContext),
+                            ),
                           ],
                         ),
                       ),
                     ),
                   ),
-                );
-              },
-            );
+                ),
+              );
+            },
+          );
           },
         ),
       ),

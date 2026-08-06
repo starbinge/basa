@@ -1,12 +1,7 @@
-import 'dart:async';
-import 'dart:io';
-
-import 'package:audioplayers/audioplayers.dart';
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/core/widgets/timer_container.dart';
-import 'package:basa_app_project/features/cards/data/dao/cards_dao/cards_dao.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
-import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/quiz_game/quiz_game_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/quiz_game/answer_options_section.dart';
 import 'package:basa_app_project/features/cards/presentation/widgets/quiz_game/progress_bar_indicator.dart';
@@ -18,16 +13,12 @@ class QuizGamePage extends StatefulWidget {
   const QuizGamePage({
     super.key,
     required this.listCards,
-    required CardsDao cardsDao,
-    required FlashCardRepo flashCardRepo,
-    required this.filePath,
+    required this.generatedDeckDao,
     this.startIndex = 0,
-  }) : _flashCardRepo = flashCardRepo,
-       _cardsDao = cardsDao;
+  });
+
   final List<CardsDetailEntity> listCards;
-  final CardsDao _cardsDao;
-  final FlashCardRepo _flashCardRepo;
-  final File filePath;
+  final GeneratedDeckDao generatedDeckDao;
   final int startIndex;
 
   @override
@@ -36,62 +27,19 @@ class QuizGamePage extends StatefulWidget {
 
 class _QuizGamePageState extends State<QuizGamePage> {
   int timeLeft = 300;
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  final AudioPlayer _sfxPlayer = AudioPlayer();
-  final AudioPlayer _bgmPlayer = AudioPlayer();
   int answeredQuestion = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    AudioPlayer.global.setAudioContext(
-      AudioContext(
-        android: const AudioContextAndroid(
-          isSpeakerphoneOn: true,
-          stayAwake: true,
-          contentType: AndroidContentType.music,
-          usageType: AndroidUsageType.game,
-          audioFocus: AndroidAudioFocus.gainTransientMayDuck,
-        ),
-        iOS: AudioContextIOS(category: AVAudioSessionCategory.ambient),
-      ),
-    );
-    _audioPlayer.setAudioContext(
-      AudioContext(
-        android: const AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
-      ),
-    );
-
-    _sfxPlayer.setAudioContext(
-      AudioContext(
-        android: const AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
-      ),
-    );
-    _initAndPlayBgm();
-  }
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    _bgmPlayer.stop();
-    _bgmPlayer.dispose();
-    _sfxPlayer.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          QuizGameBloc(
-            cardsDao: widget._cardsDao,
-            flashCardRepo: widget._flashCardRepo,
-          )..add(
-            GeneratingQuizGameQuestions(
-              listCards: widget.listCards,
-              startIndex: widget.startIndex,
+          QuizGameBloc(generatedDeckDao: widget.generatedDeckDao)
+            ..add(
+              GeneratingQuizGameQuestions(
+                listCards: widget.listCards,
+                startIndex: widget.startIndex,
+              ),
             ),
-          ),
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 130,
@@ -149,13 +97,10 @@ class _QuizGamePageState extends State<QuizGamePage> {
                     QuestionSection(
                       activeQuestion: state.activeQuestion ?? 0,
                       question: state.cards[state.activeQuestion ?? 0].question,
-                      audioPlayer: _audioPlayer,
                     ),
 
                     AnswerOptionSection(
                       listCards: widget.listCards,
-                      filePath: widget.filePath,
-                      audioPlayer: _sfxPlayer,
                     ),
                   ],
                 );
@@ -165,21 +110,6 @@ class _QuizGamePageState extends State<QuizGamePage> {
           ),
         ),
       ),
-    );
-  }
-
-  Future<void> _initAndPlayBgm() async {
-    await _bgmPlayer.setAudioContext(
-      AudioContext(
-        android: const AudioContextAndroid(audioFocus: AndroidAudioFocus.none),
-      ),
-    );
-    await _bgmPlayer.setReleaseMode(ReleaseMode.loop);
-
-    await _bgmPlayer.setVolume(0.1);
-
-    await _bgmPlayer.play(
-      AssetSource('sfx/sondangsirait419-1-efek-sound-1-220034.mp3'),
     );
   }
 }

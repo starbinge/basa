@@ -1,77 +1,61 @@
 import 'dart:io';
 
-import 'package:basa_app_project/core/data/external_database/external_database.dart';
-import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
-import 'package:basa_app_project/core/data/initial_database/initial_database.dart';
-import 'package:basa_app_project/features/cards/data/dao/cards_dao/cards_dao.dart';
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_entity.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-
-import '../../data/dao/db_test_helper.dart';
-
-class MockExternalDatabaseAccessor extends Mock
-    implements ExternalDatabaseAccessor {}
-
-class MockCardsDao extends Mock implements CardsDao {}
 
 CardsDetailEntity buildCard({
   required int id,
-  int queue = 100,
   String? def,
   String? trans,
 }) {
   return CardsDetailEntity(
     id: id,
-    noteId: id,
-    queue: queue,
-    reps: 0,
-    odue: 0,
-    ivl: 0,
-    left: 10,
     defaultLanguage: def ?? 'word$id',
     translatedLanguage: trans ?? 'translation$id',
-    descriptions: const [],
-    audioPath: const [],
-    factor: 250,
-    flags: 0,
+    additionalContext: '',
+    pronunciation: '',
   );
 }
 
 void main() {
-  late MockExternalDatabaseAccessor accessor;
-  late AppDatabase appDatabase;
-  late ExternalDatabase searchDb;
-  late File deckFile;
+  GeneratedDeckDatabase? searchDb;
+  late String dbPath;
+  late String invalidDbPath;
 
   setUp(() async {
-    registerFallbackValue(File(''));
-    accessor = MockExternalDatabaseAccessor();
-    appDatabase = AppDatabase(NativeDatabase.memory());
-    searchDb = ExternalDatabase(NativeDatabase.memory());
-    await insertNoteAndCard(searchDb, cardId: 1, noteId: 1, flds: 'dog\u001fanjing');
-    when(() => accessor.closeCurrentDatabase()).thenAnswer((_) async {});
+    final dir = Directory.systemTemp.createTempSync('fetching_cards_test');
+    dbPath = '${dir.path}/animal.sqlite';
+    final seedDb = GeneratedDeckDatabase(
+      NativeDatabase.createInBackground(File(dbPath)),
+    );
+    await seedDb.generatedDeckDao.insertCard(
+      GeneratedCardsTableCompanion.insert(
+        defaultLanguage: 'dog',
+        translation: 'anjing',
+        additionalContext: '',
+        pronunciation: '',
+      ),
+    );
+    await seedDb.close();
 
-    final dir = Directory.systemTemp.createTempSync('deck_test');
-    deckFile = File('${dir.path}/deck.apkg')..writeAsStringSync('dummy');
+    invalidDbPath = '${dir.path}/not_a_database';
+    Directory(invalidDbPath).createSync();
   });
 
   tearDown(() async {
-    await appDatabase.close();
-    await searchDb.close();
+    await searchDb?.close();
   });
 
-  void stubOpenDatabase() {
-    when(
-      () => accessor.openExternalDatabase(
-        pathFile: any(named: 'pathFile'),
-        fileName: any(named: 'fileName'),
-      ),
-    ).thenAnswer((_) async => searchDb);
+  GeneratedDeckDatabase openSearchDb() {
+    searchDb = GeneratedDeckDatabase(
+      NativeDatabase.createInBackground(File(dbPath)),
+    );
+    return searchDb!;
   }
 
   FetchCards fetchEvent() {
@@ -79,13 +63,12 @@ void main() {
       deckId: 1,
       deckName: 'Animal',
       deckCountry: 'ID',
-      filePath: deckFile,
-      fileName: 'deck.apkg',
+      dbPath: dbPath,
     );
   }
 
   FetchingCardIsFinished finishedSeed({
-    required CardsDao cardsDao,
+    required GeneratedDeckDao generatedDeckDao,
     List<CardsDetailEntity>? searchResults,
   }) {
     return FetchingCardIsFinished(
@@ -94,8 +77,7 @@ void main() {
         deckCountry: 'ID',
         listCard: [buildCard(id: 1, def: 'dog', trans: 'anjing')],
       ),
-      cardsDao: cardsDao,
-      filePath: deckFile,
+      generatedDeckDao: generatedDeckDao,
       searchResults: searchResults,
     );
   }
@@ -103,14 +85,9 @@ void main() {
   group('FetchingCardsBloc', () {
     blocTest<FetchingCardsBloc, FetchingCardsState>(
       'fetches cards and emits a finished state',
-      build: () {
-        stubOpenDatabase();
-        return FetchingCardsBloc(
-          databaseAccessor: accessor,
-          appDatabase: appDatabase,
-        );
-      },
+      build: () => FetchingCardsBloc(),
       act: (bloc) => bloc.add(fetchEvent()),
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<FetchingCardIsLoading>(),
         isA<FetchingCardIsFinished>()
@@ -121,37 +98,27 @@ void main() {
 
     blocTest<FetchingCardsBloc, FetchingCardsState>(
       'emits an error state when opening the database fails',
-      build: () {
-        when(
-          () => accessor.openExternalDatabase(
-            pathFile: any(named: 'pathFile'),
-            fileName: any(named: 'fileName'),
-          ),
-        ).thenThrow(Exception('db error'));
-        return FetchingCardsBloc(
-          databaseAccessor: accessor,
-          appDatabase: appDatabase,
-        );
-      },
-      act: (bloc) => bloc.add(fetchEvent()),
+      build: () => FetchingCardsBloc(),
+      act: (bloc) => bloc.add(
+        FetchCards(
+          deckId: 1,
+          deckName: 'Animal',
+          deckCountry: 'ID',
+          dbPath: invalidDbPath,
+        ),
+      ),
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<FetchingCardIsLoading>(),
-        isA<FetchingCardIsError>().having(
-          (s) => s.errorMessage,
-          'errorMessage',
-          'Exception: db error',
-        ),
+        isA<FetchingCardIsError>(),
       ],
     );
 
     blocTest<FetchingCardsBloc, FetchingCardsState>(
       'clears search results when the search params are empty',
-      build: () => FetchingCardsBloc(
-        databaseAccessor: accessor,
-        appDatabase: appDatabase,
-      ),
+      build: () => FetchingCardsBloc(),
       seed: () => finishedSeed(
-        cardsDao: searchDb.cardsDao,
+        generatedDeckDao: openSearchDb().generatedDeckDao,
         searchResults: [buildCard(id: 1, def: 'dog', trans: 'anjing')],
       ),
       act: (bloc) => bloc.add(SearchCard(searchParams: '')),
@@ -166,22 +133,10 @@ void main() {
 
     blocTest<FetchingCardsBloc, FetchingCardsState>(
       'emits matching cards when searching',
-      build: () => FetchingCardsBloc(
-        databaseAccessor: accessor,
-        appDatabase: appDatabase,
-      ),
-      seed: () {
-        final mockCardsDao = MockCardsDao();
-        when(
-          () => mockCardsDao.searchCard(searchParams: 'dog'),
-        ).thenAnswer(
-          (_) => Stream.value([buildCard(id: 1, def: 'dog', trans: 'anjing')]),
-        );
-        return finishedSeed(
-          cardsDao: mockCardsDao,
-        );
-      },
+      build: () => FetchingCardsBloc(),
+      seed: () => finishedSeed(generatedDeckDao: openSearchDb().generatedDeckDao),
       act: (bloc) => bloc.add(SearchCard(searchParams: 'dog')),
+      wait: const Duration(milliseconds: 500),
       expect: () => [
         isA<FetchingCardIsFinished>().having(
           (s) => s.searchResults,
@@ -190,5 +145,21 @@ void main() {
         ),
       ],
     );
+
+    test('closing the bloc also closes the opened deck database', () async {
+      final bloc = FetchingCardsBloc();
+      addTearDown(bloc.close);
+
+      final finished = bloc.stream.firstWhere(
+        (state) => state is FetchingCardIsFinished,
+      );
+      bloc.add(fetchEvent());
+      final finishedState = await finished;
+      final dao = (finishedState as FetchingCardIsFinished).generatedDeckDao;
+
+      await bloc.close();
+
+      await expectLater(dao.getAllCards(), throwsA(anything));
+    });
   });
 }

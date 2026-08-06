@@ -72,7 +72,7 @@ class CardAppBar extends StatelessWidget {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    flagEmoji!.isNotEmpty
+                    flagEmoji?.isNotEmpty == true
                         ? Text(
                             flagEmoji!,
                             style: TextStyle(

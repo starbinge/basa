@@ -1,12 +1,9 @@
-import 'dart:io';
-
 import 'package:basa_app_project/core/data/initial_database/initial_database.dart';
 import 'package:basa_app_project/core/router/app_shell.dart';
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
 import 'package:basa_app_project/features/cards/data/repositories/accuracy_repo_impl/accuracy_repo_impl.dart';
-import 'package:basa_app_project/features/cards/data/repositories/flashcard_repo_impl.dart';
 import 'package:basa_app_project/features/cards/data/repositories/time_consume_impl/time_consume_repo_impl.dart';
-import 'package:basa_app_project/features/cards/domain/repositories/flash_card_repo.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/fetching_card/fetching_cards_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/flash_card/flash_card_bloc.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/statistics/card_accuracy/card_accuracy_bloc.dart';
@@ -20,12 +17,11 @@ import 'package:basa_app_project/features/cards/presentation/pages/quiz_game_pag
 import 'package:basa_app_project/features/decks/data/dao/decks_dao.dart';
 import 'package:basa_app_project/features/decks/data/repositories/deck_repository_impl.dart';
 import 'package:basa_app_project/features/decks/domain/repositories/deck_repository.dart';
-import 'package:basa_app_project/features/decks/presentation/bloc/fetching_deck/fetching_deck_bloc.dart';
+import 'package:basa_app_project/features/decks/presentation/bloc/deck/deck_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/cards/data/dao/cards_dao/cards_dao.dart';
 import '../../features/cards/domain/entities/cards_detail_entity.dart';
 import '../../features/cards/presentation/pages/history_play_card.dart';
 
@@ -35,11 +31,10 @@ final appRouter = GoRouter(
     GoRoute(path: '/', builder: (context, state) => const AppShell()),
 
     GoRoute(
-      path: '/cards/:id/:fileName/:deckName/:deckCountry/:activeHour',
+      path: '/cards/:id/:deckName/:deckCountry/:activeHour',
       builder: (context, state) => MainCardPage(
         deckId: int.parse(state.pathParameters['id']!),
-        fileName: state.pathParameters['fileName']!,
-        filePath: state.extra as File,
+        dbPath: state.extra as String,
         deckName: state.pathParameters['deckName']!,
         deckCountry: state.pathParameters['deckCountry']!,
         activeHour: state.pathParameters['activeHour']!,
@@ -52,8 +47,7 @@ final appRouter = GoRouter(
                 state.extra
                     as ({
                       List<CardsDetailEntity> listCards,
-                      CardsDao cardsDao,
-                      File filePath,
+                      GeneratedDeckDao generatedDeckDao,
                       int startIndex,
                     });
 
@@ -61,8 +55,7 @@ final appRouter = GoRouter(
               child: BlocProvider(
                 create: (context) =>
                     FlashCardBloc(
-                      flashCardRepo: FlashcardRepoImpl(),
-                      cardsDao: extras.cardsDao,
+                      generatedDeckDao: extras.generatedDeckDao,
                     )..add(
                       GenerateFlashCard(
                         listCard: extras.listCards,
@@ -71,8 +64,6 @@ final appRouter = GoRouter(
                     ),
                 child: FleshCardPage(
                   deckId: int.parse(state.pathParameters['id']!),
-                  fileName: state.pathParameters['fileName']!,
-                  filePath: extras.filePath,
                   deckName: state.pathParameters['deckName']!,
                   deckCountry: state.pathParameters['deckCountry']!,
                 ),
@@ -85,15 +76,10 @@ final appRouter = GoRouter(
           path: 'deckStats/:statsType',
           pageBuilder: (context, state) {
             final extras =
-                state.extra
-                    as ({FetchingCardsBloc fetchingCardsBloc, File? filePath});
-            CardsDao? activeCardsDao;
-
-            if (extras.fetchingCardsBloc.state is FetchingCardIsFinished) {
-              activeCardsDao =
-                  (extras.fetchingCardsBloc.state as FetchingCardIsFinished)
-                      .cardsDao;
-            }
+                state.extra as ({FetchingCardsBloc fetchingCardsBloc});
+            final FetchingCardIsFinished fetchingState =
+                extras.fetchingCardsBloc.state as FetchingCardIsFinished;
+            final GeneratedDeckDao activeDao = fetchingState.generatedDeckDao;
             final String? statsTypeString = state.pathParameters['statsType'];
             final StatisticsPageEnum statsTypeParam = StatisticsPageEnum.values
                 .firstWhere(
@@ -102,10 +88,10 @@ final appRouter = GoRouter(
                 );
 
             final accuracyRepo = AccuracyRepoImpl(
-              accuracyDao: activeCardsDao!.attachedDatabase.accuracyDao,
+              generatedDeckDao: activeDao,
             );
             final timeConsumeRepo = TimeConsumeRepoImpl(
-              timeConsumeDao: activeCardsDao.attachedDatabase.timeConsumeDao,
+              generatedDeckDao: activeDao,
             );
 
             switch (statsTypeParam) {
@@ -118,7 +104,6 @@ final appRouter = GoRouter(
                     child: DeckStatisticPage(
                       deckName: state.pathParameters['deckName']!,
                       statsType: statsTypeParam,
-                      filePath: extras.filePath ?? File(""),
                     ),
                   ),
                 );
@@ -131,7 +116,6 @@ final appRouter = GoRouter(
                     child: DeckStatisticPage(
                       deckName: state.pathParameters['deckName']!,
                       statsType: statsTypeParam,
-                      filePath: extras.filePath ?? File(""),
                     ),
                   ),
                 );
@@ -141,7 +125,11 @@ final appRouter = GoRouter(
         GoRoute(
           path: 'history',
           pageBuilder: (context, state) {
-            return const MaterialPage(child: HistoryPlayCard());
+            return MaterialPage(
+              child: HistoryPlayCard(
+                generatedDeckDao: state.extra as GeneratedDeckDao,
+              ),
+            );
           },
         ),
         GoRoute(
@@ -151,18 +139,14 @@ final appRouter = GoRouter(
                 state.extra
                     as ({
                       List<CardsDetailEntity> listCards,
-                      CardsDao cardsDao,
-                      FlashCardRepo flashCardRepo,
-                      File filePath,
+                      GeneratedDeckDao generatedDeckDao,
                       int startIndex,
                     });
 
             return MaterialPage(
               child: QuizGamePage(
                 listCards: extra.listCards,
-                cardsDao: extra.cardsDao,
-                flashCardRepo: extra.flashCardRepo,
-                filePath: extra.filePath,
+                generatedDeckDao: extra.generatedDeckDao,
                 startIndex: extra.startIndex,
               ),
             );
@@ -182,7 +166,7 @@ final appRouter = GoRouter(
         );
         return MaterialPage(
           child: BlocProvider(
-            create: (context) => FetchingDeckBloc(repository: _deckRepo),
+            create: (context) => DeckBloc(repository: _deckRepo),
             child: FlashcardSummaryStatsPage(
               deckId: state.pathParameters['deckId']!,
               correctAnswer: state.pathParameters['correctAnswer']!,

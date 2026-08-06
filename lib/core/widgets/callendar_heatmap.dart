@@ -8,12 +8,16 @@ class CallendarHeatmap extends StatefulWidget {
     required this.getValue,
     this.baseColor,
     required this.onDateTap,
+    this.year,
+    this.month,
   });
 
   final int itemCount;
   final double Function(int index) getValue;
   final void Function(DateTime date) onDateTap;
   final Color? baseColor;
+  final int? year;
+  final int? month;
 
   @override
   State<CallendarHeatmap> createState() => _CallendarHeatmapState();
@@ -23,6 +27,9 @@ class _CallendarHeatmapState extends State<CallendarHeatmap> {
   @override
   Widget build(BuildContext context) {
     final color = widget.baseColor ?? Theme.of(context).primaryColor;
+    final DateTime now = DateTime.now();
+    final int year = widget.year ?? now.year;
+    final int month = widget.month ?? now.month;
 
     return Container(
       padding: const EdgeInsets.all(10),
@@ -42,7 +49,7 @@ class _CallendarHeatmapState extends State<CallendarHeatmap> {
                 return GestureDetector(
                   onTap: () {
                     final int day = dateIndex + 1;
-                    final DateTime clickedDate = DateTime(2026, 7, day);
+                    final DateTime clickedDate = DateTime(year, month, day);
                     widget.onDateTap(clickedDate);
                   },
                   child: Stack(

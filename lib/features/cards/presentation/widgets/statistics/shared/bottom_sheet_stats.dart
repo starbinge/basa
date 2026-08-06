@@ -18,6 +18,9 @@ class BottomSheetStats extends StatelessWidget {
   final String avgStatLabel;
   final int totalCards;
   final TimeUnit totalTime;
+  final String emptyTitle;
+  final String emptySubtitle;
+  final IconData emptyIcon;
 
   const BottomSheetStats({
     super.key,
@@ -32,6 +35,9 @@ class BottomSheetStats extends StatelessWidget {
     this.avgStatLabel = 'Avg',
     this.totalCards = 0,
     this.totalTime = const TimeUnit(hour: 0, minute: 0, seconds: 0),
+    this.emptyTitle = "Be patient, kid.",
+    this.emptySubtitle = "Today is still not the day",
+    this.emptyIcon = Icons.warning,
   });
 
   @override
@@ -46,13 +52,13 @@ class BottomSheetStats extends StatelessWidget {
           color: Colors.white,
           child: AnimatedHeader(
             size: 120,
-            icon: isFutureDate ? Icons.question_mark : Icons.warning,
+            icon: isFutureDate ? Icons.question_mark : emptyIcon,
             title: isFutureDate
                 ? "I don't think we have already knew each other at this day"
-                : "Be patient, kid.",
+                : emptyTitle,
             subtitle: isFutureDate
                 ? "You should be faster to come here, tho."
-                : "Today is still not the day",
+                : emptySubtitle,
           ),
         ),
       );

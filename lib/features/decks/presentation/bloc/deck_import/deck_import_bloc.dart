@@ -25,20 +25,15 @@ class DeckImportBloc extends Bloc<DeckImportEvent, DeckImportState> {
            isDeckExist: false,
          ),
        ) {
-    on<SelectFile>((event, emit) async {
-      final String result = await _filePickerService.getFilePath();
-      if (result.isEmpty) return;
-      emit(state.copyWith(filePath: result));
-    });
     on<ImportDeck>((event, emit) async {
       emit(state.copyWith(isLoading: true, isFinished: false, isError: false));
       try {
-        await Future.delayed(const Duration(seconds: 2));
         await _repository.importDeck(
           deckName: event.deckName,
           deckFilePath: event.deckFilePath,
-          deckLanguage: event.deckLanguage,
           deckColor: event.deckColor,
+          deckLanguage: event.deckLanguage,
+          explanationRolePlay: event.explanationRolePlay,
         );
         emit(
           state.copyWith(isLoading: false, isFinished: true, isError: false),
@@ -53,7 +48,7 @@ class DeckImportBloc extends Bloc<DeckImportEvent, DeckImportState> {
             isFinished: true,
           ),
         );
-      } catch (e) {
+       } catch (e) {
         emit(
           state.copyWith(
             isError: true,
@@ -65,5 +60,14 @@ class DeckImportBloc extends Bloc<DeckImportEvent, DeckImportState> {
         );
       }
     });
+  }
+
+  Future<String> pickFile() async {
+    final path = await _filePickerService.getFilePath();
+    if (path.isEmpty) return "";
+    if (!path.toLowerCase().endsWith('.euy')) {
+      throw const NotEuyFileException();
+    }
+    return path;
   }
 }

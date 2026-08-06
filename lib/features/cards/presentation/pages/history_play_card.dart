@@ -1,4 +1,4 @@
-import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
+import 'package:basa_app_project/core/data/generated_database/generated_database.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/features/cards/data/repositories/history_repo_impl.dart';
 import 'package:basa_app_project/features/cards/presentation/bloc/history/history_bloc.dart';
@@ -7,7 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HistoryPlayCard extends StatelessWidget {
-  const HistoryPlayCard({super.key});
+  const HistoryPlayCard({super.key, required this.generatedDeckDao});
+
+  final GeneratedDeckDao generatedDeckDao;
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +18,7 @@ class HistoryPlayCard extends StatelessWidget {
       body: BlocProvider(
         create: (context) => HistoryBloc(
           historyCardRepo: HistoryRepoImpl(
-            historyDao: RepositoryProvider.of<ExternalDatabaseAccessor>(
-              context,
-            ).historyDao!,
+            generatedDeckDao: generatedDeckDao,
           ),
         )..add(getHistory()),
         child: BlocBuilder<HistoryBloc, HistoryState>(

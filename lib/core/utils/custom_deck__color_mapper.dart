@@ -14,6 +14,7 @@ class CustomDeckColorMapper extends ColorMapper {
     Color color,
   ) {
     return switch (color) {
+      const Color(0xFFBEBEBE) => Color(selectedColor),
       const Color(0xFFD9D9D9) => Color(selectedColor),
       const Color(0xFF737373) => Color.alphaBlend(
         Colors.black.withAlpha(120),

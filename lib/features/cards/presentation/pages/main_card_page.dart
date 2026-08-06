@@ -1,11 +1,5 @@
-import 'dart:io';
-
-import 'package:audioplayers/audioplayers.dart';
-import 'package:basa_app_project/core/data/external_database/external_database_accessor.dart';
-import 'package:basa_app_project/core/data/initial_database/initial_database.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/features/cards/data/repositories/accuracy_repo_impl/accuracy_repo_impl.dart';
-import 'package:basa_app_project/features/cards/data/repositories/flashcard_repo_impl.dart';
 import 'package:basa_app_project/features/cards/data/repositories/time_consume_impl/time_consume_repo_impl.dart';
 import 'package:basa_app_project/features/cards/domain/entities/cards_detail_entity.dart';
 import 'package:basa_app_project/features/cards/domain/entities/time_consume_entity/time_consume_entity.dart';
@@ -25,61 +19,36 @@ class MainCardPage extends StatefulWidget {
   const MainCardPage({
     super.key,
     required this.deckId,
-    required this.fileName,
-    required this.filePath,
     required this.deckName,
     required this.deckCountry,
     required this.activeHour,
+    required this.dbPath,
   });
 
   final int deckId;
-  final String fileName;
-  final File filePath;
   final String deckName;
   final String deckCountry;
   final String activeHour;
+  final String dbPath;
 
   @override
   State<MainCardPage> createState() => _MainCardPageState();
 }
 
 class _MainCardPageState extends State<MainCardPage> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
   final ScrollController _scrollController = ScrollController();
   int _startGenerateIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _audioPlayer.onPlayerComplete.listen((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  void dispose() {
-    _audioPlayer.stop();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final flagEmoji = getCountryFlagEmoji(widget.deckCountry);
     return BlocProvider(
-      create: (context) =>
-          FetchingCardsBloc(
-            databaseAccessor: RepositoryProvider.of<ExternalDatabaseAccessor>(
-              context,
-            ),
-            appDatabase: RepositoryProvider.of<AppDatabase>(context),
-          )..add(
+      create: (context) => FetchingCardsBloc()..add(
             FetchCards(
               deckId: widget.deckId,
               deckName: widget.deckName,
               deckCountry: widget.deckCountry,
-              filePath: widget.filePath,
-              fileName: widget.fileName,
+              dbPath: widget.dbPath,
             ),
           ),
       child: Scaffold(
@@ -111,16 +80,14 @@ class _MainCardPageState extends State<MainCardPage> {
                   BlocProvider(
                     create: (_) => CardAccuracyBloc(
                       accuracyCardRepo: AccuracyRepoImpl(
-                        accuracyDao:
-                            state.cardsDao.attachedDatabase.accuracyDao,
+                        generatedDeckDao: state.generatedDeckDao,
                       ),
                     )..add(FetchAccuracySummary()),
                   ),
                   BlocProvider(
                     create: (_) => TimeConsumeBloc(
                       timeConsumeRepo: TimeConsumeRepoImpl(
-                        timeConsumeDao:
-                            state.cardsDao.attachedDatabase.timeConsumeDao,
+                        generatedDeckDao: state.generatedDeckDao,
                       ),
                     )..add(FetchWeeklyStreak()),
                   ),
@@ -140,8 +107,7 @@ class _MainCardPageState extends State<MainCardPage> {
                                 '${GoRouterState.of(context).matchedLocation}/flashcard',
                                 extra: (
                                   listCards: state.cardsEntity.listCard,
-                                  cardsDao: state.cardsDao,
-                                  filePath: widget.filePath,
+                                  generatedDeckDao: state.generatedDeckDao,
                                   startIndex: _startGenerateIndex,
                                 ),
                               );
@@ -160,9 +126,7 @@ class _MainCardPageState extends State<MainCardPage> {
                                 '${GoRouterState.of(context).matchedLocation}/quizgame',
                                 extra: (
                                   listCards: state.cardsEntity.listCard,
-                                  cardsDao: state.cardsDao,
-                                  flashCardRepo: FlashcardRepoImpl(),
-                                  filePath: widget.filePath,
+                                  generatedDeckDao: state.generatedDeckDao,
                                   startIndex: _startGenerateIndex,
                                 ),
                               );
@@ -179,6 +143,7 @@ class _MainCardPageState extends State<MainCardPage> {
                             historyButton: () {
                               context.push(
                                 '${GoRouterState.of(context).matchedLocation}/history',
+                                extra: state.generatedDeckDao,
                               );
                             },
                           ),
@@ -217,7 +182,6 @@ class _MainCardPageState extends State<MainCardPage> {
                                         extra: (
                                           fetchingCardsBloc: context
                                               .read<FetchingCardsBloc>(),
-                                          filePath: widget.filePath,
                                         ),
                                       );
                                     },
@@ -230,7 +194,6 @@ class _MainCardPageState extends State<MainCardPage> {
                                         extra: (
                                           fetchingCardsBloc: context
                                               .read<FetchingCardsBloc>(),
-                                          filePath: widget.filePath,
                                         ),
                                       );
                                     },

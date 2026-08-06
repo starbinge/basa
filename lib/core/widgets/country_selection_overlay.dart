@@ -46,35 +46,50 @@ class _CountrySelectionOverlayState extends State<CountrySelectionOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _searchController,
-              decoration: const InputDecoration(
-                labelText: 'Search for countries',
-                prefixIcon: Icon(Icons.search),
+    final theme = Theme.of(context);
+    return Material(
+      color: theme.colorScheme.surface,
+      child: SizedBox(
+        height: MediaQuery.sizeOf(context).height / 2,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+          child: Column(
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.onSurfaceVariant.withAlpha(80),
+                  borderRadius: BorderRadius.circular(2),
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _filteredCountries.length,
-                itemBuilder: (context, index) {
-                  final country = _filteredCountries[index];
-                  return ListTile(
-                    leading: Text(country.flagEmoji),
-                    title: Text('${country.name} (+${country.phoneCode})'),
-                    onTap: () {
-                      widget.onSelect(country);
-                      Navigator.pop(context);
-                    },
-                  );
-                },
+              const SizedBox(height: 12),
+              TextField(
+                controller: _searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Search country...',
+                  prefixIcon: Icon(Icons.search),
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 8),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _filteredCountries.length,
+                  itemBuilder: (context, index) {
+                    final country = _filteredCountries[index];
+                    return ListTile(
+                      leading: Text(country.flagEmoji),
+                      title: Text('${country.name} (+${country.phoneCode})'),
+                      onTap: () {
+                        widget.onSelect(country);
+                        Navigator.pop(context);
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/core/pages/error_page.dart';
 import 'package:basa_app_project/core/widgets/animated_header.dart';
 import 'package:basa_app_project/features/cards/constants/enums/statistics_page_enum.dart';
@@ -17,27 +14,16 @@ class DeckStatisticPage extends StatefulWidget {
     super.key,
     required this.deckName,
     required this.statsType,
-    required this.filePath,
   });
 
   final String deckName;
   final StatisticsPageEnum statsType;
-  final File filePath;
 
   @override
   State<DeckStatisticPage> createState() => _DeckStatisticPageState();
 }
 
 class _DeckStatisticPageState extends State<DeckStatisticPage> {
-  bool _isAudioPlated = false;
-  AudioPlayer _audioPlayer = AudioPlayer();
-
-  @override
-  void dispose() {
-    _audioPlayer.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,9 +65,6 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                             monthlyList: state.monthlyAccuracy,
                             dailyAccuracyList: state.dailyAccuracy,
                           ),
-                          isAudioPlayed: _isAudioPlated,
-                          audioPlayer: _audioPlayer,
-                          filePath: widget.filePath,
                         ),
                       ],
                     ),
@@ -115,12 +98,7 @@ class _DeckStatisticPageState extends State<DeckStatisticPage> {
                         PlayTimeStatsLayout(
                           timeStats: state.thisMonthTimeConsume,
                           monthlyData: state.monthlyTimeConsume,
-
                           dailyData: state.dailyTimeConsume,
-
-                          isAudioPlay: _isAudioPlated,
-                          audioPlayer: _audioPlayer,
-                          filePath: widget.filePath,
                         ),
                       ],
                     ),

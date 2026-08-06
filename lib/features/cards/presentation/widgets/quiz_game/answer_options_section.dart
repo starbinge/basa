@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:audioplayers/audioplayers.dart';
 import 'package:basa_app_project/features/cards/domain/entities/quiz_game_entity.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -16,13 +13,9 @@ class AnswerOptionSection extends StatefulWidget {
   const AnswerOptionSection({
     super.key,
     required this.listCards,
-    required this.filePath,
-    required this.audioPlayer,
   });
 
   final List<CardsDetailEntity> listCards;
-  final File filePath;
-  final AudioPlayer audioPlayer;
 
   @override
   State<AnswerOptionSection> createState() => _AnswerOptionSectionState();
@@ -141,7 +134,6 @@ class _AnswerOptionSectionState extends State<AnswerOptionSection> {
                                                         .cid,
                                               )
                                               .first,
-                                          audioPlayer: widget.audioPlayer,
                                         )
                                         .animate(
                                           delay: Duration(
